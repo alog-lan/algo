@@ -1,0 +1,10 @@
+bin/
+build/
+*.o
+*.s
+dastur
+salom
+arifmetika
+sikl
+funksiyalar
+tezlik
