@@ -317,11 +317,21 @@ static void gen_expr(Expr *expr, Scope *scope, FILE *out) {
         }
 
         case EXPR_INDEX: {
-            gen_expr(expr->as.index.target, scope, out);
-            fprintf(out, "    push rax\n");
-            gen_expr(expr->as.index.index, scope, out);
-            fprintf(out, "    pop rbx\n"); // rbx = massiv ko'rsatkichi, rax = indeks
-            fprintf(out, "    mov rax, [rbx + 16 + rax * 8]\n");
+            VarType idx_type = infer_expr_type(expr->as.index.index, scope);
+            if (idx_type == TYPE_STRING) {
+                gen_expr(expr->as.index.target, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(expr->as.index.index, scope, out);
+                fprintf(out, "    mov rsi, rax\n");
+                fprintf(out, "    pop rdi\n");
+                fprintf(out, "    call algo_lugat_ol\n");
+            } else {
+                gen_expr(expr->as.index.target, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(expr->as.index.index, scope, out);
+                fprintf(out, "    pop rbx\n");
+                fprintf(out, "    mov rax, [rbx + 16 + rax * 8]\n");
+            }
             break;
         }
 
@@ -388,14 +398,27 @@ static void gen_stmt(Stmt *stmt, Scope *scope, FILE *out) {
         }
 
         case STMT_INDEX_ASSIGN: {
-            gen_expr(stmt->as.index_assign.target, scope, out);
-            fprintf(out, "    push rax\n");
-            gen_expr(stmt->as.index_assign.index, scope, out);
-            fprintf(out, "    push rax\n");
-            gen_expr(stmt->as.index_assign.value, scope, out);
-            fprintf(out, "    pop rcx\n"); // indeks
-            fprintf(out, "    pop rbx\n"); // massiv ko'rsatkichi
-            fprintf(out, "    mov [rbx + 16 + rcx * 8], rax\n");
+            VarType idx_type = infer_expr_type(stmt->as.index_assign.index, scope);
+            if (idx_type == TYPE_STRING) {
+                gen_expr(stmt->as.index_assign.target, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(stmt->as.index_assign.index, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(stmt->as.index_assign.value, scope, out);
+                fprintf(out, "    mov rdx, rax\n"); // qiymat
+                fprintf(out, "    pop rsi\n");     // kalit
+                fprintf(out, "    pop rdi\n");     // lug'at
+                fprintf(out, "    call algo_lugat_qoy\n");
+            } else {
+                gen_expr(stmt->as.index_assign.target, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(stmt->as.index_assign.index, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(stmt->as.index_assign.value, scope, out);
+                fprintf(out, "    pop rcx\n"); // indeks
+                fprintf(out, "    pop rbx\n"); // massiv ko'rsatkichi
+                fprintf(out, "    mov [rbx + 16 + rcx * 8], rax\n");
+            }
             break;
         }
 
@@ -582,11 +605,9 @@ void codegen_generate(Program *prog, FILE *out) {
                     if (ret_expr->type == EXPR_ARRAY_LITERAL) ret_type = TYPE_ARRAY;
                     else if (ret_expr->type == EXPR_STRING || ret_expr->type == EXPR_KIRIT) ret_type = TYPE_STRING;
                     else if (ret_expr->type == EXPR_VAR) {
-                        // Agar parametr bo'lsa yoki o'zgaruvchi
-                        // Masalan "qaytar massiv"
-                        if (strstr(ret_expr->as.var_name, "massiv") || strstr(ret_expr->as.var_name, "royxat")) {
+                        if (strstr(ret_expr->as.var_name, "massiv") || strstr(ret_expr->as.var_name, "royxat") || strstr(ret_expr->as.var_name, "arr")) {
                             ret_type = TYPE_ARRAY;
-                        } else if (strstr(ret_expr->as.var_name, "matn") || strstr(ret_expr->as.var_name, "satr")) {
+                        } else if (strstr(ret_expr->as.var_name, "matn") || strstr(ret_expr->as.var_name, "satr") || strstr(ret_expr->as.var_name, "str")) {
                             ret_type = TYPE_STRING;
                         }
                     }
@@ -729,8 +750,38 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "    syscall\n");
     fprintf(out, "    ret\n\n");
 
-    // 5. Son chiqarish (yangi qatorsiz)
+    // 5. Son chiqarish (yoki avtomatik matn aniqlash)
     fprintf(out, "algo_chiqar_son_oddiy:\n");
+    fprintf(out, "    # Avval qiymat rodata yoki heap manzilida ekanligini tekshiramiz\n");
+    fprintf(out, "    lea rbx, [rip + algo_rodata_start]\n");
+    fprintf(out, "    lea rcx, [rip + algo_rodata_end]\n");
+    fprintf(out, "    cmp rax, rbx\n");
+    fprintf(out, "    jb .L_chk_heap\n");
+    fprintf(out, "    cmp rax, rcx\n");
+    fprintf(out, "    jb .L_chk_str_valid\n");
+    fprintf(out, ".L_chk_heap:\n");
+    fprintf(out, "    mov rbx, [rip + algo_heap_start]\n");
+    fprintf(out, "    test rbx, rbx\n");
+    fprintf(out, "    jz .L_not_str_obj\n");
+    fprintf(out, "    cmp rax, rbx\n");
+    fprintf(out, "    jb .L_not_str_obj\n");
+    fprintf(out, "    cmp rax, [rip + algo_heap_ptr]\n");
+    fprintf(out, "    jae .L_not_str_obj\n");
+    fprintf(out, ".L_chk_str_valid:\n");
+    fprintf(out, "    mov rdx, [rax]\n");
+    fprintf(out, "    cmp rdx, 0\n");
+    fprintf(out, "    jl .L_not_str_obj\n");
+    fprintf(out, "    cmp rdx, 1000000\n");
+    fprintf(out, "    jg .L_not_str_obj\n");
+    fprintf(out, "    cmp byte ptr [rax + 8 + rdx], 0\n");
+    fprintf(out, "    jne .L_not_str_obj\n");
+    fprintf(out, "    # Matn aniqlandi! Uni chiqaramiz\n");
+    fprintf(out, "    lea rsi, [rax + 8]\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_not_str_obj:\n");
     fprintf(out, "    push rbp\n");
     fprintf(out, "    mov rbp, rsp\n");
     fprintf(out, "    sub rsp, 64\n");
@@ -816,7 +867,7 @@ void codegen_generate(Program *prog, FILE *out) {
     // 7. Fayl tizimi amallari (Built-in File I/O)
     fprintf(out, "algo_fayl_och:\n");
     fprintf(out, "    # rdi = fayl_nomi (str), rsi = flags (0=read, 577=write/create/trunc)\n");
-    fprintf(out, "    lea rdi, [rdi + 8]\n"); // matn boshiga
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
     fprintf(out, "    mov rdx, 420\n");       // 0644 ruxsati
     fprintf(out, "    mov rax, 2\n");         // sys_open
     fprintf(out, "    syscall\n");
@@ -836,6 +887,578 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "    syscall\n");
     fprintf(out, "    ret\n\n");
 
+    // 8. Vaqt va Kutish (Time & Sleep)
+    fprintf(out, "algo_vaqt:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    sub rsp, 16\n");
+    fprintf(out, "    mov rax, 228\n"); // sys_clock_gettime
+    fprintf(out, "    xor rdi, rdi\n");
+    fprintf(out, "    mov rsi, rsp\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rax, [rsp]\n");
+    fprintf(out, "    imul rax, 1000\n");
+    fprintf(out, "    mov rdx, [rsp + 8]\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    mov rax, rdx\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    mov rbx, 1000000\n");
+    fprintf(out, "    div rbx\n");
+    fprintf(out, "    mov rdx, rax\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    add rax, rdx\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_kutish:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    sub rsp, 16\n");
+    fprintf(out, "    mov rax, rdi\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    mov rbx, 1000\n");
+    fprintf(out, "    div rbx\n");
+    fprintf(out, "    mov [rsp], rax\n");
+    fprintf(out, "    imul rdx, 1000000\n");
+    fprintf(out, "    mov [rsp + 8], rdx\n");
+    fprintf(out, "    mov rax, 35\n"); // sys_nanosleep
+    fprintf(out, "    mov rdi, rsp\n");
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 9. Matn amallari (String functions)
+    fprintf(out, "algo_matn_teng:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    cmp rdi, rsi\n");
+    fprintf(out, "    je .L_streq_yes\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_streq_no\n");
+    fprintf(out, "    test rsi, rsi\n");
+    fprintf(out, "    jz .L_streq_no\n");
+    fprintf(out, "    mov rcx, [rdi]\n");
+    fprintf(out, "    cmp rcx, [rsi]\n");
+    fprintf(out, "    jne .L_streq_no\n");
+    fprintf(out, "    lea r12, [rdi + 8]\n");
+    fprintf(out, "    lea r13, [rsi + 8]\n");
+    fprintf(out, ".L_streq_loop:\n");
+    fprintf(out, "    test rcx, rcx\n");
+    fprintf(out, "    jz .L_streq_yes\n");
+    fprintf(out, "    mov al, [r12]\n");
+    fprintf(out, "    cmp al, [r13]\n");
+    fprintf(out, "    jne .L_streq_no\n");
+    fprintf(out, "    inc r12\n");
+    fprintf(out, "    inc r13\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, "    jmp .L_streq_loop\n");
+    fprintf(out, ".L_streq_yes:\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_streq_no:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_matn_kesish:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push r15\n");
+    fprintf(out, "    mov r12, rdi\n"); // str
+    fprintf(out, "    mov r13, rsi\n"); // bosh
+    fprintf(out, "    mov r14, rdx\n"); // uzunlik
+    fprintf(out, "    mov r15, [r12]\n");
+    fprintf(out, "    cmp r13, r15\n");
+    fprintf(out, "    jge .L_substr_empty\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    add rax, r14\n");
+    fprintf(out, "    cmp rax, r15\n");
+    fprintf(out, "    jle .L_substr_alloc\n");
+    fprintf(out, "    mov r14, r15\n");
+    fprintf(out, "    sub r14, r13\n");
+    fprintf(out, ".L_substr_alloc:\n");
+    fprintf(out, "    mov rax, r14\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov [rax], r14\n");
+    fprintf(out, "    mov rcx, r14\n");
+    fprintf(out, "    lea rsi, [r12 + 8 + r13]\n");
+    fprintf(out, "    lea rdi, [rax + 8]\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    rep movsb\n");
+    fprintf(out, "    mov byte ptr [rdi], 0\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_substr_empty:\n");
+    fprintf(out, "    mov rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov qword ptr [rax], 0\n");
+    fprintf(out, "    mov byte ptr [rax + 8], 0\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_matn_ichida:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push r15\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, rsi\n");
+    fprintf(out, "    mov r14, [r12]\n");
+    fprintf(out, "    mov r15, [r13]\n");
+    fprintf(out, "    cmp r15, r14\n");
+    fprintf(out, "    jg .L_str_not_found\n");
+    fprintf(out, "    test r15, r15\n");
+    fprintf(out, "    jz .L_str_found\n");
+    fprintf(out, "    mov r8, r14\n");
+    fprintf(out, "    sub r8, r15\n");
+    fprintf(out, "    xor r9, r9\n");
+    fprintf(out, ".L_needle_outer:\n");
+    fprintf(out, "    cmp r9, r8\n");
+    fprintf(out, "    jg .L_str_not_found\n");
+    fprintf(out, "    xor r10, r10\n");
+    fprintf(out, ".L_needle_inner:\n");
+    fprintf(out, "    cmp r10, r15\n");
+    fprintf(out, "    jge .L_str_found\n");
+    fprintf(out, "    mov r11, r9\n");
+    fprintf(out, "    add r11, r10\n");
+    fprintf(out, "    mov al, [r12 + 8 + r11]\n");
+    fprintf(out, "    mov bl, [r13 + 8 + r10]\n");
+    fprintf(out, "    cmp al, bl\n");
+    fprintf(out, "    jne .L_needle_next\n");
+    fprintf(out, "    inc r10\n");
+    fprintf(out, "    jmp .L_needle_inner\n");
+    fprintf(out, ".L_needle_next:\n");
+    fprintf(out, "    inc r9\n");
+    fprintf(out, "    jmp .L_needle_outer\n");
+    fprintf(out, ".L_str_found:\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_str_not_found:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_matn_katta:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, [r12]\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov [rax], r13\n");
+    fprintf(out, "    xor rcx, rcx\n");
+    fprintf(out, ".L_upper_loop:\n");
+    fprintf(out, "    cmp rcx, r13\n");
+    fprintf(out, "    jge .L_upper_done\n");
+    fprintf(out, "    mov dl, [r12 + 8 + rcx]\n");
+    fprintf(out, "    cmp dl, 97\n"); // 'a'
+    fprintf(out, "    jb .L_upper_store\n");
+    fprintf(out, "    cmp dl, 122\n"); // 'z'
+    fprintf(out, "    ja .L_upper_store\n");
+    fprintf(out, "    sub dl, 32\n");
+    fprintf(out, ".L_upper_store:\n");
+    fprintf(out, "    mov [rax + 8 + rcx], dl\n");
+    fprintf(out, "    inc rcx\n");
+    fprintf(out, "    jmp .L_upper_loop\n");
+    fprintf(out, ".L_upper_done:\n");
+    fprintf(out, "    mov byte ptr [rax + 8 + r13], 0\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_matn_kichik:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, [r12]\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov [rax], r13\n");
+    fprintf(out, "    xor rcx, rcx\n");
+    fprintf(out, ".L_lower_loop:\n");
+    fprintf(out, "    cmp rcx, r13\n");
+    fprintf(out, "    jge .L_lower_done\n");
+    fprintf(out, "    mov dl, [r12 + 8 + rcx]\n");
+    fprintf(out, "    cmp dl, 65\n"); // 'A'
+    fprintf(out, "    jb .L_lower_store\n");
+    fprintf(out, "    cmp dl, 90\n"); // 'Z'
+    fprintf(out, "    ja .L_lower_store\n");
+    fprintf(out, "    add dl, 32\n");
+    fprintf(out, ".L_lower_store:\n");
+    fprintf(out, "    mov [rax + 8 + rcx], dl\n");
+    fprintf(out, "    inc rcx\n");
+    fprintf(out, "    jmp .L_lower_loop\n");
+    fprintf(out, ".L_lower_done:\n");
+    fprintf(out, "    mov byte ptr [rax + 8 + r13], 0\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_son_matnga:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    sub rsp, 48\n");
+    fprintf(out, "    mov rax, rdi\n");
+    fprintf(out, "    lea rcx, [rbp - 1]\n");
+    fprintf(out, "    mov byte ptr [rcx], 0\n");
+    fprintf(out, "    mov r8, 0\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jnz .L_s2m_nonzero\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, "    mov byte ptr [rcx], 48\n");
+    fprintf(out, "    mov r8, 1\n");
+    fprintf(out, "    jmp .L_s2m_alloc\n");
+    fprintf(out, ".L_s2m_nonzero:\n");
+    fprintf(out, "    mov r9, 0\n");
+    fprintf(out, "    cmp rax, 0\n");
+    fprintf(out, "    jge .L_s2m_loop\n");
+    fprintf(out, "    mov r9, 1\n");
+    fprintf(out, "    neg rax\n");
+    fprintf(out, ".L_s2m_loop:\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jz .L_s2m_check_neg\n");
+    fprintf(out, "    mov rdx, 0\n");
+    fprintf(out, "    mov rbx, 10\n");
+    fprintf(out, "    div rbx\n");
+    fprintf(out, "    add dl, 48\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, "    mov byte ptr [rcx], dl\n");
+    fprintf(out, "    inc r8\n");
+    fprintf(out, "    jmp .L_s2m_loop\n");
+    fprintf(out, ".L_s2m_check_neg:\n");
+    fprintf(out, "    test r9, r9\n");
+    fprintf(out, "    jz .L_s2m_alloc\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, "    mov byte ptr [rcx], 45\n");
+    fprintf(out, "    inc r8\n");
+    fprintf(out, ".L_s2m_alloc:\n");
+    fprintf(out, "    push rcx\n");
+    fprintf(out, "    push r8\n");
+    fprintf(out, "    mov rax, r8\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    pop r8\n");
+    fprintf(out, "    pop rcx\n");
+    fprintf(out, "    mov [rax], r8\n");
+    fprintf(out, "    lea rdi, [rax + 8]\n");
+    fprintf(out, "    mov rsi, rcx\n");
+    fprintf(out, "    mov rcx, r8\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    rep movsb\n");
+    fprintf(out, "    mov byte ptr [rdi], 0\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_matn_songa:\n");
+    fprintf(out, "    mov rcx, [rdi]\n");
+    fprintf(out, "    test rcx, rcx\n");
+    fprintf(out, "    jz .L_m2s_zero\n");
+    fprintf(out, "    lea rsi, [rdi + 8]\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    mov r8, 0\n");
+    fprintf(out, "    mov dl, [rsi]\n");
+    fprintf(out, "    cmp dl, 45\n");
+    fprintf(out, "    jne .L_m2s_loop\n");
+    fprintf(out, "    mov r8, 1\n");
+    fprintf(out, "    inc rsi\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, ".L_m2s_loop:\n");
+    fprintf(out, "    test rcx, rcx\n");
+    fprintf(out, "    jz .L_m2s_done\n");
+    fprintf(out, "    movzx rdx, byte ptr [rsi]\n");
+    fprintf(out, "    cmp dl, 48\n");
+    fprintf(out, "    jb .L_m2s_done\n");
+    fprintf(out, "    cmp dl, 57\n");
+    fprintf(out, "    ja .L_m2s_done\n");
+    fprintf(out, "    sub dl, 48\n");
+    fprintf(out, "    imul rax, 10\n");
+    fprintf(out, "    add rax, rdx\n");
+    fprintf(out, "    inc rsi\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, "    jmp .L_m2s_loop\n");
+    fprintf(out, ".L_m2s_done:\n");
+    fprintf(out, "    test r8, r8\n");
+    fprintf(out, "    jz .L_m2s_ret\n");
+    fprintf(out, "    neg rax\n");
+    fprintf(out, ".L_m2s_ret:\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_m2s_zero:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    ret\n\n");
+
+    // 10. Lug'at (Hashmap / Dictionary)
+    fprintf(out, "algo_hash_fnv1a:\n");
+    fprintf(out, "    mov rcx, [rdi]\n");
+    fprintf(out, "    lea rsi, [rdi + 8]\n");
+    fprintf(out, "    mov rax, 0xcbf29ce484222325\n");
+    fprintf(out, "    mov r8, 0x100000001b3\n");
+    fprintf(out, ".L_fnv_loop:\n");
+    fprintf(out, "    test rcx, rcx\n");
+    fprintf(out, "    jz .L_fnv_done\n");
+    fprintf(out, "    movzx rdx, byte ptr [rsi]\n");
+    fprintf(out, "    xor rax, rdx\n");
+    fprintf(out, "    imul rax, r8\n");
+    fprintf(out, "    inc rsi\n");
+    fprintf(out, "    dec rcx\n");
+    fprintf(out, "    jmp .L_fnv_loop\n");
+    fprintf(out, ".L_fnv_done:\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_lugat_yarat:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    mov rax, 6168\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov qword ptr [rax], 0\n");
+    fprintf(out, "    mov qword ptr [rax + 8], 256\n");
+    fprintf(out, "    lea rbx, [rax + 24]\n");
+    fprintf(out, "    mov [rax + 16], rbx\n");
+    fprintf(out, "    mov rcx, 768\n");
+    fprintf(out, "    lea rdi, [rax + 24]\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    rep stosq\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_lugat_qoy:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push r15\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, rsi\n");
+    fprintf(out, "    mov r14, rdx\n");
+    fprintf(out, "    mov rdi, r13\n");
+    fprintf(out, "    call algo_hash_fnv1a\n");
+    fprintf(out, "    mov r15, rax\n");
+    fprintf(out, "    and rax, 255\n");
+    fprintf(out, "    mov rbx, [r12 + 16]\n");
+    fprintf(out, ".L_hset_probe:\n");
+    fprintf(out, "    imul r10, rax, 24\n");
+    fprintf(out, "    lea rcx, [rbx + r10]\n");
+    fprintf(out, "    cmp qword ptr [rcx], 0\n");
+    fprintf(out, "    je .L_hset_empty\n");
+    fprintf(out, "    cmp [rcx + 8], r15\n");
+    fprintf(out, "    jne .L_hset_next\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    push rcx\n");
+    fprintf(out, "    mov rdi, [rcx]\n");
+    fprintf(out, "    mov rsi, r13\n");
+    fprintf(out, "    call algo_matn_teng\n");
+    fprintf(out, "    pop rcx\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jnz .L_hset_update\n");
+    fprintf(out, ".L_hset_next:\n");
+    fprintf(out, "    inc rax\n");
+    fprintf(out, "    and rax, 255\n");
+    fprintf(out, "    jmp .L_hset_probe\n");
+    fprintf(out, ".L_hset_empty:\n");
+    fprintf(out, "    inc qword ptr [r12]\n");
+    fprintf(out, ".L_hset_update:\n");
+    fprintf(out, "    mov [rcx], r13\n");
+    fprintf(out, "    mov [rcx + 8], r15\n");
+    fprintf(out, "    mov [rcx + 16], r14\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_lugat_ol:\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, rsi\n");
+    fprintf(out, "    mov rdi, r13\n");
+    fprintf(out, "    call algo_hash_fnv1a\n");
+    fprintf(out, "    mov r14, rax\n");
+    fprintf(out, "    and rax, 255\n");
+    fprintf(out, "    mov rbx, [r12 + 16]\n");
+    fprintf(out, ".L_hget_probe:\n");
+    fprintf(out, "    imul r10, rax, 24\n");
+    fprintf(out, "    lea rcx, [rbx + r10]\n");
+    fprintf(out, "    cmp qword ptr [rcx], 0\n");
+    fprintf(out, "    je .L_hget_notfound\n");
+    fprintf(out, "    cmp [rcx + 8], r14\n");
+    fprintf(out, "    jne .L_hget_next\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    push rcx\n");
+    fprintf(out, "    mov rdi, [rcx]\n");
+    fprintf(out, "    mov rsi, r13\n");
+    fprintf(out, "    call algo_matn_teng\n");
+    fprintf(out, "    pop rcx\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jnz .L_hget_found\n");
+    fprintf(out, ".L_hget_next:\n");
+    fprintf(out, "    inc rax\n");
+    fprintf(out, "    and rax, 255\n");
+    fprintf(out, "    jmp .L_hget_probe\n");
+    fprintf(out, ".L_hget_found:\n");
+    fprintf(out, "    mov rax, [rcx + 16]\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_hget_notfound:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_lugat_bormi:\n");
+    fprintf(out, "    call algo_lugat_ol\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    setnz al\n");
+    fprintf(out, "    movzx rax, al\n");
+    fprintf(out, "    ret\n\n");
+
+    // 11. Tarmoq va Soketlar (TCP Networking)
+    fprintf(out, "algo_tarmoq_server_och:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov rax, 41\n"); // sys_socket (AF_INET=2, SOCK_STREAM=1, 0)
+    fprintf(out, "    mov rdi, 2\n");
+    fprintf(out, "    mov rsi, 1\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    js .L_sock_err\n");
+    fprintf(out, "    mov r13, rax\n");
+    fprintf(out, "    sub rsp, 16\n");
+    fprintf(out, "    mov dword ptr [rsp], 1\n");
+    fprintf(out, "    mov rax, 54\n"); // setsockopt SO_REUSEADDR
+    fprintf(out, "    mov rdi, r13\n");
+    fprintf(out, "    mov rsi, 1\n");
+    fprintf(out, "    mov rdx, 2\n");
+    fprintf(out, "    mov r10, rsp\n");
+    fprintf(out, "    mov r8, 4\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    add rsp, 16\n");
+    fprintf(out, "    sub rsp, 16\n");
+    fprintf(out, "    mov word ptr [rsp], 2\n");
+    fprintf(out, "    mov rax, r12\n");
+    fprintf(out, "    xchg al, ah\n");
+    fprintf(out, "    mov word ptr [rsp + 2], ax\n");
+    fprintf(out, "    mov dword ptr [rsp + 4], 0\n");
+    fprintf(out, "    mov qword ptr [rsp + 8], 0\n");
+    fprintf(out, "    mov rax, 49\n"); // sys_bind
+    fprintf(out, "    mov rdi, r13\n");
+    fprintf(out, "    mov rsi, rsp\n");
+    fprintf(out, "    mov rdx, 16\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    add rsp, 16\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    js .L_sock_err\n");
+    fprintf(out, "    mov rax, 50\n"); // sys_listen
+    fprintf(out, "    mov rdi, r13\n");
+    fprintf(out, "    mov rsi, 10\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_sock_err:\n");
+    fprintf(out, "    mov rax, -1\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_tarmoq_mijoz_qabul:\n");
+    fprintf(out, "    mov rax, 43\n"); // sys_accept
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_tarmoq_yubor:\n");
+    fprintf(out, "    mov rdx, [rsi]\n");
+    fprintf(out, "    lea rsi, [rsi + 8]\n");
+    fprintf(out, "    mov rax, 1\n"); // sys_write
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_tarmoq_qabul:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, rsi\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    lea rsi, [rax + 8]\n");
+    fprintf(out, "    mov rdx, r13\n");
+    fprintf(out, "    mov rax, 0\n"); // sys_read
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jle .L_recv_empty\n");
+    fprintf(out, "    mov [rbx], rax\n");
+    fprintf(out, "    mov byte ptr [rbx + 8 + rax], 0\n");
+    fprintf(out, "    mov rax, rbx\n");
+    fprintf(out, "    jmp .L_recv_ret\n");
+    fprintf(out, ".L_recv_empty:\n");
+    fprintf(out, "    mov qword ptr [rbx], 0\n");
+    fprintf(out, "    mov byte ptr [rbx + 8], 0\n");
+    fprintf(out, "    mov rax, rbx\n");
+    fprintf(out, ".L_recv_ret:\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_tarmoq_yop:\n");
+    fprintf(out, "    mov rax, 3\n"); // sys_close
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
     // Barcha foydalanuvchi funksiyalarini generatsiya qilish
     for (int i = 0; i < prog->function_count; i++) {
         gen_function(prog->functions[i], out);
@@ -848,6 +1471,7 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "algo_heap_end:   .quad 0\n");
 
     fprintf(out, "\n.section .rodata\n");
+    fprintf(out, "algo_rodata_start:\n");
     fprintf(out, "algo_newline:\n    .byte 10\n");
     fprintf(out, "algo_space:\n    .byte 32\n");
     fprintf(out, "algo_lbracket:\n    .byte 91\n");
@@ -870,4 +1494,5 @@ void codegen_generate(Program *prog, FILE *out) {
         }
         fprintf(out, "\\0\"\n");
     }
+    fprintf(out, "algo_rodata_end:\n");
 }

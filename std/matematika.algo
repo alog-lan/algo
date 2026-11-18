@@ -1,0 +1,28 @@
+amal modul(son) {
+    agar son < 0 {
+        qaytar -son
+    }
+    qaytar son
+}
+
+amal maksimum(a, b) {
+    agar a > b {
+        qaytar a
+    }
+    qaytar b
+}
+
+amal minimum(a, b) {
+    agar a < b {
+        qaytar a
+    }
+    qaytar b
+}
+
+amal daraja(asos, daraja_son) {
+    natija = 1
+    uchun i = 0; i < daraja_son; i = i + 1 {
+        natija = natija * asos
+    }
+    qaytar natija
+}

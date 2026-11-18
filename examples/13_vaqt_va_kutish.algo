@@ -1,0 +1,19 @@
+amal asosiy() {
+    boshlandi = vaqt()
+    chiqar("Boshlanish vaqti (ms):", boshlandi)
+
+    chiqar("100 millisoniya kutmoqdamiz...")
+    kutish(100)
+
+    tugadi = vaqt()
+    chiqar("Tugash vaqti (ms):", tugadi)
+
+    farq = tugadi - boshlandi
+    chiqar("O'tgan vaqt (ms):", farq)
+
+    agar farq >= 90 {
+        chiqar("Kutish muvaffaqiyatli ishladi!")
+    }
+
+    qaytar 0
+}

@@ -20,6 +20,7 @@ const char *token_type_to_string(TokenType type) {
         case TOKEN_VA: return "va";
         case TOKEN_YOKI: return "yoki";
         case TOKEN_INKOR: return "inkor";
+        case TOKEN_YUKLA: return "yukla";
         case TOKEN_IDENT: return "IDENT";
         case TOKEN_INT: return "INT";
         case TOKEN_STRING: return "STRING";

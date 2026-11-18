@@ -1,0 +1,24 @@
+amal asosiy() {
+    lugat = lugat_yarat()
+
+    // Lug'atga ma'lumot kiritish
+    lugat["shahar"] = "Toshkent"
+    lugat["aholi"] = 3000000
+    lugat["davlat"] = "O'zbekiston"
+
+    // O'qib olish
+    shahar = lugat["shahar"]
+    aholi = lugat["aholi"]
+    davlat = lugat["davlat"]
+
+    chiqar("Davlat:", davlat)
+    chiqar("Poytaxt:", shahar)
+    chiqar("Aholi soni:", aholi)
+
+    // Borligini tekshirish
+    agar lugat_bormi(lugat, "shahar") {
+        chiqar("'shahar' kaliti lug'atda mavjud!")
+    }
+
+    qaytar 0
+}

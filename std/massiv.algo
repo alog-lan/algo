@@ -1,0 +1,33 @@
+amal massiv_teskari(arr) {
+    n = uzunlik(arr)
+    uchun i = 0; i < n / 2; i = i + 1 {
+        j = n - 1 - i
+        temp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = temp
+    }
+    qaytar arr
+}
+
+amal massiv_yigindi(arr) {
+    n = uzunlik(arr)
+    y = 0
+    uchun i = 0; i < n; i = i + 1 {
+        y = y + arr[i]
+    }
+    qaytar y
+}
+
+amal massiv_maksimum(arr) {
+    n = uzunlik(arr)
+    agar n == 0 {
+        qaytar 0
+    }
+    m = arr[0]
+    uchun i = 1; i < n; i = i + 1 {
+        agar arr[i] > m {
+            m = arr[i]
+        }
+    }
+    qaytar m
+}

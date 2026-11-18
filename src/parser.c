@@ -364,17 +364,80 @@ static StructDef *parse_struct(Parser *parser) {
     return s;
 }
 
+static char *visited_modules[256];
+static int visited_module_count = 0;
+
+static int is_module_visited(const char *path) {
+    for (int i = 0; i < visited_module_count; i++) {
+        if (strcmp(visited_modules[i], path) == 0) return 1;
+    }
+    return 0;
+}
+
+static void mark_module_visited(const char *path) {
+    if (visited_module_count < 256) {
+        visited_modules[visited_module_count++] = strdup(path);
+    }
+}
+
+static char *read_module_file(const char *path) {
+    FILE *file = fopen(path, "rb");
+    if (!file) return NULL;
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char *buffer = (char *)malloc(length + 1);
+    if (!buffer) {
+        fclose(file);
+        return NULL;
+    }
+    size_t read_bytes = fread(buffer, 1, length, file);
+    buffer[read_bytes] = '\0';
+    fclose(file);
+    return buffer;
+}
+
 Program *parser_parse(Parser *parser) {
     Program *prog = ast_new_program();
     while (!check(parser, TOKEN_EOF)) {
-        if (check(parser, TOKEN_TUZILMA)) {
+        if (match(parser, TOKEN_YUKLA)) {
+            consume(parser, TOKEN_STRING, "'yukla' dan keyin fayl yo'li (\"...\") kutilmoqda");
+            char *module_path = strdup(parser->previous.text);
+            match(parser, TOKEN_SEMICOLON);
+
+            if (!is_module_visited(module_path)) {
+                mark_module_visited(module_path);
+                char *mod_source = read_module_file(module_path);
+                if (!mod_source) {
+                    fprintf(stderr, "Xatolik: '%s' moduli topilmadi!\n", module_path);
+                    parser->had_error = 1;
+                } else {
+                    Parser mod_parser;
+                    parser_init(&mod_parser, mod_source);
+                    Program *mod_prog = parser_parse(&mod_parser);
+                    if (mod_parser.had_error) {
+                        parser->had_error = 1;
+                    } else {
+                        for (int i = 0; i < mod_prog->struct_count; i++) {
+                            ast_program_add_struct(prog, mod_prog->structs[i]);
+                        }
+                        for (int i = 0; i < mod_prog->function_count; i++) {
+                            ast_program_add_function(prog, mod_prog->functions[i]);
+                        }
+                    }
+                    free(mod_source);
+                }
+            }
+            free(module_path);
+        } else if (check(parser, TOKEN_TUZILMA)) {
             StructDef *s = parse_struct(parser);
             if (s) ast_program_add_struct(prog, s);
         } else if (check(parser, TOKEN_AMAL)) {
             Function *f = parse_function(parser);
             if (f) ast_program_add_function(prog, f);
         } else {
-            error_at_current(parser, "Faqat 'amal' yoki 'tuzilma' e'lon qilinishi mumkin");
+            error_at_current(parser, "Faqat 'amal', 'tuzilma' yoki 'yukla' e'lon qilinishi mumkin");
             advance(parser);
         }
     }

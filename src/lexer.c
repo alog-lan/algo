@@ -75,6 +75,7 @@ static TokenType check_keyword(const char *text, int len) {
     if (len == 2 && strncmp(text, "va", 2) == 0) return TOKEN_VA;
     if (len == 4 && strncmp(text, "yoki", 4) == 0) return TOKEN_YOKI;
     if (len == 5 && strncmp(text, "inkor", 5) == 0) return TOKEN_INKOR;
+    if (len == 5 && strncmp(text, "yukla", 5) == 0) return TOKEN_YUKLA;
     return TOKEN_IDENT;
 }
 

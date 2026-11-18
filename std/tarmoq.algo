@@ -1,0 +1,17 @@
+amal server_yarat(port) {
+    fd = tarmoq_server_och(port)
+    agar fd < 0 {
+        chiqar("Xatolik: Server portni ocha olmadi:", port)
+    } aks {
+        chiqar("Server muvaffaqiyatli ishga tushdi, port:", port)
+    }
+    qaytar fd
+}
+
+amal xabar_yubor(mijoz_fd, matn) {
+    tarmoq_yubor(mijoz_fd, matn)
+}
+
+amal server_yop(fd) {
+    tarmoq_yop(fd)
+}

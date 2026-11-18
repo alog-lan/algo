@@ -35,7 +35,7 @@
       "patterns": [
         {
           "name": "keyword.control.algo",
-          "match": "\\b(agar|aks|toki|uchun|qaytar|to'xtat|toxtat|davom)\\b"
+          "match": "\\b(agar|aks|toki|uchun|qaytar|to'xtat|toxtat|davom|yukla)\\b"
         },
         {
           "name": "keyword.declaration.algo",
@@ -43,7 +43,7 @@
         },
         {
           "name": "support.function.builtin.algo",
-          "match": "\\b(chiqar|chop|kirit|uzunlik|fayl_och|fayl_yoz|fayl_oqi|fayl_yop)\\b"
+          "match": "\\b(chiqar|chop|kirit|uzunlik|vaqt|kutish|fayl_och|fayl_yoz|fayl_oqi|fayl_yop|lugat_yarat|lugat_qoy|lugat_ol|lugat_bormi|lugat_ochir|matn_kesish|matn_teng|matn_ichida|matn_katta|matn_kichik|son_matnga|matn_songa|tarmoq_server_och|tarmoq_mijoz_qabul|tarmoq_ulan|tarmoq_yubor|tarmoq_qabul|tarmoq_yop)\\b"
         },
         {
           "name": "keyword.operator.logical.algo",

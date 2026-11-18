@@ -24,6 +24,7 @@ typedef enum {
     TOKEN_VA,         // va (&&)
     TOKEN_YOKI,       // yoki (||)
     TOKEN_INKOR,      // inkor / ! (not)
+    TOKEN_YUKLA,      // yukla (import)
 
     // Literallar va identifikatorlar
     TOKEN_IDENT,      // o'zgaruvchi, funksiya, tuzilma nomi

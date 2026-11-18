@@ -1,0 +1,16 @@
+yukla "std/matematika.algo"
+
+amal asosiy() {
+    chiqar("Modul yuklandi!")
+
+    m = modul(-45)
+    chiqar("-45 ning moduli:", m)
+
+    katta = maksimum(100, 250)
+    chiqar("Maksimum(100, 250):", katta)
+
+    kub = daraja(3, 4)
+    chiqar("3 ning 4-darajasi (3^4):", kub)
+
+    qaytar 0
+}

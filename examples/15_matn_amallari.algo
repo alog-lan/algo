@@ -1,0 +1,33 @@
+amal asosiy() {
+    matn = "Salom, Dunyo!"
+
+    // Matn tengligi
+    agar matn_teng(matn, "Salom, Dunyo!") {
+        chiqar("Matnlar to'liq teng!")
+    }
+
+    // Qidirish (ichida)
+    agar matn_ichida(matn, "Dunyo") {
+        chiqar("'Dunyo' so'zi matn ichida mavjud!")
+    }
+
+    // Kesish (substring: boshlanish, uzunlik)
+    qism = matn_kesish(matn, 7, 5)
+    chiqar("Kesib olingan qism (7, 5):", qism)
+
+    // Katta va kichik harflar
+    katta = matn_katta(matn)
+    kichik = matn_kichik(matn)
+    chiqar("KATTA HARFLARDA:", katta)
+    chiqar("kichik harflarda:", kichik)
+
+    // Son <-> Matn konvertatsiyasi
+    s = 12345
+    m = son_matnga(s)
+    chiqar("Son matnga aylandi:", m)
+
+    orqaga = matn_songa("9876")
+    chiqar("Matn songa aylandi + 1:", orqaga + 1)
+
+    qaytar 0
+}

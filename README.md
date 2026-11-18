@@ -11,26 +11,26 @@
 1. **Mutlaq Mustaqillik (Zero Dependencies):**
    * Hech qanday LLVM, GCC runtime yoki tashqi og'ir freymvorklarga bog'liq emas.
    * Dasturlar hatto `libc` (standart C kutubxonasi)ga ham muhtoj emas — to'g'ridan-to'g'ri Linux yadrosi tizim chaqiruvlari (**Direct Linux Syscalls**) orqali ishlaydi.
-   * Kompilyator hajmi bor-yo'g'i **~43 KB**, hosil bo'ladigan mustaqil binar dasturlar hajmi esa **~8.9 KB** *(Go dasturlari 2–10 MB bo'lgan bir paytda)*.
+   * Kompilyator hajmi bor-yo'g'i **~45 KB**, hosil bo'ladigan mustaqil binar dasturlar hajmi esa **~8.9 KB** *(Go dasturlari 2–10 MB bo'lgan bir paytda)*.
 
 2. **Chaqmoqdek Tezlik:**
-   * Og'ir Garbage Collector (axlat yig'uvchi) yo'q.
+   * Og'ir Garbage Collector (axlat yig'uvchi) to'xtashlari yo'q.
    * To'g'ridan-to'g'ri protsessor registrlarida (`RAX`, `RBX`, `RCX`, `RDX`, `RSI`, `RDI`) hisoblashlar bajariladi.
    * 100 million marta aylanadigan siklni **0.26 soniyada** hisoblaydi (*Pythondan 25+ barobar tez*).
 
-3. **O'zbek Tilidagi Tabiiy Sintaksis:**
-   * O'rganish va kod yozish xuddi ona tilida fikrlagandek oson va ravon.
+3. **To'liq Standart Imkoniyatlar (v1.0.0):**
+   * Dinamik massivlar (ro'yxatlar), dinamik matnlar, lug'at (Hashmap), modullar (`yukla`), vaqt va kutish, Linux tarmoq soketlari (TCP/HTTP), fayl tizimi va tuzilmalar (`tuzilma`).
 
 ---
 
 ## 🛠️ O'rnatish va Yig'ish
 
-Kompilyatorni yig'ish juda oddiy (hech qanday qo'shimcha paketlar talab etilmaydi):
+Kompilyatorni yig'ish:
 ```bash
 make
 ```
 
-Barcha testlarni sinovdan o'tkazish:
+Barcha 18 ta testni sinovdan o'tkazish:
 ```bash
 make test
 # yoki
@@ -41,140 +41,132 @@ make test
 
 ## 💻 CLI Buyruqlari (Algo Toolchain)
 
-`algo` buyrug'i barcha kerakli qulayliklarni o'z ichiga oladi:
-
-| Buyruq | Inglizcha muqobili | Vazifasi |
+| Buyruq | Muqobili | Vazifasi |
 |---|---|---|
-| `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Dasturni kompilyatsiya qilib darhol ishga tushirish (Python/Go kabi) |
+| `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish (Python/Go kabi) |
 | `./bin/algo yig fayl.algo -o binar` | `algo build fayl.algo` | Mustaqil bajariluvchi (ELF binary) fayl yaratish |
-| `./bin/algo sinov` | `algo test` | Ekotizimdagi barcha testlarni avtomatik ishga tushirish |
+| `./bin/algo sinov` | `algo test` | 18 ta avtomatik testni to'liq tekshirish |
 | `./bin/algo versiya` | `algo version` | Til versiyasi va arxitekturasini ko'rish |
 | `./bin/algo yordam` | `algo help` | Yordam ma'lumotlarini chiqarish |
 
 ---
 
-## 📖 Sintaksis va Imkoniyatlar Qo'llanmasi
+## 📖 To'liq Imkoniyatlar Qo'llanmasi
 
 ### 1. Salom, Dunyo va Chiqarish (`chiqar`)
 ```algo
 amal asosiy() {
     chiqar("Salom, Dunyo! Algo tiliga xush kelibsiz!")
     
-    // Bir nechta argumentlarni avtomatik bo'sh joy bilan chiqarish:
+    // Bir nechta argumentlarni chiqarish:
     ism = "Jasurbek"
     yosh = 22
     chiqar("Salom", ism, "! Yoshingiz:", yosh)
-    
     qaytar 0
 }
 ```
 
-### 2. O'zgaruvchilar va Arifmetika
-```algo
-amal asosiy() {
-    a = 15
-    b = 27
-    yigindi = a + b
-    kopaytma = a * b
-    bolinma = b / a
-    qoldiq = b % a
-    
-    chiqar("Yig'indi:", yigindi)
-    chiqar("Ko'paytma:", kopaytma)
-    qaytar 0
-}
-```
-
-### 3. Shartlar (`agar`, `aks`) va Mantiqiy operatorlar (`va`, `yoki`, `inkor`)
-```algo
-amal asosiy() {
-    bal = 85
-    agar bal >= 90 va bal <= 100 {
-        chiqar("A'lo baho!")
-    } aks agar bal >= 70 {
-        chiqar("Yaxshi baho!")
-    } aks {
-        chiqar("Qoniqarsiz!")
-    }
-    qaytar 0
-}
-```
-
-### 4. Takrorlash (`toki`, `uchun`, `to'xtat`, `davom`)
-```algo
-amal asosiy() {
-    // 1 dan 10 gacha bo'lgan sonlar sikli:
-    uchun i = 1; i <= 10; i = i + 1 {
-        agar i == 5 {
-            davom // 5-qadamni tashlab o'tish
-        }
-        agar i == 9 {
-            toxtat // siklni to'xtatish
-        }
-        chiqar(i)
-    }
-    qaytar 0
-}
-```
-
-### 5. Dinamik Massivlar (Ro'yxatlar)
+### 2. Dinamik Massivlar (Ro'yxatlar)
 ```algo
 amal asosiy() {
     sonlar = [10, 20, 30, 40, 50]
     chiqar("Massiv:", sonlar)
     chiqar("Uzunligi:", uzunlik(sonlar))
     
-    // Indeks bo'yicha murojaat va qiymat o'zgartirish:
     sonlar[2] = 999
     chiqar("O'zgartirilgandan so'ng:", sonlar)
     qaytar 0
 }
 ```
 
-### 6. Matnlar bilan ishlash va Matnlarni Ulash (`+`)
+### 3. Lug'at (Hashmap / Dictionary)
 ```algo
 amal asosiy() {
-    salom = "Salom, "
-    dunyo = "O'zbekiston!"
-    birlashgan = salom + dunyo
-    
-    chiqar(birlashgan)
-    chiqar("Matn uzunligi:", uzunlik(birlashgan))
+    lugat = lugat_yarat()
+    lugat["shahar"] = "Toshkent"
+    lugat["aholi"] = 3000000
+
+    chiqar("Poytaxt:", lugat["shahar"])
+    chiqar("Aholi:", lugat["aholi"])
+
+    agar lugat_bormi(lugat, "shahar") {
+        chiqar("'shahar' kaliti mavjud!")
+    }
     qaytar 0
 }
 ```
 
-### 7. Tuzilmalar (Structs: `tuzilma` va `yangi`)
+### 4. Matnlar ustida boy amallar
 ```algo
-tuzilma Odam {
+amal asosiy() {
+    matn = "Salom, Dunyo!"
+
+    chiqar("Tengmi:", matn_teng(matn, "Salom, Dunyo!"))
+    chiqar("Ichidami:", matn_ichida(matn, "Dunyo"))
+    chiqar("Qism:", matn_kesish(matn, 7, 5)) // "Dunyo"
+    chiqar("Katta:", matn_katta(matn))       // "SALOM, DUNYO!"
+    chiqar("Kichik:", matn_kichik(matn))     // "salom, dunyo!"
+
+    // Son <-> Matn
+    str_son = son_matnga(12345)
+    int_son = matn_songa("9876")
+    qaytar 0
+}
+```
+
+### 5. Modullar tizimi (`yukla`)
+```algo
+yukla "std/matematika.algo"
+
+amal asosiy() {
+    m = modul(-50)
+    dar = daraja(2, 10)
+    chiqar("Modul:", m)       // 50
+    chiqar("2^10:", dar)       // 1024
+    qaytar 0
+}
+```
+
+### 6. Vaqt va Kutish (`vaqt`, `kutish`)
+```algo
+amal asosiy() {
+    boshlandi = vaqt()
+    kutish(200) // 200 millisoniya kechiktirish
+    tugadi = vaqt()
+    chiqar("O'tgan vaqt (ms):", tugadi - boshlandi)
+    qaytar 0
+}
+```
+
+### 7. Tarmoq va TCP Soketlar (Networking)
+```algo
+yukla "std/tarmoq.algo"
+
+amal asosiy() {
+    server_fd = server_yarat(8088)
+    agar server_fd > 0 {
+        chiqar("TCP/HTTP Server 8088-portda ulanishlarni kutmoqda...")
+        server_yop(server_fd)
+    }
+    qaytar 0
+}
+```
+
+### 8. Tuzilmalar (Structs: `tuzilma` va `yangi`)
+```algo
+tuzilma Foydalanuvchi {
     ism,
     yosh,
     kasb
 }
 
 amal asosiy() {
-    dasturchi = yangi Odam
-    dasturchi.ism = "Jasurbek"
-    dasturchi.yosh = 22
-    dasturchi.kasb = "Arxitektor"
+    user = yangi Foydalanuvchi
+    user.ism = "Jasurbek"
+    user.yosh = 22
+    user.kasb = "Arxitektor"
 
-    chiqar("Dasturchi ismi:", dasturchi.ism)
-    chiqar("Yoshi:", dasturchi.yosh)
-    qaytar 0
-}
-```
-
-### 8. Funksiyalar va Rekursiya
-```algo
-amal faktorial(n) {
-    agar n <= 1 {
-        qaytar 1
-    }
-    qaytar n * faktorial(n - 1)
-}
-
-amal asosiy() {
-    chiqar("6 faktoriali:", faktorial(6)) // 720
+    chiqar("Foydalanuvchi:", user.ism, "Kasbi:", user.kasb)
     qaytar 0
 }
 ```
@@ -182,15 +174,10 @@ amal asosiy() {
 ### 9. Fayllar bilan ishlash (File I/O)
 ```algo
 amal asosiy() {
-    nomi = "ma'lumot.txt"
-    matn = "Algo tili x86_64 toza mashina kodiga kompilyatsiya qilinadi!\n"
-    
-    // 577 = O_WRONLY | O_CREAT | O_TRUNC
-    fd = fayl_och(nomi, 577)
+    fd = fayl_och("hisobot.txt", 577) // O_WRONLY | O_CREAT | O_TRUNC
     agar fd > 0 {
-        fayl_yoz(fd, matn)
+        fayl_yoz(fd, "Algo tili orqali yozildi!\n")
         fayl_yop(fd)
-        chiqar("Fayl muvaffaqiyatli saqlandi!")
     }
     qaytar 0
 }
@@ -206,24 +193,28 @@ algo/
 │   ├── algo             # Asosiy CLI vositasi (Run, Build, Test, Help)
 │   └── algoc            # Kompilyator
 ├── src/
-│   ├── token.h / .c     # Leksik tokenlar va o'zbekcha kalit so'zlar
+│   ├── token.h / .c     # Leksik tokenlar va kalit so'zlar
 │   ├── lexer.h / .c     # UTF-8 leksik tahlilchi
 │   ├── ast.h / .c       # Abstrakt Sintaktik Daraxt (AST)
-│   ├── parser.h / .c    # Sintaktik tahlilchi (Recursive Descent)
+│   ├── parser.h / .c    # Sintaktik tahlilchi va Modul yuklovchi (Recursive Descent)
 │   ├── codegen.h / .c   # x86_64 Assembler generatori (Zero-libc, Syscalls)
 │   └── main.c           # CLI boshqaruv moduli
-├── examples/            # 12 ta namunaviy dastur
+├── std/                 # Standart kutubxona
+│   ├── matematika.algo  # Matematik amallar (modul, daraja, max, min)
+│   ├── massiv.algo      # Massiv amallari (teskari, yig'indi, max)
+│   └── tarmoq.algo      # Tarmoq amallari (server_yarat, server_yop)
+├── examples/            # 18 ta to'liq sinov dasturlari
 ├── editors/
-│   └── vscode/          # VS Code & Antigravity IDE uchun sintaksis ranglash
+│   └── vscode/          # VS Code & Antigravity IDE uchun sintaksis paketi
 ├── Makefile             # Avtomatlashtirilgan yig'ish va sinov ssenariysi
-└── README.md            # To'liq qo'llanma
+└── README.md            # To'liq hujjatlar
 ```
 
 ---
 
-## ⚡ Ishlash Samaradorligi (Benchmark)
+## ⚡ Samaradorlik (Benchmark)
 
 100,000,000 marta takrorlanuvchi sikl sinovi:
 * **Python 3:** ~5.80 soniya
 * **Algo:** **0.26 soniya** (~25 barobar tezroq)
-* **Xotira sarfi:** ~8 KB binar o'lchami (Go da ~2.5 MB)
+* **Binar dastur hajmi:** ~8.9 KB (Go da ~2.5 MB)

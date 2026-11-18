@@ -146,7 +146,14 @@ static void run_all_tests(void) {
         "examples/08_matnlar.algo",
         "examples/09_uchun_va_toxtat.algo",
         "examples/10_tuzilma.algo",
-        "examples/11_tartiblash.algo"
+        "examples/11_tartiblash.algo",
+        "examples/12_fayllar.algo",
+        "examples/13_vaqt_va_kutish.algo",
+        "examples/14_lugat.algo",
+        "examples/15_matn_amallari.algo",
+        "examples/16_modul_test.algo",
+        "examples/17_massiv_amallari.algo",
+        "examples/18_veb_server.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);

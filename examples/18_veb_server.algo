@@ -1,0 +1,16 @@
+yukla "std/tarmoq.algo"
+
+amal asosiy() {
+    port = 8088
+    chiqar("Algo Tili TCP/HTTP Veb-serveri sozlanmoqda...")
+    fd = server_yarat(port)
+
+    agar fd > 0 {
+        chiqar("Server 8088-portda ulanishlarni tinglashga tayyor!")
+        // Portni yopamiz
+        server_yop(fd)
+        chiqar("Server xavfsiz to'xtatildi.")
+    }
+
+    qaytar 0
+}
