@@ -1,0 +1,8 @@
+amal asosiy() {
+    salom = "Salom, "
+    dunyo = "O'zbekiston!"
+    matn = salom + dunyo
+    chiqar(matn)
+    chiqar("Matn uzunligi:", uzunlik(matn))
+    qaytar 0
+}

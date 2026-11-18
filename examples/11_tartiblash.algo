@@ -1,0 +1,37 @@
+amal tartibla(massiv) {
+    n = uzunlik(massiv)
+    uchun i = 0; i < n; i = i + 1 {
+        uchun j = 0; j < n - 1; j = j + 1 {
+            agar massiv[j] > massiv[j + 1] {
+                // O'rin almashtirish (Swap)
+                vaqtinchalik = massiv[j]
+                massiv[j] = massiv[j + 1]
+                massiv[j + 1] = vaqtinchalik
+            }
+        }
+    }
+    qaytar massiv
+}
+
+amal qidir(massiv, nishon) {
+    n = uzunlik(massiv)
+    uchun i = 0; i < n; i = i + 1 {
+        agar massiv[i] == nishon {
+            qaytar i
+        }
+    }
+    qaytar -1
+}
+
+amal asosiy() {
+    sonlar = [64, 34, 25, 12, 22, 11, 90, 88, 45, 1]
+    chiqar("Boshlang'ich tartibsiz massiv:", sonlar)
+
+    tartiblangan = tartibla(sonlar)
+    chiqar("O'sish bo'yicha tartiblangan:", tartiblangan)
+
+    indeks = qidir(tartiblangan, 25)
+    chiqar("25 sonining indeksi:", indeks)
+
+    qaytar 0
+}

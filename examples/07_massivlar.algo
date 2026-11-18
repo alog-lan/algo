@@ -1,0 +1,13 @@
+amal asosiy() {
+    sonlar = [10, 20, 30, 40, 50]
+    chiqar("Massiv:", sonlar)
+    chiqar("Uzunligi:", uzunlik(sonlar))
+    chiqar("Birinchi element:", sonlar[0])
+    chiqar("Oxirgi element:", sonlar[4])
+
+    // Qiymatni o'zgartirish
+    sonlar[2] = 999
+    chiqar("O'zgartirilgandan so'ng:", sonlar)
+
+    qaytar 0
+}

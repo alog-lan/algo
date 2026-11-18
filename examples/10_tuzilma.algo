@@ -1,0 +1,16 @@
+tuzilma Odam {
+    ism,
+    yosh,
+    bal
+}
+
+amal asosiy() {
+    ali = yangi Odam
+    ali.yosh = 23
+    ali.bal = 95
+
+    chiqar("Ali yoshi:", ali.yosh)
+    chiqar("Ali bali:", ali.bal)
+
+    qaytar 0
+}

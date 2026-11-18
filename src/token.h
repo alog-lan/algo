@@ -13,12 +13,20 @@ typedef enum {
     TOKEN_AGAR,       // agar (if)
     TOKEN_AKS,        // aks (else)
     TOKEN_TOKI,       // toki (while)
+    TOKEN_UCHUN,      // uchun (for)
     TOKEN_CHIQAR,     // chiqar (print)
-    TOKEN_TOXTAT,     // toxtat (break)
+    TOKEN_KIRIT,      // kirit (input)
+    TOKEN_TOXTAT,     // toxtat / to'xtat (break)
     TOKEN_DAVOM,      // davom (continue)
+    TOKEN_TUZILMA,    // tuzilma (struct)
+    TOKEN_YANGI,      // yangi (new / instantiate)
+    TOKEN_UZUNLIK,    // uzunlik (len)
+    TOKEN_VA,         // va (&&)
+    TOKEN_YOKI,       // yoki (||)
+    TOKEN_INKOR,      // inkor / ! (not)
 
     // Literallar va identifikatorlar
-    TOKEN_IDENT,      // o'zgaruvchi yoki funksiya nomi
+    TOKEN_IDENT,      // o'zgaruvchi, funksiya, tuzilma nomi
     TOKEN_INT,        // 64-bitli butun son
     TOKEN_STRING,     // matn ("...")
 
@@ -27,8 +35,12 @@ typedef enum {
     TOKEN_RBRACE,     // }
     TOKEN_LPAREN,     // (
     TOKEN_RPAREN,     // )
+    TOKEN_LBRACKET,   // [
+    TOKEN_RBRACKET,   // ]
     TOKEN_COMMA,      // ,
     TOKEN_SEMICOLON,  // ;
+    TOKEN_DOT,        // .
+    TOKEN_COLON,      // :
 
     // Operatorlar
     TOKEN_ASSIGN,     // =

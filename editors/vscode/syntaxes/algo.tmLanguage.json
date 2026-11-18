@@ -1,0 +1,75 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Algo",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#functions"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.algo",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.line.number-sign.algo",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.algo",
+          "match": "\\b(agar|aks|toki|uchun|qaytar|to'xtat|toxtat|davom)\\b"
+        },
+        {
+          "name": "keyword.declaration.algo",
+          "match": "\\b(amal|tuzilma|yangi)\\b"
+        },
+        {
+          "name": "support.function.builtin.algo",
+          "match": "\\b(chiqar|chop|kirit|uzunlik|fayl_och|fayl_yoz|fayl_oqi|fayl_yop)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.algo",
+          "match": "\\b(va|yoki|inkor)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.algo",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.algo",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.algo",
+      "match": "\\b[0-9]+\\b"
+    },
+    "functions": {
+      "name": "entity.name.function.algo",
+      "match": "\\b([a-zA-Z_][a-zA-Z0-9_']*)\\s*(?=\\()"
+    }
+  },
+  "scopeName": "source.algo"
+}

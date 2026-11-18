@@ -1,0 +1,13 @@
+amal asosiy() {
+    chiqar("1 dan 10 gacha sonlar (5 tashlab ketiladi, 8 da to'xtaydi):")
+    uchun i = 1; i <= 10; i = i + 1 {
+        agar i == 5 {
+            davom
+        }
+        agar i == 8 {
+            toxtat
+        }
+        chiqar(i)
+    }
+    qaytar 0
+}

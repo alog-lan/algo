@@ -1,0 +1,6 @@
+amal asosiy() {
+    ism = "Jasurbek"
+    yosh = 22
+    chiqar("Salom", ism, "! Sizning yoshingiz:", yosh)
+    qaytar 0
+}

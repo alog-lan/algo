@@ -38,10 +38,9 @@ static void consume(Parser *parser, TokenType type, const char *msg) {
 void parser_init(Parser *parser, const char *source) {
     lexer_init(&parser->lexer, source);
     parser->had_error = 0;
-    advance(parser); // birinchi tokenni o'qiymiz
+    advance(parser);
 }
 
-// Rekursiv tahlil prototiplari
 static Expr *parse_expr(Parser *parser);
 static Stmt *parse_stmt(Parser *parser);
 
@@ -52,9 +51,37 @@ static Expr *parse_primary(Parser *parser) {
     if (match(parser, TOKEN_STRING)) {
         return ast_new_string(parser->previous.text);
     }
+    if (match(parser, TOKEN_KIRIT)) {
+        consume(parser, TOKEN_LPAREN, "'kirit' dan keyin '(' bo'lishi kerak");
+        consume(parser, TOKEN_RPAREN, "'kirit()' da ')' yopilishi kerak");
+        return ast_new_kirit();
+    }
+    if (match(parser, TOKEN_UZUNLIK)) {
+        consume(parser, TOKEN_LPAREN, "'uzunlik' dan keyin '(' bo'lishi kerak");
+        Expr *e = parse_expr(parser);
+        consume(parser, TOKEN_RPAREN, "'uzunlik' da ')' yopilishi kerak");
+        return ast_new_uzunlik(e);
+    }
+    if (match(parser, TOKEN_YANGI)) {
+        consume(parser, TOKEN_IDENT, "'yangi' dan keyin tuzilma nomi kutilmoqda");
+        return ast_new_yangi(parser->previous.text);
+    }
+    // Massiv literali: [elem1, elem2, ...]
+    if (match(parser, TOKEN_LBRACKET)) {
+        Expr **elems = NULL;
+        int count = 0;
+        if (!check(parser, TOKEN_RBRACKET)) {
+            do {
+                count++;
+                elems = (Expr **)realloc(elems, sizeof(Expr *) * count);
+                elems[count - 1] = parse_expr(parser);
+            } while (match(parser, TOKEN_COMMA));
+        }
+        consume(parser, TOKEN_RBRACKET, "Massiv oxirida ']' kutilmoqda");
+        return ast_new_array_literal(elems, count);
+    }
     if (match(parser, TOKEN_IDENT)) {
         char *name = strdup(parser->previous.text);
-        // Agar keyin '(' kelsa, bu funksiya chaqiruvi
         if (match(parser, TOKEN_LPAREN)) {
             Expr **args = NULL;
             int arg_count = 0;
@@ -85,12 +112,30 @@ static Expr *parse_primary(Parser *parser) {
     return ast_new_int(0);
 }
 
-static Expr *parse_unary(Parser *parser) {
-    if (match(parser, TOKEN_MINUS)) {
-        Expr *right = parse_unary(parser);
-        return ast_new_binary(TOKEN_MINUS, ast_new_int(0), right);
+static Expr *parse_postfix(Parser *parser) {
+    Expr *expr = parse_primary(parser);
+    while (1) {
+        if (match(parser, TOKEN_LBRACKET)) {
+            Expr *index = parse_expr(parser);
+            consume(parser, TOKEN_RBRACKET, "Indeksdan keyin ']' kutilmoqda");
+            expr = ast_new_index(expr, index);
+        } else if (match(parser, TOKEN_DOT)) {
+            consume(parser, TOKEN_IDENT, "Nuqtadan keyin maydon nomi kutilmoqda");
+            expr = ast_new_dot(expr, parser->previous.text);
+        } else {
+            break;
+        }
     }
-    return parse_primary(parser);
+    return expr;
+}
+
+static Expr *parse_unary(Parser *parser) {
+    if (match(parser, TOKEN_MINUS) || match(parser, TOKEN_INKOR)) {
+        TokenType op = parser->previous.type;
+        Expr *right = parse_unary(parser);
+        return ast_new_unary(op, right);
+    }
+    return parse_postfix(parser);
 }
 
 static Expr *parse_factor(Parser *parser) {
@@ -128,8 +173,26 @@ static Expr *parse_comparison(Parser *parser) {
     return expr;
 }
 
+static Expr *parse_logical_and(Parser *parser) {
+    Expr *expr = parse_comparison(parser);
+    while (match(parser, TOKEN_VA)) {
+        Expr *right = parse_comparison(parser);
+        expr = ast_new_binary(TOKEN_VA, expr, right);
+    }
+    return expr;
+}
+
+static Expr *parse_logical_or(Parser *parser) {
+    Expr *expr = parse_logical_and(parser);
+    while (match(parser, TOKEN_YOKI)) {
+        Expr *right = parse_logical_and(parser);
+        expr = ast_new_binary(TOKEN_YOKI, expr, right);
+    }
+    return expr;
+}
+
 static Expr *parse_expr(Parser *parser) {
-    return parse_comparison(parser);
+    return parse_logical_or(parser);
 }
 
 static Stmt **parse_block(Parser *parser, int *count_out) {
@@ -159,17 +222,35 @@ static Stmt *parse_stmt(Parser *parser) {
         } else {
             val = ast_new_int(0);
         }
-        match(parser, TOKEN_SEMICOLON); // ixtiyoriy ';'
+        match(parser, TOKEN_SEMICOLON);
         return ast_new_return(val);
     }
 
-    // Chiqarish (print)
+    // toxtat / davom
+    if (match(parser, TOKEN_TOXTAT)) {
+        match(parser, TOKEN_SEMICOLON);
+        return ast_new_break();
+    }
+    if (match(parser, TOKEN_DAVOM)) {
+        match(parser, TOKEN_SEMICOLON);
+        return ast_new_continue();
+    }
+
+    // Chiqarish (print) - barcha argumentlarni qo'llab-quvvatlaydi
     if (match(parser, TOKEN_CHIQAR)) {
-        consume(parser, TOKEN_LPAREN, "'chiqar' dan keyin '(' ochilishi kerak");
-        Expr *val = parse_expr(parser);
+        consume(parser, TOKEN_LPAREN, "'chiqar' dan keyin '(' kutilmoqda");
+        Expr **args = NULL;
+        int arg_count = 0;
+        if (!check(parser, TOKEN_RPAREN)) {
+            do {
+                arg_count++;
+                args = (Expr **)realloc(args, sizeof(Expr *) * arg_count);
+                args[arg_count - 1] = parse_expr(parser);
+            } while (match(parser, TOKEN_COMMA));
+        }
         consume(parser, TOKEN_RPAREN, "'chiqar' da ')' yopilishi kerak");
         match(parser, TOKEN_SEMICOLON);
-        return ast_new_chiqar(val);
+        return ast_new_chiqar(args, arg_count);
     }
 
     // Shart (agar ... aks ...)
@@ -182,7 +263,6 @@ static Stmt *parse_stmt(Parser *parser) {
         int else_count = 0;
         if (match(parser, TOKEN_AKS)) {
             if (check(parser, TOKEN_AGAR)) {
-                // aks agar (else if)
                 else_count = 1;
                 else_branch = (Stmt **)malloc(sizeof(Stmt *));
                 else_branch[0] = parse_stmt(parser);
@@ -201,27 +281,38 @@ static Stmt *parse_stmt(Parser *parser) {
         return ast_new_while(cond, body, body_count);
     }
 
-    // O'zgaruvchiga qiymat berish yoki funksiya chaqiruvi / ifoda
-    if (check(parser, TOKEN_IDENT)) {
-        // Lookahead: agar keyingi belgi '=' bo'lsa
-        Lexer lookahead = parser->lexer;
-        Token next = lexer_next_token(&lookahead);
-        if (next.type == TOKEN_ASSIGN) {
-            advance(parser); // IDENT
-            char *var_name = strdup(parser->previous.text);
-            advance(parser); // '='
-            Expr *val = parse_expr(parser);
-            match(parser, TOKEN_SEMICOLON);
-            Stmt *s = ast_new_var_assign(var_name, val);
-            free(var_name);
+    // Takrorlash (uchun i = 0; i < 10; i = i + 1 { ... })
+    if (match(parser, TOKEN_UCHUN)) {
+        Stmt *init = parse_stmt(parser);
+        Expr *cond = parse_expr(parser);
+        consume(parser, TOKEN_SEMICOLON, "'uchun' shartidan keyin ';' kutilmoqda");
+        Stmt *step = parse_stmt(parser);
+        int body_count = 0;
+        Stmt **body = parse_block(parser, &body_count);
+        return ast_new_for(init, cond, step, body, body_count);
+    }
+
+    // Ifoda yoki O'zlashtirish (x = val, arr[i] = val, obj.field = val)
+    Expr *expr = parse_expr(parser);
+    if (match(parser, TOKEN_ASSIGN)) {
+        Expr *val = parse_expr(parser);
+        match(parser, TOKEN_SEMICOLON);
+        if (expr->type == EXPR_VAR) {
+            Stmt *s = ast_new_var_assign(expr->as.var_name, val);
             return s;
+        } else if (expr->type == EXPR_INDEX) {
+            Stmt *s = ast_new_index_assign(expr->as.index.target, expr->as.index.index, val);
+            return s;
+        } else if (expr->type == EXPR_DOT) {
+            Stmt *s = ast_new_dot_assign(expr->as.dot.target, expr->as.dot.field, val);
+            return s;
+        } else {
+            error_at_current(parser, "Qiymat berish uchun noto'g'ri nishon");
         }
     }
 
-    // Oddiy ifoda amali (masalan funksiya chaqiruvi)
-    Expr *e = parse_expr(parser);
     match(parser, TOKEN_SEMICOLON);
-    return ast_new_expr_stmt(e);
+    return ast_new_expr_stmt(expr);
 }
 
 static Function *parse_function(Parser *parser) {
@@ -250,12 +341,41 @@ static Function *parse_function(Parser *parser) {
     return func;
 }
 
+static StructDef *parse_struct(Parser *parser) {
+    consume(parser, TOKEN_TUZILMA, "Tuzilma 'tuzilma' kalit so'zi bilan boshlanishi kerak");
+    consume(parser, TOKEN_IDENT, "Tuzilma nomi kutilmoqda");
+    char *name = strdup(parser->previous.text);
+
+    consume(parser, TOKEN_LBRACE, "Tuzilma tanasida '{' kutilmoqda");
+    char **fields = NULL;
+    int field_count = 0;
+    if (!check(parser, TOKEN_RBRACE)) {
+        do {
+            consume(parser, TOKEN_IDENT, "Maydon nomi kutilmoqda");
+            field_count++;
+            fields = (char **)realloc(fields, sizeof(char *) * field_count);
+            fields[field_count - 1] = strdup(parser->previous.text);
+        } while (match(parser, TOKEN_COMMA));
+    }
+    consume(parser, TOKEN_RBRACE, "Tuzilma oxirida '}' kutilmoqda");
+
+    StructDef *s = ast_new_struct(name, fields, field_count);
+    free(name);
+    return s;
+}
+
 Program *parser_parse(Parser *parser) {
     Program *prog = ast_new_program();
     while (!check(parser, TOKEN_EOF)) {
-        Function *f = parse_function(parser);
-        if (f) {
-            ast_program_add_function(prog, f);
+        if (check(parser, TOKEN_TUZILMA)) {
+            StructDef *s = parse_struct(parser);
+            if (s) ast_program_add_struct(prog, s);
+        } else if (check(parser, TOKEN_AMAL)) {
+            Function *f = parse_function(parser);
+            if (f) ast_program_add_function(prog, f);
+        } else {
+            error_at_current(parser, "Faqat 'amal' yoki 'tuzilma' e'lon qilinishi mumkin");
+            advance(parser);
         }
     }
     return prog;

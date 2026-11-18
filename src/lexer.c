@@ -36,12 +36,10 @@ static void skip_whitespace_and_comments(Lexer *lexer) {
         if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
             advance(lexer);
         } else if (c == '/' && peek_next(lexer) == '/') {
-            // // izoh
             while (peek(lexer) != '\n' && peek(lexer) != '\0') {
                 advance(lexer);
             }
         } else if (c == '#') {
-            // # izoh (Python uslubida)
             while (peek(lexer) != '\n' && peek(lexer) != '\0') {
                 advance(lexer);
             }
@@ -65,10 +63,18 @@ static TokenType check_keyword(const char *text, int len) {
     if (len == 4 && strncmp(text, "agar", 4) == 0) return TOKEN_AGAR;
     if (len == 3 && strncmp(text, "aks", 3) == 0) return TOKEN_AKS;
     if (len == 4 && strncmp(text, "toki", 4) == 0) return TOKEN_TOKI;
+    if (len == 5 && strncmp(text, "uchun", 5) == 0) return TOKEN_UCHUN;
     if (len == 6 && strncmp(text, "chiqar", 6) == 0) return TOKEN_CHIQAR;
-    if (len == 4 && strncmp(text, "chop", 4) == 0) return TOKEN_CHIQAR; // qo'shimcha qulaylik uchun
+    if (len == 4 && strncmp(text, "chop", 4) == 0) return TOKEN_CHIQAR;
+    if (len == 5 && strncmp(text, "kirit", 5) == 0) return TOKEN_KIRIT;
     if ((len == 7 && strncmp(text, "to'xtat", 7) == 0) || (len == 6 && strncmp(text, "toxtat", 6) == 0)) return TOKEN_TOXTAT;
     if (len == 5 && strncmp(text, "davom", 5) == 0) return TOKEN_DAVOM;
+    if (len == 7 && strncmp(text, "tuzilma", 7) == 0) return TOKEN_TUZILMA;
+    if (len == 5 && strncmp(text, "yangi", 5) == 0) return TOKEN_YANGI;
+    if (len == 7 && strncmp(text, "uzunlik", 7) == 0) return TOKEN_UZUNLIK;
+    if (len == 2 && strncmp(text, "va", 2) == 0) return TOKEN_VA;
+    if (len == 4 && strncmp(text, "yoki", 4) == 0) return TOKEN_YOKI;
+    if (len == 5 && strncmp(text, "inkor", 5) == 0) return TOKEN_INKOR;
     return TOKEN_IDENT;
 }
 
@@ -146,7 +152,7 @@ Token lexer_next_token(Lexer *lexer) {
         }
 
         if (peek(lexer) == '"') {
-            advance(lexer); // skip ending '"'
+            advance(lexer);
         }
         buf[len] = '\0';
 
@@ -154,7 +160,7 @@ Token lexer_next_token(Lexer *lexer) {
         return tok;
     }
 
-    // Bir yoki ikki belgili operatorlar
+    // Operatorlar va belgilar
     advance(lexer);
     TokenType type = TOKEN_ERROR;
 
@@ -163,13 +169,33 @@ Token lexer_next_token(Lexer *lexer) {
         case '}': type = TOKEN_RBRACE; break;
         case '(': type = TOKEN_LPAREN; break;
         case ')': type = TOKEN_RPAREN; break;
+        case '[': type = TOKEN_LBRACKET; break;
+        case ']': type = TOKEN_RBRACKET; break;
         case ',': type = TOKEN_COMMA; break;
         case ';': type = TOKEN_SEMICOLON; break;
+        case '.': type = TOKEN_DOT; break;
+        case ':': type = TOKEN_COLON; break;
         case '+': type = TOKEN_PLUS; break;
         case '-': type = TOKEN_MINUS; break;
         case '*': type = TOKEN_STAR; break;
         case '/': type = TOKEN_SLASH; break;
         case '%': type = TOKEN_PERCENT; break;
+        case '&':
+            if (peek(lexer) == '&') {
+                advance(lexer);
+                type = TOKEN_VA;
+            } else {
+                type = TOKEN_ERROR;
+            }
+            break;
+        case '|':
+            if (peek(lexer) == '|') {
+                advance(lexer);
+                type = TOKEN_YOKI;
+            } else {
+                type = TOKEN_ERROR;
+            }
+            break;
         case '=':
             if (peek(lexer) == '=') {
                 advance(lexer);
@@ -183,7 +209,7 @@ Token lexer_next_token(Lexer *lexer) {
                 advance(lexer);
                 type = TOKEN_NEQ;
             } else {
-                type = TOKEN_ERROR;
+                type = TOKEN_INKOR;
             }
             break;
         case '<':

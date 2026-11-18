@@ -1,0 +1,18 @@
+amal asosiy() {
+    nomi = "sinov_fayli.txt"
+    matn = "Salom! Bu Algo dasturlash tili orqali yozilgan matn!\n"
+
+    // 577 = O_WRONLY (1) | O_CREAT (64) | O_TRUNC (512)
+    fd = fayl_och(nomi, 577)
+    chiqar("Ochilgan fayl deskriptori (FD):", fd)
+
+    agar fd > 0 {
+        fayl_yoz(fd, matn)
+        fayl_yop(fd)
+        chiqar("Fayl muvaffaqiyatli yozildi va yopildi!")
+    } aks {
+        chiqar("Faylni ochishda xatolik!")
+    }
+
+    qaytar 0
+}
