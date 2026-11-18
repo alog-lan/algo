@@ -1,0 +1,12 @@
+amal asosiy() {
+    chiqar("1 dan 10 gacha bo'lgan sonlar:")
+    son = 1
+    toki son <= 10 {
+        agar son % 2 == 0 {
+            chiqar(son)
+        }
+        son = son + 1
+    }
+
+    qaytar 0
+}

@@ -1,0 +1,12 @@
+amal asosiy() {
+    chiqar("100 million marta sikl boshlanmoqda...")
+    yigindi = 0
+    i = 1
+    toki i <= 100000000 {
+        yigindi = yigindi + i
+        i = i + 1
+    }
+    chiqar("Natija:")
+    chiqar(yigindi)
+    qaytar 0
+}

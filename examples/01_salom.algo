@@ -1,0 +1,4 @@
+amal asosiy() {
+    chiqar("Salom, Dunyo! Algo tiliga xush kelibsiz!")
+    qaytar 0
+}

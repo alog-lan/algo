@@ -1,0 +1,22 @@
+amal kvadrat(x) {
+    qaytar x * x
+}
+
+amal faktorial(n) {
+    agar n <= 1 {
+        qaytar 1
+    }
+    qaytar n * faktorial(n - 1)
+}
+
+amal asosiy() {
+    chiqar("5 ning kvadrati:")
+    k = kvadrat(5)
+    chiqar(k)
+
+    chiqar("6 ning faktoriali:")
+    f = faktorial(6)
+    chiqar(f)
+
+    qaytar 0
+}

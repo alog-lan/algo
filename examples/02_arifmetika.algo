@@ -1,0 +1,18 @@
+amal asosiy() {
+    a = 15
+    b = 27
+    yigindi = a + b
+    kopaytma = a * b
+    ayirma = b - a
+    bolinma = b / a
+    qoldiq = b % a
+
+    chiqar("Hisoblash natijalari:")
+    chiqar(yigindi)
+    chiqar(kopaytma)
+    chiqar(ayirma)
+    chiqar(bolinma)
+    chiqar(qoldiq)
+
+    qaytar 0
+}
