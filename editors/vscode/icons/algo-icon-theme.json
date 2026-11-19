@@ -1,0 +1,10 @@
+{
+  "iconDefinitions": {
+    "_algo": {
+      "iconPath": "./algo.svg"
+    }
+  },
+  "fileExtensions": {
+    "algo": "_algo"
+  }
+}

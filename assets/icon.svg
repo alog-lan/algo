@@ -1,34 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
-  <!-- Algo Official Icon - 100% Transparent Background -->
+  <!-- Algo Dasturlash Tili - Rasmiy Belgisi (100% Shafof Fon, Bosh joylarsiz yirik SVG) -->
   <defs>
-    <linearGradient id="algo_left_blue" x1="0%" y1="100%" x2="50%" y2="0%">
+    <linearGradient id="algo_blue" x1="0%" y1="100%" x2="50%" y2="0%">
       <stop offset="0%" stop-color="#1D4ED8"/>
       <stop offset="100%" stop-color="#3B82F6"/>
     </linearGradient>
-    <linearGradient id="algo_right_cyan" x1="50%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="algo_cyan" x1="50%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00F2FE"/>
       <stop offset="100%" stop-color="#0EA5E9"/>
     </linearGradient>
-    <linearGradient id="algo_cross_emerald" x1="0%" y1="0%" x2="100%" y2="0%">
+    <linearGradient id="algo_cross" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#059669"/>
       <stop offset="50%" stop-color="#10B981"/>
       <stop offset="100%" stop-color="#06B6D4"/>
     </linearGradient>
   </defs>
 
-  <!-- Chap qanot (Blue Pillar): Pastdan cho'qqiga ko'tariluvchi qanot -->
-  <path d="M 128,26 C 124,26 120,29 118,33 L 30,207 C 27,214 31,222 39,222 L 79,222 C 85,222 90,218 93,212 L 115,162 L 128,132 L 128,26 Z" 
-        fill="url(#algo_left_blue)" />
+  <!-- Chap qanot (Blue Pillar): Kuchli ko'k gradientli tayanch -->
+  <path d="M 128,10 C 123,10 118,14 116,18 L 10,228 C 7,236 12,246 21,246 L 69,246 C 76,246 82,241 86,234 L 112,174 L 104,140 L 128,80 L 128,10 Z" 
+        fill="url(#algo_blue)" />
 
-  <!-- O'ng qanot (Cyan Pillar): Cho'qqidan pastga tushuvchi qanot -->
-  <path d="M 128,26 L 128,132 L 141,162 L 163,212 C 166,218 171,222 177,222 L 217,222 C 225,222 229,214 226,207 L 138,33 C 136,29 132,26 128,26 Z" 
-        fill="url(#algo_right_cyan)" />
+  <!-- O'ng qanot (Cyan Pillar): Yorqin havorang gradientli tayanch -->
+  <path d="M 128,10 L 128,80 L 152,140 L 144,174 L 170,234 C 174,241 180,246 187,246 L 235,246 C 244,246 249,236 246,228 L 140,18 C 138,14 133,10 128,10 Z" 
+        fill="url(#algo_cyan)" />
 
   <!-- Markaziy algoritmik ko'prik (The Algorithmic Chevron Crossbar) -->
-  <!-- Ichki uchburchak darcha qoldirib, tezlik chevronga ega ko'prik -->
-  <path d="M 68,162 L 188,162 C 195,162 199,170 195,176 L 175,208 C 172,213 167,216 161,216 L 95,216 C 89,216 84,213 81,208 L 61,176 C 57,170 61,162 68,162 Z" 
-        fill="url(#algo_cross_emerald)" />
-
-  <!-- Ichki darcha (Inner Counterspace / Core Node) -->
-  <polygon points="128,82 108,132 148,132" fill="#FFFFFF" opacity="0.95" />
+  <path d="M 56,174 L 200,174 C 208,174 213,184 208,191 L 184,230 C 180,236 174,240 167,240 L 89,240 C 82,240 76,236 72,230 L 48,191 C 43,184 48,174 56,174 Z" 
+        fill="url(#algo_cross)" />
 </svg>

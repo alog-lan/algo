@@ -1,13 +1,16 @@
 {
   "name": "algo-lang",
   "displayName": "Algo Dasturlash Tili",
-  "description": "Algo dasturlash tili uchun sintaksis ranglari va qo'llab-quvvatlash",
-  "version": "1.0.0",
+  "description": "Algo dasturlash tili uchun sintaksis ranglari, rasmiy ikonkalar va qo'llab-quvvatlash",
+  "version": "1.5.0",
+  "publisher": "alog-lan",
+  "icon": "icons/algo.png",
   "engines": {
     "vscode": "^1.60.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Themes"
   ],
   "contributes": {
     "languages": [
@@ -20,7 +23,11 @@
         "extensions": [
           ".algo"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/algo.svg",
+          "dark": "./icons/algo.svg"
+        }
       }
     ],
     "grammars": [
@@ -28,6 +35,13 @@
         "language": "algo",
         "scopeName": "source.algo",
         "path": "./syntaxes/algo.tmLanguage.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "algo-icons",
+        "label": "Algo File Icons",
+        "path": "./icons/algo-icon-theme.json"
       }
     ]
   }
