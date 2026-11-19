@@ -15,18 +15,29 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- ==============================================================================
-       NAVBAR
+       PROMO BANNER (Top Announcement Strip)
+       ============================================================================== -->
+  <div class="promo-banner">
+    <div class="container promo-content">
+      <span class="promo-badge">YANGI CHIQQAN VERSIYA</span>
+      <span class="promo-text">Algo v1.5.0 — Zero-libc Linux x86_64 to'g'ridan-to'g'ri tizim chaqiruvlari.</span>
+      <a href="#workbench" class="promo-link">Sinov maydonini ko'rish &rarr;</a>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       NAVBAR (Midnight Command Center)
        ============================================================================== -->
   <nav class="navbar">
     <div class="container nav-wrapper">
       <a href="#" class="brand">
-        <img src="assets/logo.svg" alt="Algo" height="32">
-        <span class="brand-badge">v1.5.0</span>
+        <img src="assets/logo.svg" alt="Algo" height="28">
+        <span class="brand-badge">BETA v1.5.0</span>
       </a>
 
       <ul class="nav-links">
@@ -38,13 +49,13 @@
       </ul>
 
       <div class="nav-actions">
-        <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener" class="btn-github">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener" class="nav-link-plain">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
           </svg>
           <span>GitHub</span>
         </a>
-        <a href="#ornatish" class="btn-cta">O'rnatish</a>
+        <a href="#ornatish" class="btn-primary">O'rnatish</a>
       </div>
     </div>
   </nav>
@@ -54,10 +65,7 @@
        ============================================================================== -->
   <header class="hero">
     <div class="container">
-      <div class="hero-tag">
-        <span>Arxitektura:</span>
-        <span class="tag-accent">Zero-Libc Linux x86_64 Direct Syscalls</span>
-      </div>
+      <div class="section-eyebrow">Tizim Darajasidagi Dasturlash Tili</div>
 
       <h1 class="hero-title">
         To'g'ridan-to'g'ri mashina kodi.<br>
@@ -65,10 +73,20 @@
       </h1>
 
       <p class="hero-desc">
-        Algo — LLVM yoki Glibc ga bog'lanmagan, to'g'ridan-to'g'ri Linux yadrosi tizim chaqiruvlari (Direct Syscalls) orqali ishlovchi mustaqil dasturlash tili. 8.9 KB tayyor binar hajm, 0.6 ms sovuq start va tabiiy O'zbek tili leksikasi.
+        Algo — LLVM yoki Glibc ga bog'lanmagan, to'g'ridan-to'g'ri Linux yadrosi tizim chaqiruvlari (Direct Syscalls) orqali ishlovchi mustaqil dasturlash tili. 8.9 KB tayyor binar hajm, 0.61 ms sovuq start va tabiiy O'zbek tili leksikasi.
       </p>
 
-      <!-- Minimal Terminal Install -->
+      <div class="hero-cta-group">
+        <a href="#ornatish" class="btn-primary">Kompilyatorni o'rnatish</a>
+        <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener" class="btn-ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          <span>GitHub ombori</span>
+        </a>
+      </div>
+
+      <!-- Terminal Install Bar -->
       <div class="install-bar" id="ornatish">
         <div class="install-cmd">
           <span class="prompt">$</span>
@@ -80,22 +98,48 @@
         </button>
       </div>
 
-      <!-- Spec Strip -->
-      <div class="spec-strip">
-        <div class="spec-item"><span class="spec-label">Binar:</span> <span class="spec-value">8.9 KB</span></div>
-        <div class="spec-item"><span class="spec-label">Start:</span> <span class="spec-value">0.61 ms</span></div>
-        <div class="spec-item"><span class="spec-label">Bog'liqlik:</span> <span class="spec-value">0 (Statically linked)</span></div>
-        <div class="spec-item"><span class="spec-label">Arxitektura:</span> <span class="spec-value">AMD64 / x86_64</span></div>
-        <div class="spec-item"><span class="spec-label">Testlar:</span> <span class="spec-value">31/31 (100%)</span></div>
+      <!-- Dovetail Stat Row (Three-Column KPI Presentation) -->
+      <div class="stat-row">
+        <div class="stat-block">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <div class="stat-value">8.9 KB</div>
+          <div class="stat-label">Binar Hajmi (ELF)</div>
+          <div class="stat-desc">Go dan 270x, Python dan 5000x kichik mustaqil mashina kodi.</div>
+        </div>
+
+        <div class="stat-block">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <div class="stat-value">0.61 ms</div>
+          <div class="stat-label">Sovuq Start Vaqti</div>
+          <div class="stat-desc">Linux yadrosi ELF yuklagichining xotiraga yuklanish sof vaqti.</div>
+        </div>
+
+        <div class="stat-block">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <div class="stat-value">0 ta</div>
+          <div class="stat-label">Tashqi Bog'liqlik</div>
+          <div class="stat-desc">libc.so, LLVM yoki GC kerak emas. 100% statik direct syscalls.</div>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- ==============================================================================
-       INTERACTIVE WORKBENCH
+       DASHBOARD PREVIEW CARD / INTERACTIVE WORKBENCH
        ============================================================================== -->
   <section class="workbench-section" id="workbench">
     <div class="container">
+      <div class="section-eyebrow">Jonli Sinov Maydoni</div>
+      <h2 class="section-heading">Kompilyator Ishini Kodingizda Ko'ring</h2>
+      <p class="section-summary">Algo kodi to'g'ridan-to'g'ri Linux x86_64 assembleriga qanday aylanishini real vaqt rejimida tekshiring.</p>
+
       <div class="workbench">
         <div class="workbench-bar">
           <div class="workbench-tabs">
@@ -110,7 +154,7 @@
             <button class="view-toggle active" id="btn-algo-view" onclick="setView('algo')">Algo Kodi</button>
             <button class="view-toggle" id="btn-asm-view" onclick="setView('asm')">x86_64 Assembler (.s)</button>
             <button class="btn-execute" id="btn-run" onclick="executeCode()">
-              <span>▶</span> Ishga tushirish
+              <span>&#9654;</span> Ishga tushirish
             </button>
           </div>
         </div>
@@ -197,7 +241,7 @@
               <td><code>sys_mmap</code></td>
               <td><code>RAX = 9</code></td>
               <td><code>PROT_READ|PROT_WRITE, MAP_ANONYMOUS</code></td>
-              <td>Dinamik xotira xiyoboni (Arena): <code>xotira_holati()</code>, <code>xotira_tikla()</code></td>
+              <td>Dinamik xotira maydoni (Arena): <code>xotira_holati()</code>, <code>xotira_tikla()</code></td>
             </tr>
           </tbody>
         </table>
@@ -214,7 +258,7 @@
       <h2 class="section-heading">O'lchovlar va Xotira Iste'moli</h2>
       <p class="section-summary">Sinov muhiti: Linux x86_64, AMD Athlon Silver / Ryzen, CachyOS / Ubuntu.</p>
 
-      <div class="bench-grid" style="margin-bottom: 24px;">
+      <div class="bench-grid">
         <div class="bench-metric-card">
           <div class="metric-name">Binar Hajmi (ELF)</div>
           <div class="metric-value">8.9 KB</div>
@@ -235,7 +279,7 @@
 
         <div class="bench-metric-card">
           <div class="metric-name">Tashqi Bog'liqliklar</div>
-          <div class="metric-value">0</div>
+          <div class="metric-value">0 ta</div>
           <div class="metric-compare">libc.so yoki runtime talab qilinmaydi</div>
         </div>
       </div>
@@ -252,12 +296,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr style="background: rgba(0, 229, 255, 0.04);">
-              <td><b style="color: var(--accent-cyan);">Algo v1.5.0</b></td>
-              <td><b style="color: #ffffff;">8.9 KB</b></td>
-              <td><b style="color: #ffffff;">0.61 ms</b></td>
-              <td><b style="color: #ffffff;">1.2 MB</b></td>
-              <td><b style="color: var(--accent-emerald);">0 ta (Statically linked)</b></td>
+            <tr class="row-highlight">
+              <td><strong>Algo v1.5.0</strong></td>
+              <td><strong>8.9 KB</strong></td>
+              <td><strong>0.61 ms</strong></td>
+              <td><strong>1.2 MB</strong></td>
+              <td><strong>0 ta (Statically linked)</strong></td>
             </tr>
             <tr>
               <td>C (GCC -O2)</td>
@@ -519,18 +563,54 @@
   </section>
 
   <!-- ==============================================================================
-       FOOTER
+       FOOTER (Dovetail Multi-Column Grid)
        ============================================================================== -->
   <footer class="footer">
-    <div class="container footer-inner">
-      <div>
-        <span>Algo Dasturlash Tili v1.5.0 • Jasurbek & Ochiq Manba Hamjamiyati • MIT Litsenziyasi</span>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">
+            <img src="assets/logo.svg" alt="Algo" height="24">
+            <span class="brand-badge">v1.5.0</span>
+          </div>
+          <p>
+            To'g'ridan-to'g'ri x86_64 Linux mashina kodi generatsiya qiluvchi, libc va LLVM ga bog'lanmagan zamonaviy tizim dasturlash tili.
+          </p>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Platforma</div>
+          <ul class="footer-col-links">
+            <li><a href="#arxitektura">Linux Syscalls</a></li>
+            <li><a href="#benchmarks">Unumdorlik</a></li>
+            <li><a href="#workbench">Jonli Sinov Maydoni</a></li>
+            <li><a href="#cli">CLI Toolchain</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Resurslar</div>
+          <ul class="footer-col-links">
+            <li><a href="#kutubxona">std/ Modullar Katalogi</a></li>
+            <li><a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener">GitHub Ombori</a></li>
+            <li><a href="https://github.com/alog-lan/algo/releases" target="_blank" rel="noopener">Binar Chiqarilishlar</a></li>
+            <li><a href="#ornatish">O'rnatish Skripti</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Hamjamiyat</div>
+          <ul class="footer-col-links">
+            <li><a href="https://github.com/alog-lan/algo/issues" target="_blank" rel="noopener">Xatolar va Takliflar</a></li>
+            <li><a href="https://github.com/alog-lan/algo/blob/master/LICENSE" target="_blank" rel="noopener">MIT Litsenziyasi</a></li>
+            <li><a href="https://github.com/alog-lan/algo/pulls" target="_blank" rel="noopener">Hissa Qo'shish</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener">GitHub Ombori</a>
-        <a href="#workbench">Playground</a>
-        <a href="#arxitektura">Arxitektura</a>
-        <a href="#kutubxona">Hujjatlar</a>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Algo Dasturlash Tili. Barcha huquqlar himoyalangan.</div>
+        <div>Zero Libc &bull; Linux x86_64 &bull; 8.9 KB ELF</div>
       </div>
     </div>
   </footer>
