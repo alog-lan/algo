@@ -1,37 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" width="720" height="200">
   <!-- Algo Official Full Logo - 100% Transparent Background -->
-  <defs>
-    <linearGradient id="logo_blue" x1="0%" y1="100%" x2="50%" y2="0%">
-      <stop offset="0%" stop-color="#1D4ED8"/>
-      <stop offset="100%" stop-color="#3B82F6"/>
-    </linearGradient>
-    <linearGradient id="logo_cyan" x1="50%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00F2FE"/>
-      <stop offset="100%" stop-color="#0EA5E9"/>
-    </linearGradient>
-    <linearGradient id="logo_cross" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#059669"/>
-      <stop offset="50%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#06B6D4"/>
-    </linearGradient>
-  </defs>
-
-  <!-- EMBLEMA (Chap tomonda, yirik va aniq) -->
-  <g transform="translate(25, 12) scale(0.69)">
-    <!-- Chap qanot -->
-    <path d="M 128,10 C 123,10 118,14 116,18 L 10,228 C 7,236 12,246 21,246 L 69,246 C 76,246 82,241 86,234 L 112,174 L 104,140 L 128,80 L 128,10 Z" 
-          fill="url(#logo_blue)" />
-
-    <!-- O'ng qanot -->
-    <path d="M 128,10 L 128,80 L 152,140 L 144,174 L 170,234 C 174,241 180,246 187,246 L 235,246 C 244,246 249,236 246,228 L 140,18 C 138,14 133,10 128,10 Z" 
-          fill="url(#logo_cyan)" />
-
-    <!-- Markaziy algoritmik ko'prik -->
-    <path d="M 56,174 L 200,174 C 208,174 213,184 208,191 L 184,230 C 180,236 174,240 167,240 L 89,240 C 82,240 76,236 72,230 L 48,191 C 43,184 48,174 56,174 Z" 
-          fill="url(#logo_cross)" />
+  <!-- Hexagon 'A' Emblemasi (Chap tomonda, aniq va muhtasham) -->
+  <g transform="translate(25, 20) scale(5)">
+    <!-- Hexagon Frame -->
+    <path fill="#0288d1" d="M16 2 3 9.5v13L16 30l13-7.5v-13ZM16 4.8 26.5 10.9v10.2L16 27.2 5.5 21.1V10.9Z"/>
+    <!-- Bold 'A' -->
+    <path fill="#00e5ff" d="M16 7 9 24h3.8l1.4-3.5h5.6l1.4 3.5H25ZM15 17.2 16 13l1 4.2Z"/>
   </g>
 
-  <!-- MATN: "algo" (Kichik harflarda, zamonaviy Go/Rust/Python uslubida) -->
+  <!-- MATN: "algo" (Kichik harflarda, zamonaviy Go/Rust/Node uslubida) -->
   <g transform="translate(225, 130)">
     <!-- Asosiy "algo" yozuvi -->
     <text x="0" y="0" 
@@ -39,10 +16,10 @@
           font-weight="800" 
           font-size="112px" 
           letter-spacing="-3px" 
-          fill="#3B82F6">algo</text>
+          fill="#0288d1">algo</text>
     
     <!-- Nuqta (Turkuaz til belgisi) -->
-    <circle cx="246" cy="-90" r="11" fill="#00F2FE" />
+    <circle cx="246" cy="-90" r="11" fill="#00e5ff" />
 
     <!-- Tagyozuv: "DASTURLASH TILI • ZERO-LIBC" -->
     <text x="5" y="32" 
@@ -50,7 +27,7 @@
           font-weight="600" 
           font-size="16px" 
           letter-spacing="4px" 
-          fill="#10B981" 
+          fill="#10b981" 
           text-transform="uppercase">DASTURLASH TILI • ZERO-LIBC</text>
   </g>
 </svg>
