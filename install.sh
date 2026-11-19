@@ -117,6 +117,17 @@ case "$SHELL_NAME" in
         ;;
     fish)
         RC_FILE="${HOME}/.config/fish/config.fish"
+        mkdir -p "${HOME}/.config/fish/functions"
+        cat > "${HOME}/.config/fish/functions/algo.fish" << EOF
+function algo --wraps='${BIN_DIR}/algo' --description 'Algo Dasturlash Tili v1.5.0'
+    ${BIN_DIR}/algo \$argv
+end
+EOF
+        cat > "${HOME}/.config/fish/functions/algoc.fish" << EOF
+function algoc --wraps='${BIN_DIR}/algoc' --description 'Algo Dasturlash Tili Kompilyatori v1.5.0'
+    ${BIN_DIR}/algoc \$argv
+end
+EOF
         ;;
     *)
         RC_FILE="${HOME}/.profile"
