@@ -103,25 +103,239 @@ static void print_banner(void) {
     printf("\033[1;33mAlgo Dasturlash Tili\033[0m v%s (x86_64, Linux, Mustaqil)\n\n", ALGO_VERSION);
 }
 
-static void print_help(void) {
+static void print_topic_help(const char *topic) {
+    printf("\033[1;36m╔══════════════════════════════════════════════════════════════════════════════╗\033[0m\n");
+    printf("\033[1;36m║\033[0m \033[1;37mALGO LUG'ATI VA QO'LLANMASI: \033[1;33m%-47s\033[0m \033[1;36m║\033[0m\n", topic);
+    printf("\033[1;36m╚══════════════════════════════════════════════════════════════════════════════╝\033[0m\n\n");
+
+    if (strcmp(topic, "amal") == 0 || strcmp(topic, "funksiya") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Kalit so'z (Sintaksis)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Funksiya (protsedura) e'lon qilish. Har qanday amalda argumentlar qabul qilinadi va natija qaytariladi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33mamal nom(arg1, arg2, ...) { ... qaytar natija }\033[0m\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32mamal kvadrat(son) {\033[0m\n");
+        printf("  \033[0;32m    qaytar son * son\033[0m\n");
+        printf("  \033[0;32m}\033[0m\n");
+        printf("  \033[0;32mamal asosiy() {\033[0m\n");
+        printf("  \033[0;32m    chiqar(\"Kvadrati:\", kvadrat(8))\033[0m\n");
+        printf("  \033[0;32m    qaytar 0\033[0m\n");
+        printf("  \033[0;32m}\033[0m\n");
+    } else if (strcmp(topic, "asosiy") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Kirish Nuqtasi (Entry Point)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Har bir Algo dasturi x86_64 mashina kodida '_start' orqali boshlanib, 'asosiy' amalini chaqiradi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33mamal asosiy() { qaytar 0 }\033[0m\n");
+    } else if (strcmp(topic, "qaytar") == 0 || strcmp(topic, "return") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Kalit so'z (Return)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Amaldan chiqish va hisoblangan qiymatni chaqiruvchiga uzatish. RAX registriga joylanadi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33mqaytar natija\033[0m yoki \033[1;33mqaytar 0\033[0m\n");
+    } else if (strcmp(topic, "agar") == 0 || strcmp(topic, "shart") == 0 || strcmp(topic, "if") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Shart Operatorlari (If / Else)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Mantiqiy ifodaga ko'ra kod blokini shartli bajarish.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33magar shart { ... } aks agar shart2 { ... } aks { ... }\033[0m\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32myosh = 20\033[0m\n");
+        printf("  \033[0;32magar yosh >= 18 {\033[0m\n");
+        printf("  \033[0;32m    chiqar(\"Voyaga yetgan\")\033[0m\n");
+        printf("  \033[0;32m} aks {\033[0m\n");
+        printf("  \033[0;32m    chiqar(\"Voyaga yetmagan\")\033[0m\n");
+        printf("  \033[0;32m}\033[0m\n");
+    } else if (strcmp(topic, "toki") == 0 || strcmp(topic, "sikl") == 0 || strcmp(topic, "while") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Takrorlanish Sikli (While)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Shart rost bo'lib turguniga qadar blokni qayta-qayta bajaradi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33mtoki shart { ... }\033[0m\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32mi = 1\033[0m\n");
+        printf("  \033[0;32mtoki i <= 5 {\033[0m\n");
+        printf("  \033[0;32m    chiqar(\"Qadam:\", i)\033[0m\n");
+        printf("  \033[0;32m    i = i + 1\033[0m\n");
+        printf("  \033[0;32m}\033[0m\n");
+    } else if (strcmp(topic, "uchun") == 0 || strcmp(topic, "for") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Diapazon Sikli (For in Range/Array)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Belgilangan sonlar oralig'i (a..b) yoki massiv bo'yicha iteratsiya qiladi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33muchun ozgaruvchi ichida boshlangich..oxirgi { ... }\033[0m\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32muchun son ichida 1..10 {\033[0m\n");
+        printf("  \033[0;32m    chiqar(\"Son:\", son)\033[0m\n");
+        printf("  \033[0;32m}\033[0m\n");
+    } else if (strcmp(topic, "tuzilma") == 0 || strcmp(topic, "struct") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Ma'lumotlar Tuzilmasi (Struct)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Bir nechta maydonlarni o'z ichiga oluvchi foydalanuvchi ma'lumotlar tipi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33mtuzilma Nom { maydon1, maydon2 }\033[0m\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32mtuzilma Talaba { ism, ball }\033[0m\n");
+        printf("  \033[0;32mali = Talaba(\"Ali\", 95)\033[0m\n");
+        printf("  \033[0;32mchiqar(ali.ism, ali.ball)\033[0m\n");
+    } else if (strcmp(topic, "chiqar") == 0 || strcmp(topic, "print") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m O'rnatilgan Amal (Built-in)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Linux 'sys_write' chaqiruvi orqali standart chiqishga (stdout/1) ma'lumot chop etadi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33mchiqar(arg1, arg2, ...)\033[0m\n");
+    } else if (strcmp(topic, "kirit") == 0 || strcmp(topic, "input") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m O'rnatilgan Amal (Built-in)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Standart kiritishdan (stdin/0) 'sys_read' orqali bir satr matn o'qiydi.\n");
+        printf("\033[1;32mSintaksis:\033[0m  \033[1;33msatr = kirit()\033[0m\n");
+    } else if (strcmp(topic, "http") == 0 || strcmp(topic, "web") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Standart Kutubxona (\033[1;33mstd/http.algo\033[0m)\n");
+        printf("\033[1;32mTavsifi:\033[0m    HTTP/1.1 veb-serveri va REST API yaratish vositalari.\n");
+        printf("\033[1;32mAmallar:\033[0m    http_metod, http_yol, http_javob_json, http_javob_html, http_tana\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32myukla \"std/http.algo\"\033[0m\n");
+        printf("  \033[0;32myukla \"std/tarmoq.algo\"\033[0m\n");
+        printf("  \033[0;32mamal asosiy() {\033[0m\n");
+        printf("  \033[0;32m    server_fd = server_yarat(8080)\033[0m\n");
+        printf("  \033[0;32m    chiqar(\"Server ishga tushdi: port 8080\")\033[0m\n");
+        printf("  \033[0;32m    toki 1 == 1 {\033[0m\n");
+        printf("  \033[0;32m        fd = mijoz_kut(server_fd)\033[0m\n");
+        printf("  \033[0;32m        sorov = xabar_qabul(fd, 2048)\033[0m\n");
+        printf("  \033[0;32m        javob = http_javob_json(200, \"{\\\"holat\\\":\\\"faol\\\"}\")\033[0m\n");
+        printf("  \033[0;32m        xabar_yubor(fd, javob)\033[0m\n");
+        printf("  \033[0;32m        ulanish_yop(fd)\033[0m\n");
+        printf("  \033[0;32m    }\033[0m\n");
+        printf("  \033[0;32m    qaytar 0\033[0m\n");
+        printf("  \033[0;32m}\033[0m\n");
+    } else if (strcmp(topic, "baza") == 0 || strcmp(topic, "db") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Standart Kutubxona (\033[1;33mstd/baza.algo\033[0m)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Lokal diskda tranzaksiyali saqlanuvchi kalit-qiymat (Key-Value) ma'lumotlar bazasi.\n");
+        printf("\033[1;32mAmallar:\033[0m    baza_och, baza_yoz, baza_oqish, baza_saqla, baza_ochir\n\n");
+        printf("\033[1mNamuna Kod:\033[0m\n");
+        printf("  \033[0;32myukla \"std/baza.algo\"\033[0m\n");
+        printf("  \033[0;32mbaza_och(\"malumot.baza\")\033[0m\n");
+        printf("  \033[0;32mbaza_yoz(\"muallif\", \"Jasurbek\")\033[0m\n");
+        printf("  \033[0;32mism = baza_oqish(\"muallif\")\033[0m\n");
+        printf("  \033[0;32mbaza_saqla(\"malumot.baza\")\033[0m\n");
+    } else if (strcmp(topic, "matematika") == 0 || strcmp(topic, "math") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Standart Kutubxona (\033[1;33mstd/matematika.algo\033[0m)\n");
+        printf("\033[1;32mTavsifi:\033[0m    SSE2 apparatli kvadrat ildiz, daraja, EKUB, EKUK, sinus, kosinus va yaxlitlash.\n");
+        printf("\033[1;32mAmallar:\033[0m    ildiz(x), daraja(a, b), ekub(a, b), ekuk(a, b), sin(rad), cos(rad), yaxlitla(x)\n");
+    } else if (strcmp(topic, "fayl") == 0 || strcmp(topic, "file") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Standart Kutubxona (\033[1;33mstd/fayl.algo\033[0m)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Zero-libc x86_64 direct syscalls orqali fayl tizimi boshqaruvi.\n");
+        printf("\033[1;32mAmallar:\033[0m    fayl_oqish(yol), fayl_yozish(yol, matn), fayl_bormi(yol), fayl_ochir(yol)\n");
+    } else if (strcmp(topic, "rang") == 0 || strcmp(topic, "color") == 0) {
+        printf("\033[1;32mKategoriya:\033[0m Standart Kutubxona (\033[1;33mstd/rang.algo\033[0m)\n");
+        printf("\033[1;32mTavsifi:\033[0m    Terminal uchun 16 ta ANSI ranglari va matn formatlash amallari.\n");
+        printf("\033[1;32mAmallar:\033[0m    rang_turkuaz(m), rang_yashil(m), rang_qizil(m), rang_sariq(m), rang_qalin(m)\n");
+    } else {
+        printf("\033[1;31mNoma'lum mavzu:\033[0m '%s'\n", topic);
+        printf("Mavjud lug'at bo'limlari: amal, asosiy, qaytar, agar, toki, uchun, tuzilma, chiqar, kirit, http, baza, matematika, fayl, rang, tarmoq, massiv, matn\n");
+        printf("Barcha lug'atni ko'rish uchun: \033[1;32malgo yordam\033[0m\n");
+    }
+}
+
+static void print_help(const char *topic) {
+    if (topic != NULL && strlen(topic) > 0 && strcmp(topic, "barchasi") != 0 && strcmp(topic, "all") != 0) {
+        print_topic_help(topic);
+        return;
+    }
+
     print_banner();
-    printf("\033[1mBuyruqlar (Commands):\033[0m\n");
-    printf("  \033[1;32malgo ishga-tushir <fayl.algo>\033[0m (yoki \033[1;32malgo run\033[0m)  Kompilyatsiya qilib, darhol ishga tushirish\n");
-    printf("  \033[1;32malgo yig <fayl.algo> [-o nom]\033[0m (yoki \033[1;32malgo build\033[0m) Binar mashina kodiga yig'ish\n");
-    printf("  \033[1;32malgo format <fayl.algo>\033[0m      (yoki \033[1;32malgo fmt\033[0m)    Kodni chiroyli formatlash (gofmt kabi)\n");
-    printf("  \033[1;32malgo doc <fayl.algo> [-o md]\033[0m  (yoki \033[1;32malgo hujjat\033[0m) Avtomatik hujjat generatsiyasi (godoc kabi)\n");
-    printf("  \033[1;32malgo paket <yarat|royxat|ornat>\033[0m (yoki \033[1;32malgo pkg\033[0m) Paket menejeri (npm/cargo/pip kabi)\n");
-    printf("  \033[1;32malgo tekshir <fayl.algo>\033[0m     (yoki \033[1;32malgo lint\033[0m)   Kodni statik tahlil qilish (linter)\n");
-    printf("  \033[1;32malgo vaqt <fayl.algo>\033[0m        (yoki \033[1;32malgo time\033[0m)   Kompilyatsiya va bajarilish vaqtini o'lchash\n");
-    printf("  \033[1;32malgo tezlik <fayl.algo>\033[0m      (yoki \033[1;32malgo bench\033[0m)  Unumdorlik sinovi (Benchmark)\n");
-    printf("  \033[1;32malgo sinov [fayl.algo]\033[0m       (yoki \033[1;32malgo test\033[0m)   Barcha testlarni yoki alohida faylni tekshirish\n");
-    printf("  \033[1;32malgo yangi <loyiha_nomi>\033[0m     (yoki \033[1;32malgo new\033[0m)    Yangi Algo loyihasini yaratish\n");
-    printf("  \033[1;32malgo repl\033[0m                                       Interaktiv buyruqlar satri (REPL)\n");
-    printf("  \033[1;32malgo versiya\033[0m                 (yoki \033[1;32malgo version\033[0m)  Til versiyasini ko'rish\n");
-    printf("  \033[1;32malgo yordam\033[0m                  (yoki \033[1;32malgo help\033[0m)     Ushbu yordam oynasi\n\n");
-    printf("\033[1mParametrlar:\033[0m\n");
-    printf("  -s    Assembler (.s) kodini saqlab qolish\n");
-    printf("  -o    Chiqariluvchi binar fayl nomi yoki hujjat fayli\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf(" \033[1;37m1. CLI ASBOBLAR VA BUYRUQLAR RO'YXATI (TOOLCHAIN COMMANDS)\033[0m\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf("  \033[1;32malgo ishga-tushir <fayl>\033[0m   (run)    Kompilyatsiya qilib, darhol ishga tushirish\n");
+    printf("  \033[1;32malgo yig <fayl> [-o nom]\033[0m   (build)  Mustaqil x86_64 ELF binar mashina kodiga yig'ish\n");
+    printf("  \033[1;32malgo sinov [fayl]\033[0m          (test)   31 ta birlik sinovlarni avtomatik tekshirish\n");
+    printf("  \033[1;32malgo format <fayl>\033[0m         (fmt)    Kodni chiroyli tartibga solish (gofmt kabi)\n");
+    printf("  \033[1;32malgo doc <fayl> [-o md]\033[0m    (hujjat) Koddan avtomatik Markdown hujjat yaratish\n");
+    printf("  \033[1;32malgo tekshir <fayl>\033[0m        (lint)   Statik xatolar tahlilchisi (Linter)\n");
+    printf("  \033[1;32malgo vaqt <fayl>\033[0m           (time)   Bajarilish vaqtini mikrosekundlarda o'lchash\n");
+    printf("  \033[1;32malgo tezlik <fayl>\033[0m         (bench)  Unumdorlik va xotira iste'moli testi\n");
+    printf("  \033[1;32malgo paket <yarat|royxat>\033[0m  (pkg)    Paket va modullar menejeri\n");
+    printf("  \033[1;32malgo yangi <loyiha_nomi>\033[0m   (new)    Yangi Algo loyihasi shablonini yaratish\n");
+    printf("  \033[1;32malgo repl\033[0m                           Interaktiv tezkor buyruqlar satri (REPL)\n");
+    printf("  \033[1;32malgo lugat [soz]\033[0m                    Til sintaksisi va modullar lug'atini ko'rish\n");
+    printf("  \033[1;32malgo versiya\033[0m                (version)Til versiyasi va tizim arxitekturasini ko'rish\n");
+    printf("  \033[1;32malgo yordam [soz]\033[0m           (help)   To'liq yordam va lug'at oynasi\n\n");
+
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf(" \033[1;37m2. TIL SINTAKSISI VA KALIT SO'ZLAR LUG'ATI (KEYWORDS DICTIONARY)\033[0m\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf("  \033[1;33mamal\033[0m       Funksiya yaratish: \033[0;32mamal qosh(a, b) { qaytar a + b }\033[0m\n");
+    printf("  \033[1;33masosiy\033[0m     Dasturning asosiy kirish amali: \033[0;32mamal asosiy() { ... }\033[0m\n");
+    printf("  \033[1;33mqaytar\033[0m     Amaldan natija qaytarish (\033[0;36mreturn\033[0m): \033[0;32mqaytar 0\033[0m\n");
+    printf("  \033[1;33magar\033[0m       Shart tekshirish (\033[0;36mif\033[0m): \033[0;32magar x > 10 { chiqar(\"Katta\") }\033[0m\n");
+    printf("  \033[1;33maks agar\033[0m   Qo'shimcha shart (\033[0;36melse if\033[0m): \033[0;32maks agar x == 10 { ... }\033[0m\n");
+    printf("  \033[1;33maks\033[0m        Aks holdagi blok (\033[0;36melse\033[0m): \033[0;32maks { chiqar(\"Kichik\") }\033[0m\n");
+    printf("  \033[1;33mtoki\033[0m       Shartli sikl (\033[0;36mwhile\033[0m): \033[0;32mtoki i < 10 { i = i + 1 }\033[0m\n");
+    printf("  \033[1;33muchun\033[0m      Sikl (\033[0;36mfor\033[0m): \033[0;32muchun i ichida 1..5 { chiqar(i) }\033[0m\n");
+    printf("  \033[1;33michida\033[0m     Oraliq yoki massiv elementi (\033[0;36min\033[0m): \033[0;32michida [1, 2, 3]\033[0m\n");
+    printf("  \033[1;33mtoxtat\033[0m     Siklni zudlik bilan to'xtatish (\033[0;36mbreak\033[0m)\n");
+    printf("  \033[1;33mdavom\033[0m      Siklning keyingi qadamiga o'tish (\033[0;36mcontinue\033[0m)\n");
+    printf("  \033[1;33myukla\033[0m      Modulni ulash (\033[0;36mimport\033[0m): \033[0;32myukla \"std/http.algo\"\033[0m\n");
+    printf("  \033[1;33mtuzilma\033[0m    Yangi ma'lumot tuzilmasi (\033[0;36mstruct\033[0m): \033[0;32mtuzilma Foydalanuvchi { ism, yosh }\033[0m\n\n");
+
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf(" \033[1;37m3. O'RNATILGAN ASOSIY AMALLAR LUG'ATI (CORE BUILT-IN FUNCTIONS)\033[0m\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf("  \033[1;32mchiqar(...)\033[0m         Konsolga matn yoki qiymatlarni chop etadi (\033[0;36msys_write\033[0m)\n");
+    printf("  \033[1;32mkirit()\033[0m             Terminaldan foydalanuvchi kiritgan satrni o'qiydi (\033[0;36msys_read\033[0m)\n");
+    printf("  \033[1;32muzunlik(x)\033[0m          Matn yoki massiv elementlari sonini qaytaradi\n");
+    printf("  \033[1;32mbutun(x)\033[0m            Matn yoki sonni 64-bitli butun songa o'giradi (int64)\n");
+    printf("  \033[1;32mhaqiqiy(x)\033[0m          Sonni 64-bitli kasr haqiqiy songa o'tkazadi (float64)\n");
+    printf("  \033[1;32mmatn(x)\033[0m             Son yoki obyektni matn (string) formatiga aylantiradi\n");
+    printf("  \033[1;32mildiz(x)\033[0m            SSE2 uskunaviy kvadrat ildiz hisoblaydi (sqrt)\n");
+    printf("  \033[1;32mtasodifiy(a, b)\033[0m     Kriptografik xavfsiz tasodifiy butun son qaytaradi (CSPRNG)\n");
+    printf("  \033[1;32mvaqt()\033[0m              Unix vaqt tamg'asini mikrosekundlarda qaytaradi\n");
+    printf("  \033[1;32mtizim_buyruq(cmd)\033[0m   Operatsion tizim buyrug'ini chaqiradi va kodini qaytaradi\n");
+    printf("  \033[1;32mxotira_holati()\033[0m     Arena xotira ko'rsatkichining joriy holatini oladi\n");
+    printf("  \033[1;32mxotira_tikla(p)\033[0m     Xotirani belgilangan nuqtagacha bir zumda tiklaydi (O(1))\n\n");
+
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf(" \033[1;37m4. MA'LUMOT TURLARI VA OPERATORLAR (TYPES & OPERATORS)\033[0m\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf("  \033[1mButun Sonlar:\033[0m   64-bitli butun sonlar (masalan: 42, -15, 0, 1000000)\n");
+    printf("  \033[1mHaqiqiy Sonlar:\033[0m 64-bitli suzuvchi kasr sonlar (masalan: 3.14159, 0.618)\n");
+    printf("  \033[1mMatnlar:\033[0m        UTF-8 satrlar (masalan: \"Salom Dunyo!\", 'O\\'zbekiston')\n");
+    printf("  \033[1mMantiqiy:\033[0m       \033[1;32mrost\033[0m (1 / true), \033[1;31myolgon\033[0m (0 / false)\n");
+    printf("  \033[1mMassivlar:\033[0m      Dinamik ro'yxat: [10, 20, 30], element olish: massiv[0]\n");
+    printf("  \033[1mLug'atlar:\033[0m      Kalit-qiymat xaritasi: {\"nom\": \"Algo\", \"versiya\": 1.5}\n");
+    printf("  \033[1mArifmetika:\033[0m     + (qo'shish), - (ayirish), * (ko'paytirish), / (bo'lish), %% (qoldiq)\n");
+    printf("  \033[1mTaqqoslash:\033[0m     == (teng), != (teng emas), < (kichik), <=, >, >=\n");
+    printf("  \033[1mMantiqiy Amallar:\033[0mva (&&), yoki (||), emas (!)\n\n");
+
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf(" \033[1;37m5. STANDART KUTUBXONA (std/) MODULLAR LUG'ATI\033[0m\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf("  \033[1;33mstd/http.algo\033[0m       HTTP/1.1 backend server, marshrutlar va JSON format\n");
+    printf("                      \033[0;90mAmallar: http_metod, http_yol, http_javob_json, http_javob_html\033[0m\n");
+    printf("  \033[1;33mstd/tarmoq.algo\033[0m     To'g'ridan-to'g'ri TCP soketlar (sys_socket, bind, listen)\n");
+    printf("                      \033[0;90mAmallar: server_yarat, mijoz_kut, xabar_qabul, xabar_yubor\033[0m\n");
+    printf("  \033[1;33mstd/baza.algo\033[0m       Tranzaksiyali persistent Key-Value lokal ma'lumotlar bazasi\n");
+    printf("                      \033[0;90mAmallar: baza_och, baza_yoz, baza_oqish, baza_saqla, baza_ochir\033[0m\n");
+    printf("  \033[1;33mstd/matematika.algo\033[0m Ilmiy hisob-kitoblar, ildiz, daraja, EKUB, EKUK, sin, cos\n");
+    printf("                      \033[0;90mAmallar: ildiz, daraja, yaxlitla, pol, shift, ekub, ekuk, sin, cos\033[0m\n");
+    printf("  \033[1;33mstd/matn.algo\033[0m       Matnlar bilan ishlash, qidirish, kesish, katta/kichik harflar\n");
+    printf("                      \033[0;90mAmallar: matn_kesish, matn_topish, matn_katta, matn_kichik, matn_teng\033[0m\n");
+    printf("  \033[1;33mstd/massiv.algo\033[0m     Massivlar bilan ishlash, tartiblash, qidirish va filtrlash\n");
+    printf("                      \033[0;90mAmallar: massiv_qosh, massiv_sarala, massiv_teskari, massiv_yigindi\033[0m\n");
+    printf("  \033[1;33mstd/fayl.algo\033[0m       Fayl tizimi: o'qish, yozish, tekshirish va o'chirish\n");
+    printf("                      \033[0;90mAmallar: fayl_oqish, fayl_yozish, fayl_bormi, fayl_ochir\033[0m\n");
+    printf("  \033[1;33mstd/rang.algo\033[0m       Terminal konsoli uchun 16 ta boy ANSI ranglar va formatlar\n");
+    printf("                      \033[0;90mAmallar: rang_turkuaz, rang_yashil, rang_qizil, rang_sariq, rang_qalin\033[0m\n");
+    printf("  \033[1;33mstd/bayroq.algo\033[0m     CLI argumentlari va flaglarini avtomatik tahlil qilish\n");
+    printf("                      \033[0;90mAmallar: bayroq_matn_ol, bayroq_butun_ol, bayroq_bormi\033[0m\n");
+    printf("  \033[1;33mstd/sinov.algo\033[0m      Birlik testlari (Unit Testing) va test hisobotlari\n");
+    printf("                      \033[0;90mAmallar: sinovchi_yarat, sinov_teng_butun, sinov_rost, sinovchi_yakunla\033[0m\n");
+    printf("  \033[1;33mstd/navbat.algo\033[0m     LIFO Stek va FIFO Navbat abstrakt ma'lumotlar tuzilmalari\n");
+    printf("                      \033[0;90mAmallar: stek_yarat, stek_qoy, stek_ol, navbat_yarat, navbat_qoy\033[0m\n");
+    printf("  \033[1;33mstd/arxiv.algo\033[0m      RLE algoritmi orqali ma'lumotlarni siqish va ochish\n");
+    printf("                      \033[0;90mAmallar: arxiv_siqish_rle, arxiv_ochish_rle\033[0m\n");
+    printf("  \033[1;33mstd/csv.algo\033[0m        CSV formatdagi jadvallarni o'qish va formatlash\n");
+    printf("                      \033[0;90mAmallar: csv_qator_bol, csv_qator_qur\033[0m\n");
+    printf("  \033[1;33mstd/shablon.algo\033[0m    Dinamik shablonlash va HTML xavfsiz sanitizatsiya\n");
+    printf("                      \033[0;90mAmallar: shablon_almashtir, shablon_lugatdan, shablon_html_xavfsiz\033[0m\n");
+    printf("  \033[1;33mstd/yol.algo\033[0m        Fayl yo'llarini birlashtirish va qismlarga ajratish\n");
+    printf("                      \033[0;90mAmallar: yol_birlashtir, yol_asosiy, yol_papka, yol_kengaytma\033[0m\n\n");
+
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf(" \033[1;37m6. NAMUNA VA QIDIRUV (EXAMPLES & SEARCH)\033[0m\n");
+    printf("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n");
+    printf("  Alohida kalit so'z yoki modul bo'yicha batafsil ma'lumot olish uchun:\n");
+    printf("    \033[1;32malgo yordam amal\033[0m       - Funksiya sintaksisi va namunasi\n");
+    printf("    \033[1;32malgo yordam agar\033[0m       - Shart operatori haqida\n");
+    printf("    \033[1;32malgo yordam toki\033[0m       - Sikllar bo'yicha qo'llanma\n");
+    printf("    \033[1;32malgo yordam http\033[0m       - Veb server yaratish namunasi\n");
+    printf("    \033[1;32malgo yordam baza\033[0m       - Kalit-qiymat bazasidan foydalanish\n");
+    printf("    \033[1;32malgo lugat\033[0m             - To'liq til lug'ati\n\n");
 }
 
 static int run_format_algo(const char *filepath) {
@@ -749,8 +963,9 @@ int main(int argc, char **argv) {
         return run_new_project(proj_name);
     }
 
-    if (strcmp(cmd, "yordam") == 0 || strcmp(cmd, "help") == 0 || strcmp(cmd, "--help") == 0 || strcmp(cmd, "-h") == 0) {
-        print_help();
+    if (strcmp(cmd, "yordam") == 0 || strcmp(cmd, "help") == 0 || strcmp(cmd, "--help") == 0 || strcmp(cmd, "-h") == 0 || strcmp(cmd, "lugat") == 0 || strcmp(cmd, "dictionary") == 0) {
+        const char *topic = (argc >= 3) ? argv[2] : NULL;
+        print_help(topic);
         return 0;
     }
 
