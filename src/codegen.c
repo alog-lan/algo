@@ -709,6 +709,7 @@ static void gen_stmt(Stmt *stmt, Scope *scope, FILE *out) {
                 gen_stmt(stmt->as.while_stmt.body[i], scope, out);
             }
 
+            fprintf(out, ".L_loop_step_%d:\n", id);
             fprintf(out, "    jmp .L_loop_start_%d\n", id);
             fprintf(out, ".L_loop_end_%d:\n", id);
 

@@ -25,6 +25,10 @@ amal rang_moviy(matn) {
     qaytar "\e[36m" + matn + "\e[0m"
 }
 
+amal rang_turkuaz(matn) {
+    qaytar "\e[36m" + matn + "\e[0m"
+}
+
 amal rang_oq(matn) {
     qaytar "\e[37m" + matn + "\e[0m"
 }

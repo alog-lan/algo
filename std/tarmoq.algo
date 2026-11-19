@@ -18,6 +18,14 @@ amal mijoz_ulan(ip, port) {
     qaytar fd
 }
 
+amal mijoz_qabul(server_fd) {
+    qaytar tarmoq_mijoz_qabul(server_fd)
+}
+
+amal mijoz_kut(server_fd) {
+    qaytar tarmoq_mijoz_qabul(server_fd)
+}
+
 amal xabar_qabul(fd, hajm) {
     qaytar tarmoq_qabul(fd, hajm)
 }

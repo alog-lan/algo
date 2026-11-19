@@ -1,0 +1,101 @@
+// ==============================================================================
+// Algo Dasturlash Tili - Rasmiy Portal Veb-Serveri (sayt.algo)
+// 100% Algo tilida yozilgan, mustaqil x86_64 Linux Direct Syscalls veb-serveri
+// ==============================================================================
+
+yukla "std/tarmoq.algo"
+yukla "std/http.algo"
+yukla "std/fayl.algo"
+yukla "std/rang.algo"
+yukla "std/tizim.algo"
+
+amal asosiy() {
+    port = 8080
+    
+    chiqar(rang_turkuaz("╔══════════════════════════════════════════════════════════════════════╗"))
+    chiqar(rang_turkuaz("║") + rang_qalin("  🚀 Algo Dasturlash Tili - Rasmiy Veb-Portali (v1.5.0)              ") + rang_turkuaz("║"))
+    chiqar(rang_turkuaz("║") + "  100% Algo tilida yozilgan • Zero-Libc • Direct Linux Syscalls        " + rang_turkuaz("║"))
+    chiqar(rang_turkuaz("╚══════════════════════════════════════════════════════════════════════╝"))
+    
+    server_fd = server_yarat(port)
+    agar server_fd < 0 {
+        chiqar(rang_qizil("Xatolik: Portni ochib bo'lmadi!"), port)
+        qaytar 1
+    }
+    
+    chiqar(rang_yashil("✓") + " Server tinglamoqda: " + rang_turkuaz("http://localhost:8080") + " yoki " + rang_turkuaz("http://127.0.0.1:8080"))
+    chiqar(rang_sariq("!") + " Saytni ko'rish uchun brauzerda oching. To'xtatish: Ctrl+C\n")
+
+    // Statik fayllarni xotiraga yuklaymiz
+    html_sahifa = fayl_oqish("docs/index.html")
+    css_sahifa = fayl_oqish("docs/assets/styles.css")
+    js_sahifa = fayl_oqish("docs/assets/app.js")
+    icon_svg = fayl_oqish("docs/assets/icon.svg")
+    logo_svg = fayl_oqish("docs/assets/logo.svg")
+    install_sh = fayl_oqish("docs/install.sh")
+
+    // Cheksiz mijozlarni qabul qilish sikli
+    toki 1 == 1 {
+        mijoz_fd = mijoz_kut(server_fd)
+        agar mijoz_fd < 0 {
+            davom
+        }
+        
+        // Mijozdan so'rovni qabul qilamiz (4096 baytgacha)
+        sorov = xabar_qabul(mijoz_fd, 4096)
+        agar uzunlik(sorov) == 0 {
+            ulanish_yop(mijoz_fd)
+            davom
+        }
+        
+        metod = http_metod(sorov)
+        yol = http_yol(sorov)
+        
+        chiqar(rang_turkuaz("[HTTP]") + " " + rang_qalin(metod) + " " + yol)
+        
+        // Marshrutlash (Routing)
+        agar yol == "/" yoki yol == "/index.html" {
+            javob = http_javob_html(200, html_sahifa)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/assets/styles.css" {
+            javob = http_javob_qur(200, "text/css; charset=utf-8", css_sahifa)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/assets/app.js" {
+            javob = http_javob_qur(200, "application/javascript; charset=utf-8", js_sahifa)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/assets/icon.svg" {
+            javob = http_javob_qur(200, "image/svg+xml", icon_svg)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/assets/logo.svg" {
+            javob = http_javob_qur(200, "image/svg+xml", logo_svg)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/install.sh" {
+            javob = http_javob_qur(200, "text/plain; charset=utf-8", install_sh)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/api/salomatlik" {
+            javob = http_javob_json(200, "{\"holat\":\"faol\",\"til\":\"Algo v1.5.0\",\"dvijok\":\"x86_64 Direct Syscalls\"}")
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/api/bajar" va metod == "POST" {
+            // Jonli kod bajarish API si
+            tana = http_tana(sorov)
+            agar uzunlik(tana) > 0 {
+                fayl_yozish("/tmp/live_kod.algo", tana)
+                tizim_buyruq("./bin/algo bajar /tmp/live_kod.algo > /tmp/live_chiqish.txt 2>&1")
+                chiqish_matni = fayl_oqish("/tmp/live_chiqish.txt")
+                javob = http_javob_matn(200, chiqish_matni)
+                xabar_yubor(mijoz_fd, javob)
+            } aks {
+                javob = http_javob_json(400, "{\"xato\":\"Kod kiritilmadi\"}")
+                xabar_yubor(mijoz_fd, javob)
+            }
+        } aks {
+            javob = http_javob_404()
+            xabar_yubor(mijoz_fd, javob)
+        }
+        
+        ulanish_yop(mijoz_fd)
+    }
+
+    server_yop(server_fd)
+    qaytar 0
+}

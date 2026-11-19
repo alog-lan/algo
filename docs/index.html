@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algo Dasturlash Tili — Mustaqil, x86_64, Zero-Libc</title>
+  
+  <!-- Meta SEO -->
+  <meta name="description" content="Python kabi oson, Go dan tez, to'g'ridan-to'g'ri x86_64 GNU Assembler ustiga qurilgan mutlaq mustaqil dasturlash tili.">
+  <meta name="keywords" content="Algo, Dasturlash tili, x86_64, Linux, zero-libc, assembler, compiler, O'zbek dasturlash tili">
+  <meta property="og:title" content="Algo Dasturlash Tili">
+  <meta property="og:description" content="Mustaqil x86_64 Mashina Kodi. Zero-Libc. O'ta yuqori tezlik.">
+  <meta property="og:image" content="assets/logo.png">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles.css">
+  
+  <!-- Shriftlar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ==============================================================================
+       NAVBAR
+       ============================================================================== -->
+  <nav class="navbar">
+    <div class="container nav-wrapper">
+      <a href="#" class="brand">
+        <img src="assets/logo.svg" alt="Algo Logo" height="38">
+        <span class="brand-badge">v1.5.0</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#imkoniyatlar" class="nav-link">Imkoniyatlar</a></li>
+        <li><a href="#playground" class="nav-link">Sinov Maydoni</a></li>
+        <li><a href="#taqqoslash" class="nav-link">Taqqoslash</a></li>
+        <li><a href="#kutubxonalar" class="nav-link">Kutubxonalar</a></li>
+        <li><a href="#cli" class="nav-link">CLI</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener" class="btn-icon" title="GitHub Ombori">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </a>
+        <a href="#ornatish" class="btn-primary">
+          <span>O'rnatish</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==============================================================================
+       HERO SECTION
+       ============================================================================== -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-pill">
+        <span class="dot"></span>
+        <span>Mustaqil x86_64 Mashina Kodi • Zero-Libc Arxitekturasi</span>
+      </div>
+
+      <h1 class="hero-title">
+        Python kabi oson,<br>
+        <span class="glow">Go dan chaqqon va mustaqil.</span>
+      </h1>
+
+      <p class="hero-desc">
+        Hech qanday og'ir runtime, GCC yoki libc kutubxonalariga ehtiyoj sezmaydigan, to'g'ridan-to'g'ri Linux yadrosi tizim chaqiruvlari (Direct Syscalls) orqali x86_64 mashina kodida ishlovchi birinchi professional dasturlash tili.
+      </p>
+
+      <div class="hero-badges">
+        <div class="badge-item"><span>🚀</span> Binar hajmi: <b>~8.9 KB</b></div>
+        <div class="badge-item"><span>⚡</span> Ishga tushish: <b>0.61 ms</b></div>
+        <div class="badge-item"><span>🔒</span> Bog'liqliklar: <b>0 (Zero-Libc)</b></div>
+        <div class="badge-item"><span>💻</span> Arxitektura: <b>x86_64 Linux</b></div>
+        <div class="badge-item"><span>🧪</span> Sinovlar: <b>31/31 (100%)</b></div>
+      </div>
+
+      <!-- Bir qatorda o'rnatish qutisi -->
+      <div class="install-wrapper" id="ornatish">
+        <div class="terminal-box">
+          <div class="terminal-cmd">
+            <span class="prompt">$</span>
+            <code>curl -fsSL https://raw.githubusercontent.com/alog-lan/algo/master/install.sh | bash</code>
+          </div>
+          <button class="copy-btn" onclick="copyCommand(this, 'curl -fsSL https://raw.githubusercontent.com/alog-lan/algo/master/install.sh | bash')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Nusxa olish</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==============================================================================
+       PLAYGROUND & CODE SHOWCASE
+       ============================================================================== -->
+  <section class="playground-section" id="playground">
+    <div class="container">
+      <div class="ide-window">
+        <div class="ide-header">
+          <div class="window-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+          </div>
+
+          <div class="ide-tabs">
+            <button class="tab-btn active" data-tab="salom" onclick="switchTab('salom')">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              <span>01_salom.algo</span>
+            </button>
+            <button class="tab-btn" data-tab="veb" onclick="switchTab('veb')">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              <span>veb_server.algo</span>
+            </button>
+            <button class="tab-btn" data-tab="jarayon" onclick="switchTab('jarayon')">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              <span>jarayonlar.algo</span>
+            </button>
+            <button class="tab-btn" data-tab="baza" onclick="switchTab('baza')">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              <span>kv_baza.algo</span>
+            </button>
+            <button class="tab-btn" data-tab="matematika" onclick="switchTab('matematika')">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              <span>matematika.algo</span>
+            </button>
+          </div>
+
+          <div class="ide-actions">
+            <button class="run-btn" id="run-btn" onclick="runCode()">
+              <span>▶</span>
+              <span>Ishga tushirish</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ide-body">
+          <div class="editor-pane">
+            <textarea id="code-editor" spellcheck="false"></textarea>
+          </div>
+          <div class="terminal-pane">
+            <div class="terminal-header">
+              <span>TERMINAL CHIQISHI</span>
+              <span>x86_64 LINUX DIRECT SYSCALLS</span>
+            </div>
+            <div class="terminal-output" id="terminal-output"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       SUPERPOWERS / IMKONIYATLAR
+       ============================================================================== -->
+  <section class="section" id="imkoniyatlar">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-tag">ARXITEKTURA & USTUNLIKLAR</div>
+        <h2 class="section-title">Nega aynan Algo tili?</h2>
+        <p class="section-desc">Zamonaviy dasturlash tillarining ortiqcha yuklaridan xalos bo'lgan, sof mashina unumdorligiga yo'naltirilgan dizayn.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3 class="feature-title">Mutlaq Zero-Libc</h3>
+          <p class="feature-text">Hech qanday standart C kutubxonasi (glibc/musl) yoki tashqi DLL/SO larga bog'liq emas. Direct Linux Syscalls (sys_write, sys_read, sys_socket, sys_mmap) orqali to'g'ridan-to'g'ri operatsion tizim yadrosi bilan so'zlashadi.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <h3 class="feature-title">Chaqmoqdek Tezlik (~0.6 ms)</h3>
+          <p class="feature-text">Kompilyatsiya qilingan binar dastur bor-yo'g'i ~8.9 KB hajmda bo'lib, xotiraga bir zumda (sub-millisecond) yuklanadi va eng og'ir mikroservis yuklamalarini chaqqon bajaradi.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          </div>
+          <h3 class="feature-title">Multi-Process Parallellik</h3>
+          <p class="feature-text"><code>jarayon_yarat()</code> (sys_fork 57) va <code>jarayon_kut()</code> (sys_wait4 61) primitivalari orqali uskunaviy ko'p yadroli multiprocessing va xavfsiz izolyatsiyalangan hisob-kitoblar.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+          </div>
+          <h3 class="feature-title">Xotira Checkpoint Arena</h3>
+          <p class="feature-text"><code>xotira_holati()</code> va <code>xotira_tikla(checkpoint)</code> arxitekturasi yordamida og'ir bloklar, so'rovlar yoki sikllardan so'ng xotirani nol oqish (zero-leak) bilan bir zumda tiklash imkoniyati.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          </div>
+          <h3 class="feature-title">HTTP Backend REST API</h3>
+          <p class="feature-text">Hech qanday Nginx yoki Apache kerak emas. <code>std/http.algo</code> orqali to'g'ridan-to'g'ri JSON API marshrutlari, parametrlar tahlili va yuqori unumdor mikroservislar qurish.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          </div>
+          <h3 class="feature-title">Mukammal CLI Asboblar</h3>
+          <p class="feature-text">Kompilyator ichiga o'rnatilgan <code>algo doc</code> (avtomatik hujjatlashtirish), <code>algo sinov</code> (birlik testlar), <code>algo vaqt</code> (benchmark profayler) va <code>algo paket</code> (paket menejeri).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       BENCHMARKS / TAQQOSLASH
+       ============================================================================== -->
+  <section class="section" id="taqqoslash">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-tag">UNUMDORLIK TAQQOSLASH</div>
+        <h2 class="section-title">Raqamlar gapirganda</h2>
+        <p class="section-desc">Haqiqiy Linux x86_64 muhitida o'tkazilgan o'lchov natijalari.</p>
+      </div>
+
+      <div class="benchmark-container">
+        <div class="benchmark-grid">
+          <!-- Binar Hajmi -->
+          <div class="bench-card">
+            <h3>
+              <span>📦</span> Tayyor Binar Fayl Hajmi (Kichik = Yaxshi)
+            </h3>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>Algo (Mustaqil ELF)</span>
+                <span style="color: var(--color-cyan); font-weight: 700;">8.9 KB</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-algo" style="width: 2%;"></div>
+              </div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>C (GCC -O2)</span>
+                <span>16.2 KB</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-c" style="width: 4%;"></div>
+              </div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>Go (Stripped)</span>
+                <span>2,410 KB (~2.4 MB)</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-go" style="width: 45%;"></div>
+              </div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>Python (PyInstaller)</span>
+                <span>45,200 KB (~45 MB)</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-py" style="width: 95%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ishga Tushish Vaqti -->
+          <div class="bench-card">
+            <h3>
+              <span>⏱</span> Sovuq Ishga Tushish Vaqti (Cold Startup)
+            </h3>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>Algo (x86_64 Direct Syscalls)</span>
+                <span style="color: var(--color-cyan); font-weight: 700;">0.61 ms</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-algo" style="width: 3%;"></div>
+              </div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>C (Glibc Dynamic Linker)</span>
+                <span>1.12 ms</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-c" style="width: 6%;"></div>
+              </div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>Go (Runtime + GC Startup)</span>
+                <span>3.20 ms</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-go" style="width: 18%;"></div>
+              </div>
+            </div>
+
+            <div class="bar-group">
+              <div class="bar-info">
+                <span>Python 3.12 (Interpreter)</span>
+                <span>28.40 ms</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill fill-py" style="width: 90%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       STANDART KUTUBXONALAR (std/)
+       ============================================================================== -->
+  <section class="section" id="kutubxonalar">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-tag">STANDART KUTUBXONA</div>
+        <h2 class="section-title">O'rnatilgan Boy Modullar (std/)</h2>
+        <p class="section-desc">Kutubxona qidirishga vaqt sarflamang — eng kerakli asboblar tilning o'zida tayyor.</p>
+        <div style="margin-top: 24px;">
+          <input type="text" placeholder="Modulni qidirish (masalan: http, baza, rang)..." 
+                 oninput="filterLibraries(this.value)"
+                 style="background: #0f172a; border: 1px solid var(--border-glow); padding: 12px 20px; border-radius: var(--radius-sm); color: #fff; width: 100%; max-width: 420px; font-family: var(--font-mono); outline: none;">
+        </div>
+      </div>
+
+      <div class="std-grid">
+        <div class="std-card">
+          <div class="std-name">std/http.algo</div>
+          <div class="std-desc">HTTP server, so'rovlar marshruti, GET/POST tahlili, status kodlari va JSON/HTML formatlash.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/baza.algo</div>
+          <div class="std-desc">Diskka saqlanuvchi tezkor kalit-qiymat (Key-Value) lokal ma'lumotlar bazasi dvijogi.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/matematika.algo</div>
+          <div class="std-desc">SSE2 uskunaviy ildiz, daraja, yaxlitlash, shift, pol, EKUB, EKUK va trigonometriya.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/rang.algo</div>
+          <div class="std-desc">Terminal konsoli uchun 16 ta boy ANSI ranglar, fonlar, qalin va tagiga chizilgan matnlar.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/arxiv.algo</div>
+          <div class="std-desc">RLE (Run-Length Encoding) algoritmi orqali ma'lumotlarni tezkor siqish va qayta ochish.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/shablon.algo</div>
+          <div class="std-desc">Dinamik shablonlash dvijogi, HTML xavfsiz sanitizatsiya va parametrlarni o'rniga qo'yish.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/csv.algo</div>
+          <div class="std-desc">CSV ma'lumotlar jadvallarini o'qish, tahlil qilish, qatorlarga ajratish va formatlash.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/sinov.algo</div>
+          <div class="std-desc">Birlik sinovlar freymvorki, taqqoslash tasdiqlari (assertions) va rangli hisobotlar.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/bayroq.algo</div>
+          <div class="std-desc">Buyruqlar satri CLI flaglari (--port, --nom, --fayl) ni avtomatik o'qish va tahlil qilish.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/yol.algo</div>
+          <div class="std-desc">Fayl yo'llarini birlashtirish, fayl kengaytmasini olish, mutlaq yo'lni tekshirish.</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/log.algo</div>
+          <div class="std-desc">Vaqt belgilari va darajalari bilan tuzilgan strukturali jurnallash (INFO, WARN, ERROR).</div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-name">std/navbat.algo</div>
+          <div class="std-desc">LIFO Stek (Stack) va FIFO Navbat (Queue) abstrakt ma'lumotlar tuzilmalari.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       CLI TOOLCHAIN
+       ============================================================================== -->
+  <section class="section" id="cli">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-tag">CLI ASBOBLAR TO'PLAMI</div>
+        <h2 class="section-title">Yagona Binar — Barcha Imkoniyatlar</h2>
+        <p class="section-desc">Algo kompilyatori loyihangizni boshqarish uchun barcha vositalarni o'z ichiga oladi.</p>
+      </div>
+
+      <div class="terminal-box" style="max-width: 800px; margin: 0 auto; display: block; padding: 24px;">
+        <div style="font-family: var(--font-mono); font-size: 14px; line-height: 2;">
+          <p><span style="color: var(--color-cyan);">$</span> <b>algo bajar dastur.algo</b> <span style="color: var(--text-dim);"># Dasturni to'g'ridan-to'g'ri xotirada tezkor ishga tushirish</span></p>
+          <p><span style="color: var(--color-cyan);">$</span> <b>algo kompilyatsiya dastur.algo -o dastur</b> <span style="color: var(--text-dim);"># Mustaqil x86_64 ELF binar fayl yaratish</span></p>
+          <p><span style="color: var(--color-cyan);">$</span> <b>algo sinov</b> <span style="color: var(--text-dim);"># Loyihadagi barcha birlik testlarni ishga tushirish</span></p>
+          <p><span style="color: var(--color-cyan);">$</span> <b>algo doc dastur.algo -o DOCS.md</b> <span style="color: var(--text-dim);"># Funksiyalardan avtomatik Markdown hujjat yasash</span></p>
+          <p><span style="color: var(--color-cyan);">$</span> <b>algo vaqt dastur.algo</b> <span style="color: var(--text-dim);"># Bajarilish vaqti va xotirani profayling qilish</span></p>
+          <p><span style="color: var(--color-cyan);">$</span> <b>algo paket royxat</b> <span style="color: var(--text-dim);"># Mahalliy modullar va kutubxonalar ro'yxatini ko'rish</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       FOOTER
+       ============================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="assets/logo.svg" alt="Algo Logo">
+        </div>
+
+        <div style="display: flex; gap: 24px; font-size: 14px; color: var(--text-muted);">
+          <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener">GitHub</a>
+          <a href="#imkoniyatlar">Imkoniyatlar</a>
+          <a href="#playground">Sinov Maydoni</a>
+          <a href="#kutubxonalar">Kutubxonalar</a>
+          <a href="https://github.com/alog-lan/algo/blob/master/README.md" target="_blank">Hujjatlar</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Algo Dasturlash Tili © 2026. Jasurbek va ochiq manba hamjamiyati tomonidan mehr bilan yaratilgan. MIT litsenziyasi ostida taqdim etiladi.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dvijok Skripti -->
+  <script src="assets/app.js"></script>
+</body>
+</html>

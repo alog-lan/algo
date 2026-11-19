@@ -13,5 +13,11 @@ $(TARGET): $(SRC)
 test: $(TARGET)
 	./$(TARGET) sinov
 
+sayt: $(TARGET)
+	./$(TARGET) yig sayt.algo -o bin/sayt
+
+web: sayt
+	./bin/sayt
+
 clean:
 	rm -rf bin build *.o *.s dastur test* /tmp/algo_*
