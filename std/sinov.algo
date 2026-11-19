@@ -1,0 +1,90 @@
+// Algo Dasturlash Tili - Standart Sinov Kutubxonasi (std/sinov.algo)
+// Birlik testlar (Unit tests) va tekshiruvlar uchun rasmiy freymvork
+
+tuzilma Sinovchi {
+    jami,
+    otdi,
+    xato,
+    nomi
+}
+
+amal sinovchi_yarat(nom) {
+    s = yangi Sinovchi
+    s.jami = 0
+    s.otdi = 0
+    s.xato = 0
+    s.nomi = nom
+    chiqar("========================================")
+    chiqar("Sinov guruhi boshlandi: " + nom)
+    chiqar("========================================")
+    qaytar s
+}
+
+amal sinov_teng_butun(s, kutildi, olingan, tavsif) {
+    s.jami = s.jami + 1
+    agar kutildi == olingan {
+        s.otdi = s.otdi + 1
+        chiqar("  [OK] " + tavsif)
+        qaytar 1
+    } yoqsa {
+        s.xato = s.xato + 1
+        chiqar("  [XATO] " + tavsif + " (Kutildi: " + son_matnga(kutildi) + ", Olingan: " + son_matnga(olingan) + ")")
+        qaytar 0
+    }
+}
+
+amal sinov_teng_matn(s, kutildi_matn, olingan_matn, tavsif) {
+    s.jami = s.jami + 1
+    agar kutildi_matn == olingan_matn {
+        s.otdi = s.otdi + 1
+        chiqar("  [OK] " + tavsif)
+        qaytar 1
+    } yoqsa {
+        s.xato = s.xato + 1
+        chiqar("  [XATO] " + tavsif + " (Kutildi: '" + kutildi_matn + "', Olingan: '" + olingan_matn + "')")
+        qaytar 0
+    }
+}
+
+amal sinov_rost(s, shart, tavsif) {
+    s.jami = s.jami + 1
+    agar shart {
+        s.otdi = s.otdi + 1
+        chiqar("  [OK] " + tavsif)
+        qaytar 1
+    } yoqsa {
+        s.xato = s.xato + 1
+        chiqar("  [XATO] " + tavsif + " (Kutilgan shart qanoatlantirilmadi)")
+        qaytar 0
+    }
+}
+
+amal sinov_yolgon(s, shart, tavsif) {
+    s.jami = s.jami + 1
+    agar inkor shart {
+        s.otdi = s.otdi + 1
+        chiqar("  [OK] " + tavsif)
+        qaytar 1
+    } yoqsa {
+        s.xato = s.xato + 1
+        chiqar("  [XATO] " + tavsif + " (Shart yolg'on bo'lishi kerak edi)")
+        qaytar 0
+    }
+}
+
+amal sinovchi_yakunla(s) {
+    chiqar("----------------------------------------")
+    chiqar("Natija: " + s.nomi)
+    chiqar("Jami sinovlar:  " + son_matnga(s.jami))
+    chiqar("Muvaffaqiyatli: " + son_matnga(s.otdi))
+    chiqar("Xatolar:        " + son_matnga(s.xato))
+    agar s.xato == 0 {
+        chiqar("XULOSA: 100% Sinovlardan muvaffaqiyatli o'tdi!")
+        chiqar("========================================")
+        qaytar 1
+    } yoqsa {
+        chiqar("XULOSA: Ayrim sinovlarda xatolik aniqlandi!")
+        chiqar("========================================")
+        qaytar 0
+    }
+}

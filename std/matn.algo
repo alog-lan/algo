@@ -77,3 +77,15 @@ amal matn_ong_toldir(s, kerakli_uzunlik, toldiruvchi) {
     kam = kerakli_uzunlik - hozirgi
     qaytar s + matn_takrorla(toldiruvchi, kam)
 }
+
+amal son_matn(son) {
+    qaytar son_matnga(son)
+}
+
+amal matn_son(s) {
+    qaytar matn_songa(s)
+}
+
+amal matn_kesib_ol(s, boshlanish, soni) {
+    qaytar matn_kesish(s, boshlanish, soni)
+}

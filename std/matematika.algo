@@ -104,3 +104,66 @@ amal tangens(x) {
     agar c == 0.0 { qaytar 0.0 }
     qaytar s / c
 }
+
+amal pol(x) {
+    b = butun(x)
+    agar x < 0.0 va haqiqiy(b) > x {
+        qaytar b - 1
+    }
+    qaytar b
+}
+
+amal shift(x) {
+    b = butun(x)
+    agar x > 0.0 va haqiqiy(b) < x {
+        qaytar b + 1
+    }
+    qaytar b
+}
+
+amal yaxlitla(x) {
+    agar x >= 0.0 {
+        qaytar butun(x + 0.5)
+    } yoqsa {
+        qaytar butun(x - 0.5)
+    }
+}
+
+amal tasodifiy_oraliq(min, max) {
+    agar min >= max { qaytar min }
+    t = tasodifiy()
+    agar t < 0 { t = -t }
+    qaytar min + (t % (max - min + 1))
+}
+
+amal daraja_haqiqiy(asos, daraja_son) {
+    natija = 1.0
+    uchun i = 0; i < daraja_son; i = i + 1 {
+        natija = natija * asos
+    }
+    qaytar natija
+}
+
+amal eksponenta(x) {
+    term = 1.0
+    yigindi = 1.0
+    uchun i = 1; i <= 10; i = i + 1 {
+        term = term * x / haqiqiy(i)
+        yigindi = yigindi + term
+    }
+    qaytar yigindi
+}
+
+amal natural_logarifm(x) {
+    agar x <= 0.0 { qaytar 0.0 }
+    y = (x - 1.0) / (x + 1.0)
+    y2 = y * y
+    term = y
+    yigindi = y
+    uchun i = 1; i <= 7; i = i + 1 {
+        term = term * y2
+        daraja_k = haqiqiy(2 * i + 1)
+        yigindi = yigindi + (term / daraja_k)
+    }
+    qaytar 2.0 * yigindi
+}

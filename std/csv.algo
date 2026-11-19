@@ -1,0 +1,36 @@
+// Algo Dasturlash Tili - Standart CSV Kutubxonasi (std/csv.algo)
+// CSV fayllarini o'qish, bo'lish va yaratish vositalari
+
+amal csv_qator_bol(qator) {
+    qaytar matn_bolish(qator, ",")
+}
+
+amal csv_qator_qur(massiv) {
+    qaytar matn_birlashtir_massiv(massiv, ",")
+}
+
+amal csv_matn_qur(jadval) {
+    // Jadval - massivlar massivi (har bir element qator massivi)
+    natija = ""
+    uzun = uzunlik(jadval)
+    uchun i = 0; i < uzun; i = i + 1 {
+        qator_str = csv_qator_qur(jadval[i])
+        natija = natija + qator_str + "\n"
+    }
+    qaytar natija
+}
+
+amal csv_matn_bol(matn_malumot) {
+    // CSV matnini qatorlar massiviga bo'lish
+    xom_qatorlar = matn_bolish(matn_malumot, "\n")
+    natija = []
+    uzun = uzunlik(xom_qatorlar)
+    uchun i = 0; i < uzun; i = i + 1 {
+        q = xom_qatorlar[i]
+        agar uzunlik(q) > 0 {
+            ustunlar = csv_qator_bol(q)
+            massiv_qosh(natija, ustunlar)
+        }
+    }
+    qaytar natija
+}

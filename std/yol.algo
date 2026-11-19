@@ -1,0 +1,93 @@
+// Algo Dasturlash Tili - Standart Fayl Yo'llari Kutubxonasi (std/yol.algo)
+// Fayl va papka yo'llari bilan ishlash funksiyalari
+
+amal yol_birlashtir(qism1, qism2) {
+    agar uzunlik(qism1) == 0 { qaytar qism2 }
+    agar uzunlik(qism2) == 0 { qaytar qism1 }
+    u1 = uzunlik(qism1)
+    oxirgi_q1 = belgi_kodi(qism1, u1 - 1)
+    bosh_q2 = belgi_kodi(qism2, 0)
+    agar oxirgi_q1 == 47 va bosh_q2 == 47 {
+        qaytar qism1 + matn_kesish(qism2, 1, uzunlik(qism2) - 1)
+    }
+    agar oxirgi_q1 != 47 va bosh_q2 != 47 {
+        qaytar qism1 + "/" + qism2
+    }
+    qaytar qism1 + qism2
+}
+
+amal yol_asosiy(yol) {
+    uzun = uzunlik(yol)
+    agar uzun == 0 { qaytar "" }
+    oxirgi_slash = -1
+    uchun i = uzun - 1; i >= 0; i = i - 1 {
+        b = belgi_kodi(yol, i)
+        agar b == 47 {
+            oxirgi_slash = i
+            toxtat
+        }
+    }
+    agar oxirgi_slash == -1 {
+        qaytar yol
+    }
+    agar oxirgi_slash == uzun - 1 {
+        // Oxirida slash bo'lsa, undan oldingisini qidirish
+        qisqartirilgan = matn_kesish(yol, 0, uzun - 1)
+        qaytar yol_asosiy(qisqartirilgan)
+    }
+    qaytar matn_kesish(yol, oxirgi_slash + 1, uzun - oxirgi_slash - 1)
+}
+
+amal yol_papka(yol) {
+    uzun = uzunlik(yol)
+    agar uzun == 0 { qaytar "." }
+    oxirgi_slash = -1
+    uchun i = uzun - 1; i >= 0; i = i - 1 {
+        b = belgi_kodi(yol, i)
+        agar b == 47 {
+            oxirgi_slash = i
+            toxtat
+        }
+    }
+    agar oxirgi_slash == -1 {
+        qaytar "."
+    }
+    agar oxirgi_slash == 0 {
+        qaytar "/"
+    }
+    qaytar matn_kesish(yol, 0, oxirgi_slash)
+}
+
+amal yol_kengaytma(yol) {
+    uzun = uzunlik(yol)
+    agar uzun == 0 { qaytar "" }
+    oxirgi_slash = -1
+    uchun i = uzun - 1; i >= 0; i = i - 1 {
+        b = belgi_kodi(yol, i)
+        agar b == 47 {
+            oxirgi_slash = i
+            toxtat
+        }
+    }
+    oxirgi_nuqta = -1
+    uchun i = uzun - 1; i > oxirgi_slash; i = i - 1 {
+        b = belgi_kodi(yol, i)
+        agar b == 46 {
+            oxirgi_nuqta = i
+            toxtat
+        }
+    }
+    agar oxirgi_nuqta >= 0 {
+        qaytar matn_kesish(yol, oxirgi_nuqta, uzun - oxirgi_nuqta)
+    }
+    qaytar ""
+}
+
+amal yol_mutlaqmi(yol) {
+    agar uzunlik(yol) > 0 {
+        agar belgi_kodi(yol, 0) == 47 {
+            qaytar 1
+        }
+    }
+    qaytar 0
+}

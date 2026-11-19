@@ -62,6 +62,7 @@ static TokenType check_keyword(const char *text, int len) {
     if (len == 6 && strncmp(text, "qaytar", 6) == 0) return TOKEN_QAYTAR;
     if (len == 4 && strncmp(text, "agar", 4) == 0) return TOKEN_AGAR;
     if (len == 3 && strncmp(text, "aks", 3) == 0) return TOKEN_AKS;
+    if (len == 5 && strncmp(text, "yoqsa", 5) == 0) return TOKEN_AKS;
     if (len == 4 && strncmp(text, "toki", 4) == 0) return TOKEN_TOKI;
     if (len == 5 && strncmp(text, "uchun", 5) == 0) return TOKEN_UCHUN;
     if (len == 6 && strncmp(text, "chiqar", 6) == 0) return TOKEN_CHIQAR;

@@ -18,7 +18,18 @@
    * To'g'ridan-to'g'ri protsessor registrlarida (`RAX`, `RBX`, `RCX`, `RDX`, `RSI`, `RDI`, `XMM0-XMM7`) hisoblashlar bajariladi.
    * 100 million marta aylanadigan siklni **0.04 - 0.26 soniyada** hisoblaydi (*Pythondan 25-90+ barobar tez*).
 
-3. **To'liq Mukammal Ekotizim (v1.4.0):**
+3. **To'liq Mukammal Ekotizim (v1.5.0):**
+   * **Birlik Sinovlari Freymvorki (`std/sinov.algo`):** Rasmiy test tizimi (`sinovchi_yarat`, `sinov_teng_butun`, `sinov_teng_matn`, `sinov_rost`, `sinov_yolgon`, `sinovchi_yakunla`).
+   * **Avtomatik Hujjatlash Tizimi (`algo doc`):** Kod izohlaridan avtomatik chiroyli konsol va Markdown API hujjatlari generatsiyasi (`godoc` kabi).
+   * **Paket Menejeri (`algo paket` / `algo ornat`):** To'liq o'rnatilgan paket boshqaruvi (`paket.json`, o'rnatish, ro'yxat).
+   * **Statik Kod Tahlilchisi (`algo tekshir` / `algo lint`):** Kod tozaligi, funksiyalar va tuzilmalar hisoboti.
+   * **Fayl Yo'llari Kutubxonasi (`std/yol.algo`):** `yol_birlashtir`, `yol_asosiy` (basename), `yol_papka` (dirname), `yol_kengaytma`, `yol_mutlaqmi`.
+   * **CSV Tahlil va Yozish (`std/csv.algo`):** `csv_qator_bol`, `csv_qator_qur`, `csv_matn_bol`, `csv_matn_qur`.
+   * **Tizimli Loglash (`std/log.algo`):** `log_malumot`, `log_muvaffaqiyat`, `log_ogoh`, `log_xato`, `log_faylga`.
+   * **Kengaytirilgan Matematika (`std/matematika.algo`):** `pol` (floor), `shift` (ceil), `yaxlitla` (round), `tasodifiy_oraliq`, `eksponenta`, `natural_logarifm`, `sinus`, `kosinus`, `tangens`.
+   * **Yangi Built-in Tizim Chaqiruvlari:** `joriy_papka()` (`sys_getcwd`), `foydalanuvchi_id()` (`sys_getuid`), `fayl_hajmi()` (`sys_stat`), `papka_bormi()` (`sys_stat`), `butun()` (float->int), `haqiqiy()` (int->float), `yoqsa` (sintaktik sinonim).
+   * **Doimiy NoSQL Baza (`std/baza.algo`):** Faylga saqlanuvchi kalit-qiymat ma'lumotlar bazasi.
+   * **Stek va Navbat (`std/navbat.algo`):** LIFO va FIFO xotira tuzilmalari.
    * **Bit amallari (Bitwise):** `&`, `|`, `^`, `~`, `<<`, `>>`
    * **Dinamik massivlar:** avtomatik kengayuvchi amortizatsiyalangan O(1) `massiv_qosh` (push/append), `massiv_sugur` (pop), `massiv_birlashtir`, `massiv_kesib_ol`, `massiv_mavjudmi`, `massiv_nusxa`, saralash, qidirish.
    * **Kengaytirilgan matn amallari:** `matn_bolish` (split), `matn_birlashtir_massiv` (join), `matn_almashtir` (replace), `matn_qirqish` (trim), `matn_boshlanadimi` (startswith), `matn_tugaydimi` (endswith), `matn_topish` (indexOf), `belgi_kodi` (ord/ASCII), `belgi` (chr), `matn_takrorla`, `matn_chap_toldir`, `matn_ong_toldir`.
@@ -27,8 +38,6 @@
    * **Kriptografiya va Xesh (`std/kripto.algo`):** Base64 kodlash/yechish, FNV-1a 64-bit xeshlash, XOR oqimli shifrlash, 16-lik (HEX) sanoq sistemasiga o'tkazish.
    * **Sana va Vaqt (`std/vaqt.algo`):** Unix timestamp (ms va sekund), ISO 8601 formatlash (`YYYY-MM-DD HH:MM:SS`), yuqori aniqlikdagi kutish.
    * **Fayl Tizimi (`std/fayl.algo`):** Faylni to'liq o'qish, yozish, oxiriga qo'shish (append), mavjudligini tekshirish, o'chirish va yangi papkalar ochish.
-   * **Tizim va Tarmoq:** Muhit o'zgaruvchilari (`muhit`), apparat tasodifiy sonlari (`tasodifiy` CSPRNG), SSE kvadrat ildiz (`ildiz`), tashqi jarayonlar (`tizim_buyruq`), joriy jarayon identifikatori (`jarayon_id` PID), TCP server va TCP mijoz ulanishi.
-   * **Interaktiv REPL va Loyiha Generator:** `algo repl` va `algo yangi <loyiha>` buyruqlari.
 
 ---
 
@@ -39,7 +48,7 @@ Kompilyatorni yig'ish:
 make
 ```
 
-Barcha **29 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
+Barcha **30 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
 ```bash
 make test
 # yoki
@@ -54,11 +63,15 @@ make test
 |---|---|---|
 | `./bin/algo` yoki `./bin/algo repl` | `algo repl` | Interaktiv konsol (Read-Eval-Print Loop) qobig'i |
 | `./bin/algo format <fayl.algo>` | `algo fmt` | Kodni avtomatik chiroyli formatlash (`gofmt` kabi) |
+| `./bin/algo doc <fayl.algo> [-o md]` | `algo hujjat` | Avtomatik hujjat generatsiyasi (`godoc` kabi) |
+| `./bin/algo paket <yarat\|royxat\|ornat>` | `algo pkg` | Paket menejeri (`cargo`/`npm` kabi) |
+| `./bin/algo tekshir <fayl.algo>` | `algo lint` | Kodni statik tahlil qilish (Linter) |
+| `./bin/algo vaqt <fayl.algo>` | `algo time` | Kompilyatsiya va bajarilish vaqtini o'lchash |
 | `./bin/algo tezlik <fayl.algo>` | `algo bench` | Benchmark va unumdorlik sinovi (ms, KB, iterations) |
 | `./bin/algo yangi <nomi>` | `algo new <nomi>` | Yangi Algo loyihasini andoza bilan yaratish (scaffolding) |
 | `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish |
 | `./bin/algo yig fayl.algo -o binar` | `algo build fayl.algo` | Mustaqil bajariluvchi (ELF binary) fayl yaratish |
-| `./bin/algo sinov` | `algo test` | 29 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
+| `./bin/algo sinov [fayl.algo]` | `algo test` | 30 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
 | `./bin/algo versiya` | `algo version` | Til versiyasi va arxitekturasini ko'rish |
 | `./bin/algo yordam` | `algo help` | Yordam ma'lumotlarini chiqarish |
 

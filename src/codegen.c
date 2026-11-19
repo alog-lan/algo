@@ -124,11 +124,13 @@ static VarType find_function_return_type(const char *name) {
         strcmp(name, "fayl_oqish") == 0 ||
         strcmp(name, "faylni_oqish") == 0 ||
         strcmp(name, "muhit") == 0 ||
-        strcmp(name, "muhit_ol") == 0) {
+        strcmp(name, "muhit_ol") == 0 ||
+        strcmp(name, "joriy_papka") == 0) {
         return TYPE_STRING;
     }
     if (strcmp(name, "ildiz") == 0 ||
         strcmp(name, "kvadrat_ildiz") == 0 ||
+        strcmp(name, "haqiqiy") == 0 ||
         strcmp(name, "pi") == 0 ||
         strcmp(name, "e") == 0) {
         return TYPE_FLOAT;
@@ -191,7 +193,9 @@ static VarType infer_expr_type(Expr *expr, Scope *scope) {
             LocalVar *v = scope_find_var(scope, expr->as.var_name);
             if (v && v->type != TYPE_INT) return v->type;
             const char *vn = expr->as.var_name;
-            if (strstr(vn, "matn") || strstr(vn, "kalit") || strstr(vn, "key") || strstr(vn, "str") || strstr(vn, "nom") || strstr(vn, "yol")) return TYPE_STRING;
+            if (strstr(vn, "matn") || strstr(vn, "kalit") || strstr(vn, "key") || strstr(vn, "str") ||
+                strstr(vn, "nom") || strstr(vn, "yol") || strstr(vn, "kutildi") || strstr(vn, "olingan") ||
+                strstr(vn, "qator") || strstr(vn, "satr") || strstr(vn, "tana") || strstr(vn, "xabar") || strstr(vn, "tavsif")) return TYPE_STRING;
             if (strstr(vn, "massiv") || strstr(vn, "royxat") || strstr(vn, "arr")) return TYPE_ARRAY;
             return v ? v->type : TYPE_INT;
         }
@@ -291,27 +295,80 @@ static void gen_expr(Expr *expr, Scope *scope, FILE *out) {
                 break;
             }
 
-            // Haqiqiy (o'nlik) sonlar arifmetikasi (SSE xmm registers)
+            // Haqiqiy (o'nlik) sonlar arifmetikasi va taqqoslashlari (SSE xmm registers)
             if (lt == TYPE_FLOAT || rt == TYPE_FLOAT) {
+                int id = label_counter++;
                 gen_expr(expr->as.binary.left, scope, out);
                 fprintf(out, "    push rax\n");
                 gen_expr(expr->as.binary.right, scope, out);
                 fprintf(out, "    movq xmm1, rax\n");
+                if (rt == TYPE_INT) {
+                    fprintf(out, "    mov r8, rax\n");
+                    fprintf(out, "    mov r9, 2000000000\n");
+                    fprintf(out, "    cmp r8, r9\n");
+                    fprintf(out, "    jg .L_fp_rt_done_%d\n", id);
+                    fprintf(out, "    mov r9, -2000000000\n");
+                    fprintf(out, "    cmp r8, r9\n");
+                    fprintf(out, "    jl .L_fp_rt_done_%d\n", id);
+                    fprintf(out, "    cvtsi2sd xmm1, rax\n");
+                    fprintf(out, ".L_fp_rt_done_%d:\n", id);
+                }
                 fprintf(out, "    pop rax\n");
                 fprintf(out, "    movq xmm0, rax\n");
-                if (lt == TYPE_INT) fprintf(out, "    cvtsi2sd xmm0, rax\n");
-                if (rt == TYPE_INT) {
-                    fprintf(out, "    movq rax, xmm1\n");
-                    fprintf(out, "    cvtsi2sd xmm1, rax\n");
+                if (lt == TYPE_INT) {
+                    fprintf(out, "    mov r8, rax\n");
+                    fprintf(out, "    mov r9, 2000000000\n");
+                    fprintf(out, "    cmp r8, r9\n");
+                    fprintf(out, "    jg .L_fp_lt_done_%d\n", id);
+                    fprintf(out, "    mov r9, -2000000000\n");
+                    fprintf(out, "    cmp r8, r9\n");
+                    fprintf(out, "    jl .L_fp_lt_done_%d\n", id);
+                    fprintf(out, "    cvtsi2sd xmm0, rax\n");
+                    fprintf(out, ".L_fp_lt_done_%d:\n", id);
                 }
                 switch (expr->as.binary.op) {
-                    case TOKEN_PLUS:  fprintf(out, "    addsd xmm0, xmm1\n"); break;
-                    case TOKEN_MINUS: fprintf(out, "    subsd xmm0, xmm1\n"); break;
-                    case TOKEN_STAR:  fprintf(out, "    mulsd xmm0, xmm1\n"); break;
-                    case TOKEN_SLASH: fprintf(out, "    divsd xmm0, xmm1\n"); break;
-                    default: break;
+                    case TOKEN_PLUS:  fprintf(out, "    addsd xmm0, xmm1\n    movq rax, xmm0\n"); break;
+                    case TOKEN_MINUS: fprintf(out, "    subsd xmm0, xmm1\n    movq rax, xmm0\n"); break;
+                    case TOKEN_STAR:  fprintf(out, "    mulsd xmm0, xmm1\n    movq rax, xmm0\n"); break;
+                    case TOKEN_SLASH: fprintf(out, "    divsd xmm0, xmm1\n    movq rax, xmm0\n"); break;
+                    case TOKEN_EQ:
+                        fprintf(out, "    ucomisd xmm0, xmm1\n");
+                        fprintf(out, "    sete al\n");
+                        fprintf(out, "    setnp dl\n");
+                        fprintf(out, "    and al, dl\n");
+                        fprintf(out, "    movzx rax, al\n");
+                        break;
+                    case TOKEN_NEQ:
+                        fprintf(out, "    ucomisd xmm0, xmm1\n");
+                        fprintf(out, "    setne al\n");
+                        fprintf(out, "    setp dl\n");
+                        fprintf(out, "    or al, dl\n");
+                        fprintf(out, "    movzx rax, al\n");
+                        break;
+                    case TOKEN_LT:
+                        fprintf(out, "    ucomisd xmm0, xmm1\n");
+                        fprintf(out, "    setb al\n");
+                        fprintf(out, "    movzx rax, al\n");
+                        break;
+                    case TOKEN_LTE:
+                        fprintf(out, "    ucomisd xmm0, xmm1\n");
+                        fprintf(out, "    setbe al\n");
+                        fprintf(out, "    movzx rax, al\n");
+                        break;
+                    case TOKEN_GT:
+                        fprintf(out, "    ucomisd xmm0, xmm1\n");
+                        fprintf(out, "    seta al\n");
+                        fprintf(out, "    movzx rax, al\n");
+                        break;
+                    case TOKEN_GTE:
+                        fprintf(out, "    ucomisd xmm0, xmm1\n");
+                        fprintf(out, "    setae al\n");
+                        fprintf(out, "    movzx rax, al\n");
+                        break;
+                    default:
+                        fprintf(out, "    movq rax, xmm0\n");
+                        break;
                 }
-                fprintf(out, "    movq rax, xmm0\n");
                 break;
             }
 
@@ -2926,6 +2983,134 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "algo_jarayon_id:\n");
     fprintf(out, "    mov rax, 39\n"); // sys_getpid
     fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
+    // 40. Foydalanuvchi identifikatori (UID)
+    fprintf(out, "algo_foydalanuvchi_id:\n");
+    fprintf(out, "    mov rax, 102\n"); // sys_getuid
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
+    // 41. Joriy ishchi papka (sys_getcwd)
+    fprintf(out, "algo_joriy_papka:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    mov rdi, 4112\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov r12, rax\n");
+    fprintf(out, "    lea rdi, [r12 + 8]\n");
+    fprintf(out, "    mov rsi, 4096\n");
+    fprintf(out, "    mov rax, 79\n"); // sys_getcwd
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    cmp rax, 0\n");
+    fprintf(out, "    jl .L_getcwd_err\n");
+    fprintf(out, "    lea rdi, [r12 + 8]\n");
+    fprintf(out, "    xor rcx, rcx\n");
+    fprintf(out, ".L_getcwd_len_loop:\n");
+    fprintf(out, "    cmp byte ptr [rdi + rcx], 0\n");
+    fprintf(out, "    je .L_getcwd_len_done\n");
+    fprintf(out, "    inc rcx\n");
+    fprintf(out, "    jmp .L_getcwd_len_loop\n");
+    fprintf(out, ".L_getcwd_len_done:\n");
+    fprintf(out, "    mov [r12], rcx\n");
+    fprintf(out, "    mov rax, r12\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_getcwd_err:\n");
+    fprintf(out, "    mov qword ptr [r12], 0\n");
+    fprintf(out, "    mov byte ptr [r12 + 8], 0\n");
+    fprintf(out, "    mov rax, r12\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 42. Fayl hajmi baytlarda (sys_stat st_size)
+    fprintf(out, "algo_fayl_hajmi:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    sub rsp, 144\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_fayl_hajmi_xato\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    mov rax, 4\n"); // sys_stat
+    fprintf(out, "    mov rsi, rsp\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jnz .L_fayl_hajmi_xato\n");
+    fprintf(out, "    mov rax, [rsp + 48]\n"); // st_size
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_fayl_hajmi_xato:\n");
+    fprintf(out, "    mov rax, -1\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 43. Papka mavjudligini tekshirish (sys_stat S_ISDIR)
+    fprintf(out, "algo_papka_bormi:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    sub rsp, 144\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_papka_yoq\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    mov rax, 4\n"); // sys_stat
+    fprintf(out, "    mov rsi, rsp\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jnz .L_papka_yoq\n");
+    fprintf(out, "    mov eax, [rsp + 24]\n"); // st_mode
+    fprintf(out, "    and eax, 0xF000\n");
+    fprintf(out, "    cmp eax, 0x4000\n"); // S_IFDIR
+    fprintf(out, "    jne .L_papka_yoq\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_papka_yoq:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 44. Butun songa aylantirish (Float/Int -> Int)
+    fprintf(out, "algo_butun:\n");
+    fprintf(out, "    mov r8, rdi\n");
+    fprintf(out, "    mov rax, 2000000000\n");
+    fprintf(out, "    cmp r8, rax\n");
+    fprintf(out, "    jg .L_butun_fp\n");
+    fprintf(out, "    mov rax, -2000000000\n");
+    fprintf(out, "    cmp r8, rax\n");
+    fprintf(out, "    jl .L_butun_fp\n");
+    fprintf(out, "    mov rax, rdi\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_butun_fp:\n");
+    fprintf(out, "    movq xmm0, rdi\n");
+    fprintf(out, "    cvttsd2si rax, xmm0\n");
+    fprintf(out, "    ret\n\n");
+
+    // 45. Haqiqiy songa aylantirish (Int/Float -> Float)
+    fprintf(out, "algo_haqiqiy:\n");
+    fprintf(out, "    mov r8, rdi\n");
+    fprintf(out, "    mov rax, 2000000000\n");
+    fprintf(out, "    cmp r8, rax\n");
+    fprintf(out, "    jg .L_haqiqiy_already_fp\n");
+    fprintf(out, "    mov rax, -2000000000\n");
+    fprintf(out, "    cmp r8, rax\n");
+    fprintf(out, "    jl .L_haqiqiy_already_fp\n");
+    fprintf(out, "    cvtsi2sd xmm0, rdi\n");
+    fprintf(out, "    movq rax, xmm0\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_haqiqiy_already_fp:\n");
+    fprintf(out, "    mov rax, rdi\n");
     fprintf(out, "    ret\n\n");
 
     // Barcha foydalanuvchi funksiyalarini generatsiya qilish

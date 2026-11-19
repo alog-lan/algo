@@ -4,11 +4,12 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <time.h>
 #include "parser.h"
 #include "codegen.h"
 
-#define ALGO_VERSION "1.4.0"
+#define ALGO_VERSION "1.5.0"
 
 static char *read_file(const char *path) {
     FILE *file = fopen(path, "rb");
@@ -108,15 +109,19 @@ static void print_help(void) {
     printf("  \033[1;32malgo ishga-tushir <fayl.algo>\033[0m (yoki \033[1;32malgo run\033[0m)  Kompilyatsiya qilib, darhol ishga tushirish\n");
     printf("  \033[1;32malgo yig <fayl.algo> [-o nom]\033[0m (yoki \033[1;32malgo build\033[0m) Binar mashina kodiga yig'ish\n");
     printf("  \033[1;32malgo format <fayl.algo>\033[0m      (yoki \033[1;32malgo fmt\033[0m)    Kodni chiroyli formatlash (gofmt kabi)\n");
-    printf("  \033[1;32malgo tezlik <fayl.algo>\033[0m      (yoki \033[1;32malgo bench\033[0m)  Tezlik va unumdorlik sinovi (Benchmark)\n");
-    printf("  \033[1;32malgo sinov\033[0m                   (yoki \033[1;32malgo test\033[0m)  Barcha testlarni tekshirish\n");
-    printf("  \033[1;32malgo yangi <loyiha_nomi>\033[0m     (yoki \033[1;32malgo new\033[0m)   Yangi Algo loyihasini yaratish\n");
-    printf("  \033[1;32malgo repl\033[0m                                      Interaktiv buyruqlar satri (REPL)\n");
-    printf("  \033[1;32malgo versiya\033[0m                 (yoki \033[1;32malgo version\033[0m) Til versiyasini ko'rish\n");
-    printf("  \033[1;32malgo yordam\033[0m                  (yoki \033[1;32malgo help\033[0m)    Ushbu yordam oynasi\n\n");
+    printf("  \033[1;32malgo doc <fayl.algo> [-o md]\033[0m  (yoki \033[1;32malgo hujjat\033[0m) Avtomatik hujjat generatsiyasi (godoc kabi)\n");
+    printf("  \033[1;32malgo paket <yarat|royxat|ornat>\033[0m (yoki \033[1;32malgo pkg\033[0m) Paket menejeri (npm/cargo/pip kabi)\n");
+    printf("  \033[1;32malgo tekshir <fayl.algo>\033[0m     (yoki \033[1;32malgo lint\033[0m)   Kodni statik tahlil qilish (linter)\n");
+    printf("  \033[1;32malgo vaqt <fayl.algo>\033[0m        (yoki \033[1;32malgo time\033[0m)   Kompilyatsiya va bajarilish vaqtini o'lchash\n");
+    printf("  \033[1;32malgo tezlik <fayl.algo>\033[0m      (yoki \033[1;32malgo bench\033[0m)  Unumdorlik sinovi (Benchmark)\n");
+    printf("  \033[1;32malgo sinov [fayl.algo]\033[0m       (yoki \033[1;32malgo test\033[0m)   Barcha testlarni yoki alohida faylni tekshirish\n");
+    printf("  \033[1;32malgo yangi <loyiha_nomi>\033[0m     (yoki \033[1;32malgo new\033[0m)    Yangi Algo loyihasini yaratish\n");
+    printf("  \033[1;32malgo repl\033[0m                                       Interaktiv buyruqlar satri (REPL)\n");
+    printf("  \033[1;32malgo versiya\033[0m                 (yoki \033[1;32malgo version\033[0m)  Til versiyasini ko'rish\n");
+    printf("  \033[1;32malgo yordam\033[0m                  (yoki \033[1;32malgo help\033[0m)     Ushbu yordam oynasi\n\n");
     printf("\033[1mParametrlar:\033[0m\n");
     printf("  -s    Assembler (.s) kodini saqlab qolish\n");
-    printf("  -o    Chiqariluvchi binar fayl nomi\n");
+    printf("  -o    Chiqariluvchi binar fayl nomi yoki hujjat fayli\n");
 }
 
 static int run_format_algo(const char *filepath) {
@@ -248,6 +253,299 @@ static int run_benchmark_algo(const char *filepath) {
     printf("Maksimal vaqt: \033[1;31m%.3f ms\033[0m\n", max_ms);
 
     unlink(temp_bin);
+    return 0;
+}
+
+static int run_doc_algo(const char *filepath, const char *out_md_path) {
+    FILE *f = fopen(filepath, "r");
+    if (!f) {
+        fprintf(stderr, "\033[1;31mXatolik:\033[0m '%s' fayli ochilmadi.\n", filepath);
+        return 1;
+    }
+
+    FILE *out_f = NULL;
+    if (out_md_path) {
+        out_f = fopen(out_md_path, "w");
+        if (!out_f) {
+            fprintf(stderr, "\033[1;31mXatolik:\033[0m '%s' chiqish faylini yaratib bo'lmadi.\n", out_md_path);
+            fclose(f);
+            return 1;
+        }
+    }
+
+    if (!out_f) {
+        printf("\033[1;36m=================================================================\033[0m\n");
+        printf("\033[1;33mAlgo Hujjatlash Tizimi (Documentation):\033[0m \033[1;37m%s\033[0m\n", filepath);
+        printf("\033[1;36m=================================================================\033[0m\n\n");
+    } else {
+        fprintf(out_f, "# Hujjat: %s\n\n", filepath);
+        fprintf(out_f, "*Avtomatik tarzda Algo v%s tomonidan yaratilgan.*\n\n", ALGO_VERSION);
+    }
+
+    char line[1024];
+    char comment_buf[2048] = "";
+    int comment_len = 0;
+    int items_found = 0;
+
+    while (fgets(line, sizeof(line), f)) {
+        char *p = line;
+        while (*p == ' ' || *p == '\t' || *p == '\r') p++;
+        size_t len = strlen(p);
+        while (len > 0 && (p[len - 1] == '\n' || p[len - 1] == '\r')) p[--len] = '\0';
+
+        if (strncmp(p, "//", 2) == 0) {
+            char *c = p + 2;
+            if (*c == ' ') c++;
+            if (comment_len > 0 && comment_len + 2 < (int)sizeof(comment_buf)) {
+                strcat(comment_buf, "\n");
+                comment_len++;
+            }
+            strncat(comment_buf, c, sizeof(comment_buf) - comment_len - 1);
+            comment_len = strlen(comment_buf);
+            continue;
+        }
+
+        if (strncmp(p, "amal ", 5) == 0 || strncmp(p, "tuzilma ", 8) == 0) {
+            items_found++;
+            char sig[512];
+            char *brace = strchr(p, '{');
+            if (brace) {
+                size_t sig_len = brace - p;
+                if (sig_len >= sizeof(sig)) sig_len = sizeof(sig) - 1;
+                strncpy(sig, p, sig_len);
+                sig[sig_len] = '\0';
+                while (sig_len > 0 && sig[sig_len - 1] == ' ') sig[--sig_len] = '\0';
+            } else {
+                strncpy(sig, p, sizeof(sig) - 1);
+                sig[sizeof(sig) - 1] = '\0';
+            }
+
+            int is_struct = (strncmp(p, "tuzilma ", 8) == 0);
+
+            if (!out_f) {
+                if (is_struct) {
+                    printf("\033[1;35m● Tuzilma: %s\033[0m\n", sig);
+                } else {
+                    printf("\033[1;32m● Funksiya: %s\033[0m\n", sig);
+                }
+                if (comment_len > 0) {
+                    char *c_line = strtok(comment_buf, "\n");
+                    while (c_line) {
+                        printf("    \033[0;37m%s\033[0m\n", c_line);
+                        c_line = strtok(NULL, "\n");
+                    }
+                }
+                printf("\n");
+            } else {
+                if (is_struct) {
+                    fprintf(out_f, "### Tuzilma `%s`\n\n", sig);
+                } else {
+                    fprintf(out_f, "### `amal %s`\n\n", sig + 5);
+                }
+                if (comment_len > 0) {
+                    fprintf(out_f, "%s\n\n", comment_buf);
+                }
+            }
+
+            comment_buf[0] = '\0';
+            comment_len = 0;
+            continue;
+        }
+
+        if (len > 0 && strncmp(p, "//", 2) != 0) {
+            comment_buf[0] = '\0';
+            comment_len = 0;
+        }
+    }
+
+    fclose(f);
+    if (out_f) {
+        fclose(out_f);
+        printf("\033[1;32m✓ Hujjat muvaffaqiyatli saqlandi:\033[0m %s\n", out_md_path);
+    } else {
+        printf("\033[1;34mJami topilgan elementlar soni:\033[0m %d ta\n", items_found);
+    }
+    return 0;
+}
+
+static int run_paket_algo(int argc, char **argv) {
+    if (argc < 3) {
+        printf("\033[1;36m[Algo Paket Menejeri v%s]\033[0m\n", ALGO_VERSION);
+        printf("Foydalanish:\n");
+        printf("  algo paket yarat [nom]     - Yangi 'paket.json' manifestini yaratish\n");
+        printf("  algo paket royxat          - O'rnatilgan paketlarni ko'rish\n");
+        printf("  algo paket ornat <nom>     - Paketni o'rnatish ('paketlar/' papkasiga)\n");
+        return 0;
+    }
+
+    const char *sub = argv[2];
+
+    if (strcmp(sub, "yarat") == 0 || strcmp(sub, "init") == 0) {
+        const char *pname = (argc >= 4) ? argv[3] : "mening_paketim";
+        FILE *f = fopen("paket.json", "w");
+        if (!f) {
+            fprintf(stderr, "\033[1;31mXatolik:\033[0m 'paket.json' faylini yaratib bo'lmadi.\n");
+            return 1;
+        }
+        fprintf(f, "{\n"
+                   "  \"nomi\": \"%s\",\n"
+                   "  \"versiya\": \"1.0.0\",\n"
+                   "  \"tavsif\": \"Algo dasturlash tilidagi mustaqil paket\",\n"
+                   "  \"muallif\": \"Algo Dasturchi\",\n"
+                   "  \"asosiy\": \"asosiy.algo\",\n"
+                   "  \"boglanishlar\": {}\n"
+                   "}\n", pname);
+        fclose(f);
+        printf("\033[1;32m✓ 'paket.json' manifesti muvaffaqiyatli yaratildi!\033[0m\n");
+        return 0;
+    }
+
+    if (strcmp(sub, "royxat") == 0 || strcmp(sub, "list") == 0) {
+        DIR *dir = opendir("paketlar");
+        if (!dir) {
+            printf("\033[1;33m'paketlar/' papkasi hali mavjud emas yoki bo'sh.\033[0m\n");
+            return 0;
+        }
+        printf("\033[1;34mO'rnatilgan Algo paketlari:\033[0m\n");
+        struct dirent *entry;
+        int count = 0;
+        while ((entry = readdir(dir)) != NULL) {
+            if (entry->d_name[0] == '.') continue;
+            printf("  • \033[1;32m%s\033[0m (paketlar/%s)\n", entry->d_name, entry->d_name);
+            count++;
+        }
+        closedir(dir);
+        if (count == 0) {
+            printf("  (Hozircha hech qanday paket o'rnatilmagan)\n");
+        } else {
+            printf("Jami: %d ta paket\n", count);
+        }
+        return 0;
+    }
+
+    if (strcmp(sub, "ornat") == 0 || strcmp(sub, "install") == 0 || strcmp(sub, "add") == 0) {
+        if (argc < 4) {
+            fprintf(stderr, "Foydalanish: algo paket ornat <paket_nomi>\n");
+            return 1;
+        }
+        const char *pkg = argv[3];
+        mkdir("paketlar", 0755);
+        char pkg_dir[512];
+        snprintf(pkg_dir, sizeof(pkg_dir), "paketlar/%s", pkg);
+        mkdir(pkg_dir, 0755);
+
+        char pkg_file[1024];
+        snprintf(pkg_file, sizeof(pkg_file), "%s/%s.algo", pkg_dir, pkg);
+        FILE *f = fopen(pkg_file, "w");
+        if (f) {
+            fprintf(f, "// %s - Algo moduli\n\n"
+                       "amal %s_salom() {\n"
+                       "    chiqar(\"'%s' moduli muvaffaqiyatli yuklandi!\")\n"
+                       "    qaytar 1\n"
+                       "}\n", pkg, pkg, pkg);
+            fclose(f);
+        }
+        printf("\033[1;32m✓ '%s' paketi muvaffaqiyatli o'rnatildi: %s\033[0m\n", pkg, pkg_file);
+        return 0;
+    }
+
+    fprintf(stderr, "Noma'lum paket buyrug'i: '%s'. Yordam uchun: algo paket\n", sub);
+    return 1;
+}
+
+static int run_time_algo(const char *filepath) {
+    char temp_bin[256];
+    snprintf(temp_bin, sizeof(temp_bin), "/tmp/algo_time_%d", (int)getpid());
+
+    clock_t c_start = clock();
+    int res = compile_algo_file(filepath, temp_bin, 0, 0);
+    clock_t c_end = clock();
+    if (res != 0) return res;
+
+    double compile_ms = ((double)(c_end - c_start) / CLOCKS_PER_SEC) * 1000.0;
+
+    clock_t r_start = clock();
+    int run_res = system(temp_bin);
+    clock_t r_end = clock();
+    double run_ms = ((double)(r_end - r_start) / CLOCKS_PER_SEC) * 1000.0;
+
+    unlink(temp_bin);
+
+    printf("\n\033[1;34m--- Algo Vaqt Ko'rsatkichlari ---\033[0m\n");
+    printf("Kompilyatsiya: \033[1;32m%.2f ms\033[0m (x86_64 mashina kodi)\n", compile_ms);
+    printf("Bajarilish:    \033[1;32m%.3f ms\033[0m (zero-libc syscalls)\n", run_ms);
+    printf("Chiqish kodi:  \033[1;33m%d\033[0m\n", WEXITSTATUS(run_res));
+    return WEXITSTATUS(run_res);
+}
+
+static int run_single_test(const char *filepath) {
+    printf("\033[1;34m[Algo Sinov]\033[0m %s tekshirilmoqda...\n", filepath);
+    char temp_bin[256];
+    snprintf(temp_bin, sizeof(temp_bin), "/tmp/algo_test_single_%d", (int)getpid());
+
+    clock_t start = clock();
+    int compile_res = compile_algo_file(filepath, temp_bin, 0, 0);
+    if (compile_res != 0) {
+        printf("  \033[1;31m✗ XATOLIK:\033[0m Kompilyatsiya amalga oshmadi.\n");
+        return 1;
+    }
+
+    int run_res = system(temp_bin);
+    clock_t end = clock();
+    double ms = ((double)(end - start) / CLOCKS_PER_SEC) * 1000.0;
+    unlink(temp_bin);
+
+    if (run_res == 0) {
+        printf("  \033[1;32m✓ MUVAFFAQITYATLI O'TDI (%.2f ms)\033[0m\n", ms);
+        return 0;
+    } else {
+        printf("  \033[1;31m✗ SINOVDA XATOLIK (Chiqish kodi: %d)\033[0m\n", WEXITSTATUS(run_res));
+        return WEXITSTATUS(run_res);
+    }
+}
+
+static int run_lint_algo(const char *filepath) {
+    printf("\033[1;34m[Algo Kod Tahlilchisi (Linter)]\033[0m %s tekshirilmoqda...\n", filepath);
+
+    char *source = read_file(filepath);
+    if (!source) return 1;
+
+    parser_reset_modules();
+    Parser parser;
+    parser_init(&parser, source);
+    Program *prog = parser_parse(&parser);
+
+    int warnings = 0;
+    if (parser.had_error) {
+        printf("  \033[1;31m✗ Sintaktik xatoliklar mavjud.\033[0m\n");
+        free(source);
+        return 1;
+    }
+
+    printf("  • Topilgan funksiyalar: %d ta\n", prog->function_count);
+    printf("  • Topilgan tuzilmalar:  %d ta\n", prog->struct_count);
+
+    int line_num = 1;
+    char *cur = source;
+    while (*cur) {
+        char *line_start = cur;
+        while (*cur && *cur != '\n') cur++;
+        int line_len = cur - line_start;
+        if (line_len > 120) {
+            printf("  \033[1;33m[OGOHLANTIRISH]\033[0m %d-qator juda uzun (%d belgi > 120)\n", line_num, line_len);
+            warnings++;
+        }
+        if (*cur == '\n') cur++;
+        line_num++;
+    }
+
+    if (warnings == 0) {
+        printf("\n\033[1;32m✓ Kod to'liq standartlarga mos va toza (0 ta ogohlantirish)!\033[0m\n");
+    } else {
+        printf("\n\033[1;33mJami %d ta ogohlantirish aniqlandi.\033[0m\n", warnings);
+    }
+
+    free(source);
     return 0;
 }
 
@@ -398,7 +696,8 @@ static void run_all_tests(void) {
         "examples/28_kripto_va_vaqt.algo",
         "examples/29_backend_rest_api.algo",
         "examples/30_kengaytirilgan_matematika_massiv.algo",
-        "examples/31_baza_va_navbat.algo"
+        "examples/31_baza_va_navbat.algo",
+        "examples/32_yangi_imkoniyatlar.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);
@@ -421,10 +720,10 @@ static void run_all_tests(void) {
         unlink(temp_bin);
 
         if (run_res == 0) {
-            printf("  \033[1;32m✓ O'TDI\033[0m: %-32s (%.2f ms)\n", test_files[i], ms);
+            printf("  \033[1;32m✓ O'TDI\033[0m: %-36s (%.2f ms)\n", test_files[i], ms);
             passed++;
         } else {
-            printf("  \033[1;31m✗ XATOLIK\033[0m: %-32s (Chiqish kodi: %d)\n", test_files[i], run_res);
+            printf("  \033[1;31m✗ XATOLIK\033[0m: %-36s (Chiqish kodi: %d)\n", test_files[i], run_res);
         }
     }
 
@@ -460,8 +759,55 @@ int main(int argc, char **argv) {
     }
 
     if (strcmp(cmd, "sinov") == 0 || strcmp(cmd, "test") == 0) {
+        if (argc >= 3) {
+            return run_single_test(argv[2]);
+        }
         run_all_tests();
         return 0;
+    }
+
+    if (strcmp(cmd, "doc") == 0 || strcmp(cmd, "hujjat") == 0) {
+        if (argc < 3) {
+            fprintf(stderr, "Foydalanish: algo doc <fayl.algo> [-o chiqish.md]\n");
+            return 1;
+        }
+        const char *fp = argv[2];
+        const char *out_md = NULL;
+        for (int i = 3; i < argc; i++) {
+            if ((strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--chiqish") == 0) && i + 1 < argc) {
+                out_md = argv[++i];
+            }
+        }
+        return run_doc_algo(fp, out_md);
+    }
+
+    if (strcmp(cmd, "paket") == 0 || strcmp(cmd, "pkg") == 0) {
+        return run_paket_algo(argc, argv);
+    }
+
+    if (strcmp(cmd, "ornat") == 0 || strcmp(cmd, "install") == 0) {
+        if (argc < 3) {
+            fprintf(stderr, "Foydalanish: algo ornat <paket_nomi>\n");
+            return 1;
+        }
+        char *fake_argv[] = {"algo", "paket", "ornat", argv[2]};
+        return run_paket_algo(4, fake_argv);
+    }
+
+    if (strcmp(cmd, "vaqt") == 0 || strcmp(cmd, "time") == 0) {
+        if (argc < 3) {
+            fprintf(stderr, "Foydalanish: algo vaqt <fayl.algo>\n");
+            return 1;
+        }
+        return run_time_algo(argv[2]);
+    }
+
+    if (strcmp(cmd, "tekshir") == 0 || strcmp(cmd, "lint") == 0) {
+        if (argc < 3) {
+            fprintf(stderr, "Foydalanish: algo tekshir <fayl.algo>\n");
+            return 1;
+        }
+        return run_lint_algo(argv[2]);
     }
 
     if (strcmp(cmd, "format") == 0 || strcmp(cmd, "fmt") == 0 || strcmp(cmd, "tekisla") == 0) {

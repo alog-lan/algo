@@ -1,0 +1,87 @@
+// 32-Misol: v1.5.0 Yangi Imkoniyatlar Sinovi
+// std/sinov, std/yol, std/csv, std/log va yangi built-in funksiyalar
+
+yukla "std/sinov.algo"
+yukla "std/yol.algo"
+yukla "std/csv.algo"
+yukla "std/log.algo"
+yukla "std/matematika.algo"
+
+amal asosiy() {
+    s = sinovchi_yarat("Algo v1.5.0 Imkoniyatlari")
+
+    // 1. Yangi Built-in tizim funksiyalari
+    pwd = joriy_papka()
+    sinov_rost(s, uzunlik(pwd) > 0, "joriy_papka() bo'sh emas")
+
+    uid = foydalanuvchi_id()
+    sinov_rost(s, uid >= 0, "foydalanuvchi_id() manfiy emas")
+
+    hajm = fayl_hajmi("Makefile")
+    sinov_rost(s, hajm > 0, "Makefile hajmi > 0")
+
+    std_bor = papka_bormi("std")
+    sinov_teng_butun(s, 1, std_bor, "std papkasi mavjud")
+
+    yoq_papka = papka_bormi("bunday_papka_yoq_123")
+    sinov_teng_butun(s, 0, yoq_papka, "mavjud bo'lmagan papka aniqlanmadi")
+
+    b_son = butun(19.95)
+    sinov_teng_butun(s, 19, b_son, "butun(19.95) == 19")
+
+    // 2. std/yol (Path) sinovlari
+    birikkan = yol_birlashtir("loyiha/papka", "fayl.algo")
+    sinov_teng_matn(s, "loyiha/papka/fayl.algo", birikkan, "yol_birlashtir()")
+
+    asos = yol_asosiy("/home/jasur/dastur.algo")
+    sinov_teng_matn(s, "dastur.algo", asos, "yol_asosiy()")
+
+    papkasi = yol_papka("/home/jasur/dastur.algo")
+    sinov_teng_matn(s, "/home/jasur", papkasi, "yol_papka()")
+
+    keng = yol_kengaytma("/home/jasur/dastur.algo")
+    sinov_teng_matn(s, ".algo", keng, "yol_kengaytma()")
+
+    mutlaq = yol_mutlaqmi("/home/jasur")
+    sinov_teng_butun(s, 1, mutlaq, "yol_mutlaqmi('/') == 1")
+
+    nisbiy = yol_mutlaqmi("std/http.algo")
+    sinov_teng_butun(s, 0, nisbiy, "yol_mutlaqmi('std/...') == 0")
+
+    // 3. std/csv sinovlari
+    qator = "ism,yosh,shahar"
+    ustunlar = csv_qator_bol(qator)
+    sinov_teng_butun(s, 3, uzunlik(ustunlar), "csv_qator_bol uzunligi 3")
+    sinov_teng_matn(s, "ism", ustunlar[0], "csv birinchi ustun")
+    sinov_teng_matn(s, "shahar", ustunlar[2], "csv uchinchi ustun")
+
+    qayta_qator = csv_qator_qur(ustunlar)
+    sinov_teng_matn(s, "ism,yosh,shahar", qayta_qator, "csv_qator_qur()")
+
+    // 4. std/matematika yangi funksiyalari
+    p_qiymat = pol(7.8)
+    sinov_teng_butun(s, 7, p_qiymat, "pol(7.8) == 7")
+
+    sh_qiymat = shift(7.2)
+    sinov_teng_butun(s, 8, sh_qiymat, "shift(7.2) == 8")
+
+    yax_qiymat = yaxlitla(7.6)
+    sinov_teng_butun(s, 8, yax_qiymat, "yaxlitla(7.6) == 8")
+
+    yax_past = yaxlitla(7.4)
+    sinov_teng_butun(s, 7, yax_past, "yaxlitla(7.4) == 7")
+
+    tasodif = tasodifiy_oraliq(10, 20)
+    sinov_rost(s, tasodif >= 10 va tasodif <= 20, "tasodifiy_oraliq(10, 20)")
+
+    // 5. std/log sinovlari
+    log_malumot("Sinov xabari: barcha modullar ishlamoqda")
+    log_muvaffaqiyat("Barcha testlar yakunlandi")
+
+    natija = sinovchi_yakunla(s)
+    agar natija == 1 {
+        qaytar 0
+    } yoqsa {
+        qaytar 1
+    }
+}

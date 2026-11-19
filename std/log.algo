@@ -1,0 +1,23 @@
+// Algo Dasturlash Tili - Standart Jurnal (Logging) Kutubxonasi (std/log.algo)
+// Konsol va fayllarga tizimli log yozish
+
+amal log_malumot(xabar) {
+    chiqar("[MA'LUMOT] " + xabar)
+}
+
+amal log_muvaffaqiyat(xabar) {
+    chiqar("[MUVAFFAQIYAT] " + xabar)
+}
+
+amal log_ogoh(xabar) {
+    chiqar("[OGOHLANTIRISH] " + xabar)
+}
+
+amal log_xato(xabar) {
+    chiqar("[XATOLIK] " + xabar)
+}
+
+amal log_faylga(fayl_yoli, daraja, xabar) {
+    satr = "[" + daraja + "] " + xabar + "\n"
+    fayl_qoshish(fayl_yoli, satr)
+}
