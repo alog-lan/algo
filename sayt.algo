@@ -26,7 +26,7 @@ amal asosiy() {
     chiqar(rang_yashil("✓") + " Server tinglamoqda: " + rang_turkuaz("http://localhost:8080") + " yoki " + rang_turkuaz("http://127.0.0.1:8080"))
     chiqar(rang_sariq("!") + " Saytni ko'rish uchun brauzerda oching. To'xtatish: Ctrl+C\n")
 
-    // Statik fayllarni xotiraga yuklaymiz
+    // Statik fayllarni xotiraga oldindan keshlab olamiz
     html_sahifa = fayl_oqish("docs/index.html")
     css_sahifa = fayl_oqish("docs/assets/styles.css")
     js_sahifa = fayl_oqish("docs/assets/app.js")
@@ -49,7 +49,14 @@ amal asosiy() {
         }
         
         metod = http_metod(sorov)
-        yol = http_yol(sorov)
+        xom_yol = http_yol(sorov)
+        
+        // Query parametr (?v=...) ni kesib olamiz
+        yol = xom_yol
+        q_idx = matn_topish(xom_yol, "?")
+        agar q_idx >= 0 {
+            yol = matn_kesish(xom_yol, 0, q_idx)
+        }
         
         chiqar(rang_turkuaz("[HTTP]") + " " + rang_qalin(metod) + " " + yol)
         
@@ -63,7 +70,7 @@ amal asosiy() {
         } aks agar yol == "/assets/app.js" {
             javob = http_javob_qur(200, "application/javascript; charset=utf-8", js_sahifa)
             xabar_yubor(mijoz_fd, javob)
-        } aks agar yol == "/assets/icon.svg" {
+        } aks agar yol == "/assets/icon.svg" yoki yol == "/favicon.ico" {
             javob = http_javob_qur(200, "image/svg+xml", icon_svg)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/assets/logo.svg" {
