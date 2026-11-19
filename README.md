@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Algo Dasturlash Tili Logo" width="650" />
+  <img src="assets/logo.svg" alt="Algo Dasturlash Tili Logo" width="550" />
 </p>
 
 <p align="center">
