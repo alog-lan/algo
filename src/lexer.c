@@ -195,12 +195,14 @@ Token lexer_next_token(Lexer *lexer) {
         case '*': type = TOKEN_STAR; break;
         case '/': type = TOKEN_SLASH; break;
         case '%': type = TOKEN_PERCENT; break;
+        case '^': type = TOKEN_CARET; break;
+        case '~': type = TOKEN_TILDE; break;
         case '&':
             if (peek(lexer) == '&') {
                 advance(lexer);
                 type = TOKEN_VA;
             } else {
-                type = TOKEN_ERROR;
+                type = TOKEN_AMP;
             }
             break;
         case '|':
@@ -208,7 +210,7 @@ Token lexer_next_token(Lexer *lexer) {
                 advance(lexer);
                 type = TOKEN_YOKI;
             } else {
-                type = TOKEN_ERROR;
+                type = TOKEN_PIPE;
             }
             break;
         case '=':
@@ -231,6 +233,9 @@ Token lexer_next_token(Lexer *lexer) {
             if (peek(lexer) == '=') {
                 advance(lexer);
                 type = TOKEN_LTE;
+            } else if (peek(lexer) == '<') {
+                advance(lexer);
+                type = TOKEN_SHL;
             } else {
                 type = TOKEN_LT;
             }
@@ -239,6 +244,9 @@ Token lexer_next_token(Lexer *lexer) {
             if (peek(lexer) == '=') {
                 advance(lexer);
                 type = TOKEN_GTE;
+            } else if (peek(lexer) == '>') {
+                advance(lexer);
+                type = TOKEN_SHR;
             } else {
                 type = TOKEN_GT;
             }

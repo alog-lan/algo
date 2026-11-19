@@ -1,0 +1,61 @@
+// Algo Dasturlash Tili - Standart JSON Kutubxonasi (std/json.algo)
+
+amal json_satr(s) {
+    qaytar "\"" + s + "\""
+}
+
+amal json_juftlik(kalit, qiymat) {
+    qaytar "\"" + kalit + "\": " + qiymat
+}
+
+amal json_massiv_qur(arr) {
+    n = uzunlik(arr)
+    agar n == 0 {
+        qaytar "[]"
+    }
+    natija = "["
+    uchun i = 0; i < n; i = i + 1 {
+        natija = natija + arr[i]
+        agar i < n - 1 {
+            natija = natija + ", "
+        }
+    }
+    natija = natija + "]"
+    qaytar natija
+}
+
+amal json_qiymat(json_matn, kalit) {
+    qidiruv = "\"" + kalit + "\""
+    agar inkor matn_ichida(json_matn, qidiruv) {
+        qaytar ""
+    }
+    
+    // Kalit bo'yicha bo'lamiz
+    qismlar = matn_bolish(json_matn, qidiruv)
+    agar uzunlik(qismlar) < 2 {
+        qaytar ""
+    }
+    
+    // Ikkinchi qismdan keyin ':' ni topamiz
+    keyingi = qismlar[1]
+    nuqtalar = matn_bolish(keyingi, ":")
+    agar uzunlik(nuqtalar) < 2 {
+        qaytar ""
+    }
+    
+    // Qiymatni ajratib olamiz (vergul yoki jingalak qavsgacha)
+    xom_qiymat = nuqtalar[1]
+    vergul_bolak = matn_bolish(xom_qiymat, ",")
+    bitta = vergul_bolak[0]
+    yopuvchi_bolak = matn_bolish(bitta, "}")
+    toza = matn_qirqish(yopuvchi_bolak[0])
+
+    // Agar matn bo'lsa (qo'shtirnoq ichida bo'lsa), qo'shtirnoqlarni olib tashlaymiz
+    agar matn_boshlanadimi(toza, "\"") {
+        uzun = uzunlik(toza)
+        agar uzun >= 2 {
+            toza = matn_kesish(toza, 1, uzun - 2)
+        }
+    }
+    qaytar toza
+}

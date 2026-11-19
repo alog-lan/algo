@@ -1,0 +1,35 @@
+// Algo Dasturlash Tili - JSON Serializatsiya va Parser Sinovi
+
+yukla "std/json.algo"
+
+amal asosiy() {
+    chiqar("=== 1. JSON Matnini Shakllantirish (Serialization) ===")
+    ism_json = json_juftlik("ism", json_satr("Jasurbek"))
+    yosh_json = json_juftlik("yosh", "22")
+    til_json = json_juftlik("til", json_satr("Algo"))
+    
+    json_obyekt = "{" + ism_json + ", " + yosh_json + ", " + til_json + "}"
+    chiqar("Hosil bo'lgan JSON:", json_obyekt)
+
+    chiqar("\n=== 2. JSON Parseri (Deserialization / Qiymat ajratish) ===")
+    ism_qiymat = json_qiymat(json_obyekt, "ism")
+    yosh_qiymat = json_qiymat(json_obyekt, "yosh")
+    til_qiymat = json_qiymat(json_obyekt, "til")
+
+    chiqar("Parsed 'ism':", ism_qiymat)
+    chiqar("Parsed 'yosh':", yosh_qiymat)
+    chiqar("Parsed 'til':", til_qiymat)
+
+    tasdiqla(ism_qiymat == "Jasurbek", "JSON ism mos emas")
+    tasdiqla(yosh_qiymat == "22", "JSON yosh mos emas")
+    tasdiqla(til_qiymat == "Algo", "JSON til mos emas")
+
+    chiqar("\n=== 3. JSON Massiv Formatlash ===")
+    texnologiyalar = [json_satr("x86_64"), json_satr("Linux"), json_satr("Syscall")]
+    massiv_json = json_massiv_qur(texnologiyalar)
+    chiqar("JSON massiv:", massiv_json)
+    tasdiqla(massiv_json == "[\"x86_64\", \"Linux\", \"Syscall\"]", "JSON massiv mos emas")
+
+    chiqar("\nJSON kutubxonasi 100% muvaffaqiyatli ishladi!")
+    qaytar 0
+}

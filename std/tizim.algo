@@ -12,6 +12,18 @@ amal tasodifiy_son(min, max) {
     qaytar tasodifiy(min, max)
 }
 
+amal jarayon_raqami() {
+    qaytar jarayon_id()
+}
+
+amal kutish_ms(ms) {
+    qaytar kutish(ms)
+}
+
+amal kutish_sekund(sekund) {
+    qaytar kutish(sekund * 1000)
+}
+
 amal dasturdan_chiq(kod) {
     chiqish(kod)
 }

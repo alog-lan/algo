@@ -133,7 +133,7 @@ static Expr *parse_postfix(Parser *parser) {
 }
 
 static Expr *parse_unary(Parser *parser) {
-    if (match(parser, TOKEN_MINUS) || match(parser, TOKEN_INKOR)) {
+    if (match(parser, TOKEN_MINUS) || match(parser, TOKEN_INKOR) || match(parser, TOKEN_TILDE)) {
         TokenType op = parser->previous.type;
         Expr *right = parse_unary(parser);
         return ast_new_unary(op, right);
@@ -163,14 +163,52 @@ static Expr *parse_term(Parser *parser) {
     return expr;
 }
 
-static Expr *parse_comparison(Parser *parser) {
+static Expr *parse_shift(Parser *parser) {
     Expr *expr = parse_term(parser);
+    while (check(parser, TOKEN_SHL) || check(parser, TOKEN_SHR)) {
+        advance(parser);
+        TokenType op = parser->previous.type;
+        Expr *right = parse_term(parser);
+        expr = ast_new_binary(op, expr, right);
+    }
+    return expr;
+}
+
+static Expr *parse_bitwise_and(Parser *parser) {
+    Expr *expr = parse_shift(parser);
+    while (match(parser, TOKEN_AMP)) {
+        Expr *right = parse_shift(parser);
+        expr = ast_new_binary(TOKEN_AMP, expr, right);
+    }
+    return expr;
+}
+
+static Expr *parse_bitwise_xor(Parser *parser) {
+    Expr *expr = parse_bitwise_and(parser);
+    while (match(parser, TOKEN_CARET)) {
+        Expr *right = parse_bitwise_and(parser);
+        expr = ast_new_binary(TOKEN_CARET, expr, right);
+    }
+    return expr;
+}
+
+static Expr *parse_bitwise_or(Parser *parser) {
+    Expr *expr = parse_bitwise_xor(parser);
+    while (match(parser, TOKEN_PIPE)) {
+        Expr *right = parse_bitwise_xor(parser);
+        expr = ast_new_binary(TOKEN_PIPE, expr, right);
+    }
+    return expr;
+}
+
+static Expr *parse_comparison(Parser *parser) {
+    Expr *expr = parse_bitwise_or(parser);
     while (check(parser, TOKEN_EQ) || check(parser, TOKEN_NEQ) ||
            check(parser, TOKEN_LT) || check(parser, TOKEN_LTE) ||
            check(parser, TOKEN_GT) || check(parser, TOKEN_GTE)) {
         advance(parser);
         TokenType op = parser->previous.type;
-        Expr *right = parse_term(parser);
+        Expr *right = parse_bitwise_or(parser);
         expr = ast_new_binary(op, expr, right);
     }
     return expr;

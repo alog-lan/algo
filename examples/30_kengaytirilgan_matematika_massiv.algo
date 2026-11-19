@@ -1,0 +1,49 @@
+// Algo Dasturlash Tili - Kengaytirilgan Matematika va Massiv Amallari Testi
+yukla "std/matematika.algo"
+yukla "std/massiv.algo"
+
+amal asosiy() {
+    chiqar("=== 1. Matematika: EKUB, EKUK, Faktorial va Tub Sonlar ===")
+    e_kub = ekub(48, 18)
+    chiqar("EKUB(48, 18) =", e_kub)
+    tasdiqla(e_kub == 6, "EKUB xato")
+
+    e_kuk = ekuk(12, 15)
+    chiqar("EKUK(12, 15) =", e_kuk)
+    tasdiqla(e_kuk == 60, "EKUK xato")
+
+    f7 = faktorial(7)
+    chiqar("7! (Faktorial) =", f7)
+    tasdiqla(f7 == 5040, "Faktorial xato")
+
+    chiqar("29 tubmi (1=ha):", tubmi(29))
+    chiqar("30 tubmi (0=yo'q):", tubmi(30))
+    tasdiqla(tubmi(29) == 1, "29 tub son bolishi kerak")
+    tasdiqla(tubmi(30) == 0, "30 tub emas")
+
+    chiqar("\n=== 2. Massiv: Birlashtirish, Kesish, Qidirish va Nusxa ===")
+    m1 = [1, 2, 3]
+    m2 = [4, 5, 6]
+    birlashdi = massiv_birlashtir(m1, m2)
+    chiqar("Birlashtirilgan massiv:", birlashdi)
+    tasdiqla(uzunlik(birlashdi) == 6, "Uzunlik 6 bolishi kerak")
+    tasdiqla(birlashdi[5] == 6, "Oxirgi element 6 bolishi kerak")
+
+    kesildi = massiv_kesib_ol(birlashdi, 2, 3)
+    chiqar("Kesib olingan qism (indeks 2 dan 3 ta):", kesildi)
+    tasdiqla(uzunlik(kesildi) == 3, "Kesilgan uzunlik 3 bolishi kerak")
+    tasdiqla(kesildi[0] == 3, "Kesilgan birinchi element 3 bolishi kerak")
+    tasdiqla(kesildi[2] == 5, "Kesilgan oxirgi element 5 bolishi kerak")
+
+    chiqar("5 massivda bormi (1=ha):", massiv_mavjudmi(birlashdi, 5))
+    chiqar("99 massivda bormi (0=yo'q):", massiv_mavjudmi(birlashdi, 99))
+    tasdiqla(massiv_mavjudmi(birlashdi, 5) == 1, "5 mavjud bolishi kerak")
+    tasdiqla(massiv_mavjudmi(birlashdi, 99) == 0, "99 mavjud emas")
+
+    nusxa = massiv_nusxa(m1)
+    chiqar("Nusxa olingan massiv:", nusxa)
+    tasdiqla(uzunlik(nusxa) == 3, "Nusxa uzunligi 3 bolishi kerak")
+
+    chiqar("\nKengaytirilgan matematika va massiv amallari 100% muvaffaqiyatli ishladi!")
+    qaytar 0
+}

@@ -8,6 +8,10 @@ amal faylga_yozish(fayl_nomi, matn) {
     qaytar fayl_yozish(fayl_nomi, matn)
 }
 
+amal faylga_qoshish(fayl_nomi, matn) {
+    qaytar fayl_qoshish(fayl_nomi, matn)
+}
+
 amal fayl_bormi(fayl_nomi) {
     qaytar fayl_mavjudmi(fayl_nomi)
 }

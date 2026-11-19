@@ -1,0 +1,121 @@
+// Algo Dasturlash Tili - Standart Kriptografiya va Xesh Kutubxonasi (std/kripto.algo)
+// To'liq mustaqil x86_64 mashina kodida ishlaydi
+
+amal baza64_belgi(indeks) {
+    alifbo = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    qaytar matn_kesish(alifbo, indeks, 1)
+}
+
+amal baza64_indeks(b) {
+    alifbo = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    qaytar matn_topish(alifbo, b)
+}
+
+amal baza64_kodla(matn) {
+    uzun = uzunlik(matn)
+    natija = ""
+    i = 0
+    toki i + 2 < uzun {
+        b0 = belgi_kodi(matn, i)
+        b1 = belgi_kodi(matn, i + 1)
+        b2 = belgi_kodi(matn, i + 2)
+        c0 = b0 >> 2
+        c1 = ((b0 & 3) << 4) | (b1 >> 4)
+        c2 = ((b1 & 15) << 2) | (b2 >> 6)
+        c3 = b2 & 63
+        natija = natija + baza64_belgi(c0) + baza64_belgi(c1) + baza64_belgi(c2) + baza64_belgi(c3)
+        i = i + 3
+    }
+    qoldiq = uzun - i
+    agar qoldiq == 1 {
+        b0 = belgi_kodi(matn, i)
+        c0 = b0 >> 2
+        c1 = (b0 & 3) << 4
+        natija = natija + baza64_belgi(c0) + baza64_belgi(c1) + "=="
+    }
+    agar qoldiq == 2 {
+        b0 = belgi_kodi(matn, i)
+        b1 = belgi_kodi(matn, i + 1)
+        c0 = b0 >> 2
+        c1 = ((b0 & 3) << 4) | (b1 >> 4)
+        c2 = (b1 & 15) << 2
+        natija = natija + baza64_belgi(c0) + baza64_belgi(c1) + baza64_belgi(c2) + "="
+    }
+    qaytar natija
+}
+
+amal baza64_yech(b64) {
+    uzun = uzunlik(b64)
+    agar uzun == 0 { qaytar "" }
+    natija = ""
+    i = 0
+    toki i + 3 < uzun {
+        c0_s = matn_kesish(b64, i, 1)
+        c1_s = matn_kesish(b64, i + 1, 1)
+        c2_s = matn_kesish(b64, i + 2, 1)
+        c3_s = matn_kesish(b64, i + 3, 1)
+        
+        c0 = baza64_indeks(c0_s)
+        c1 = baza64_indeks(c1_s)
+        
+        b0 = (c0 << 2) | (c1 >> 4)
+        natija = natija + belgi(b0)
+        
+        agar c2_s != "=" {
+            c2 = baza64_indeks(c2_s)
+            b1 = ((c1 & 15) << 4) | (c2 >> 2)
+            natija = natija + belgi(b1)
+            
+            agar c3_s != "=" {
+                c3 = baza64_indeks(c3_s)
+                b2 = ((c2 & 3) << 6) | c3
+                natija = natija + belgi(b2)
+            }
+        }
+        i = i + 4
+    }
+    qaytar natija
+}
+
+amal xesh_fnv1a(matn) {
+    uzun = uzunlik(matn)
+    xesh = 2166136261
+    uchun i = 0; i < uzun; i = i + 1 {
+        b = belgi_kodi(matn, i)
+        xesh = xesh ^ b
+        xesh = xesh * 16777619
+    }
+    qaytar xesh
+}
+
+amal shifr_xor(matn, kalit) {
+    uzun = uzunlik(matn)
+    kalit_uzun = uzunlik(kalit)
+    agar kalit_uzun == 0 { qaytar matn }
+    natija = ""
+    uchun i = 0; i < uzun; i = i + 1 {
+        b = belgi_kodi(matn, i)
+        k = belgi_kodi(kalit, i % kalit_uzun)
+        natija = natija + belgi(b ^ k)
+    }
+    qaytar natija
+}
+
+amal son_onolti(son) {
+    agar son == 0 { qaytar "0" }
+    alifbo = "0123456789ABCDEF"
+    natija = ""
+    n = son
+    agar n < 0 {
+        n = -n
+    }
+    toki n > 0 {
+        q = n & 15
+        natija = matn_kesish(alifbo, q, 1) + natija
+        n = n >> 4
+    }
+    agar son < 0 {
+        natija = "-" + natija
+    }
+    qaytar natija
+}

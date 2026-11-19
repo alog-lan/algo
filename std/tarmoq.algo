@@ -8,10 +8,28 @@ amal server_yarat(port) {
     qaytar fd
 }
 
+amal mijoz_ulan(ip, port) {
+    fd = tarmoq_ulan(ip, port)
+    agar fd < 0 {
+        chiqar("Xatolik: Serverga ulanib bo'lmadi:", ip, port)
+    } aks {
+        chiqar("Muvaffaqiyatli ulandi:", ip, port)
+    }
+    qaytar fd
+}
+
+amal xabar_qabul(fd, hajm) {
+    qaytar tarmoq_qabul(fd, hajm)
+}
+
 amal xabar_yubor(mijoz_fd, matn) {
     tarmoq_yubor(mijoz_fd, matn)
 }
 
 amal server_yop(fd) {
+    tarmoq_yop(fd)
+}
+
+amal ulanish_yop(fd) {
     tarmoq_yop(fd)
 }

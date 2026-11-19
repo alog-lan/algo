@@ -1,0 +1,65 @@
+// Algo Dasturlash Tili - HTTP va Backend REST API Tizimi Testi
+yukla "std/http.algo"
+yukla "std/json.algo"
+
+amal marshrut_bajar(sorov) {
+    metod = http_metod(sorov)
+    yol = http_yol(sorov)
+    tana = http_tana(sorov)
+
+    // GET /api/salomatlik
+    agar yol == "/api/salomatlik" va metod == "GET" {
+        qaytar http_javob_json(200, "{\"holat\": \"yaxshi\", \"versiya\": \"1.4.0\", \"dvijok\": \"x86_64\"}")
+    }
+
+    // GET /api/foydalanuvchi
+    agar yol == "/api/foydalanuvchi" va metod == "GET" {
+        json_javob = json_juftlik("ism", "Jasurbek") + ", " + json_juftlik("rol", "Dasturchi")
+        qaytar http_javob_json(200, "{" + json_javob + "}")
+    }
+
+    // POST /api/xabar
+    agar yol == "/api/xabar" va metod == "POST" {
+        agar uzunlik(tana) > 0 {
+            qaytar http_javob_201("{\"xabar\": \"qabul qilindi\", \"qabul_qilingan_baytlar\": " + son_matnga(uzunlik(tana)) + "}")
+        } aks {
+            qaytar http_javob_500("Tana bosh bolmasligi kerak")
+        }
+    }
+
+    // 404 Boshqa barcha yo'llar uchun
+    qaytar http_javob_404()
+}
+
+amal asosiy() {
+    chiqar("=== 1. HTTP GET /api/salomatlik So'rovi ===")
+    sorov1 = "GET /api/salomatlik HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0\r\n\r\n"
+    chiqar("So'rov metodi:", http_metod(sorov1))
+    chiqar("So'rov yo'li:", http_yol(sorov1))
+    tasdiqla(http_metod(sorov1) == "GET", "Metod GET bolishi kerak")
+    tasdiqla(http_yol(sorov1) == "/api/salomatlik", "Yol /api/salomatlik bolishi kerak")
+
+    javob1 = marshrut_bajar(sorov1)
+    chiqar("Server javobi:\n" + javob1)
+    tasdiqla(matn_topish(javob1, "200 OK") >= 0, "200 OK topilmadi")
+    tasdiqla(matn_topish(javob1, "application/json") >= 0, "JSON turi topilmadi")
+    tasdiqla(matn_topish(javob1, "holat") >= 0, "holat maydoni topilmadi")
+
+    chiqar("\n=== 2. HTTP POST /api/xabar So'rovi (Tana bilan) ===")
+    sorov2 = "POST /api/xabar HTTP/1.1\r\nHost: localhost:8080\r\nContent-Type: application/json\r\n\r\n{\"matn\": \"Salom Backend!\"}"
+    chiqar("POST tana:", http_tana(sorov2))
+    tasdiqla(http_tana(sorov2) == "{\"matn\": \"Salom Backend!\"}", "Tana ajratish xato")
+
+    javob2 = marshrut_bajar(sorov2)
+    chiqar("Server javobi:\n" + javob2)
+    tasdiqla(matn_topish(javob2, "201 Created") >= 0, "201 Created topilmadi")
+
+    chiqar("\n=== 3. HTTP 404 Not Found So'rovi ===")
+    sorov3 = "GET /api/noma_lum HTTP/1.1\r\nHost: localhost:8080\r\n\r\n"
+    javob3 = marshrut_bajar(sorov3)
+    chiqar("404 javobi:\n" + javob3)
+    tasdiqla(matn_topish(javob3, "404 Not Found") >= 0, "404 Not Found topilmadi")
+
+    chiqar("\nHTTP Backend REST API tizimi 100% muvaffaqiyatli ishladi!")
+    qaytar 0
+}

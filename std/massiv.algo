@@ -1,3 +1,5 @@
+// Algo Dasturlash Tili - Standart Massiv Kutubxonasi (std/massiv.algo)
+
 amal massiv_teskari(arr) {
     n = uzunlik(arr)
     uchun i = 0; i < n / 2; i = i + 1 {
@@ -56,6 +58,13 @@ amal massiv_qidir(arr, qiymat) {
     qaytar -1
 }
 
+amal massiv_mavjudmi(arr, qiymat) {
+    agar massiv_qidir(arr, qiymat) >= 0 {
+        qaytar 1
+    }
+    qaytar 0
+}
+
 amal massiv_sarala(arr) {
     n = uzunlik(arr)
     uchun i = 0; i < n - 1; i = i + 1 {
@@ -68,4 +77,37 @@ amal massiv_sarala(arr) {
         }
     }
     qaytar arr
+}
+
+amal massiv_nusxa(arr) {
+    n = uzunlik(arr)
+    yangi_arr = []
+    uchun i = 0; i < n; i = i + 1 {
+        yangi_arr = massiv_qosh(yangi_arr, arr[i])
+    }
+    qaytar yangi_arr
+}
+
+amal massiv_birlashtir(arr1, arr2) {
+    natija = []
+    n1 = uzunlik(arr1)
+    uchun i = 0; i < n1; i = i + 1 {
+        natija = massiv_qosh(natija, arr1[i])
+    }
+    n2 = uzunlik(arr2)
+    uchun j = 0; j < n2; j = j + 1 {
+        natija = massiv_qosh(natija, arr2[j])
+    }
+    qaytar natija
+}
+
+amal massiv_kesib_ol(arr, bosh, soni) {
+    natija = []
+    n = uzunlik(arr)
+    oxiri = bosh + soni
+    agar oxiri > n { oxiri = n }
+    uchun i = bosh; i < oxiri; i = i + 1 {
+        natija = massiv_qosh(natija, arr[i])
+    }
+    qaytar natija
 }

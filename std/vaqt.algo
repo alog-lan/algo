@@ -1,0 +1,81 @@
+// Algo Dasturlash Tili - Standart Vaqt va Sana Kutubxonasi (std/vaqt.algo)
+// Unix vaqt, ISO 8601 formatlash va yuqori aniqlikdagi vaqt amallari
+
+yukla "std/matn.algo"
+
+amal vaqt_ms() {
+    qaytar vaqt()
+}
+
+amal vaqt_sekund() {
+    qaytar vaqt() / 1000
+}
+
+amal vaqt_kutish(ms) {
+    qaytar kutish(ms)
+}
+
+amal kabisa_yilimi(y) {
+    agar (y % 4 == 0 va y % 100 != 0) yoki (y % 400 == 0) {
+        qaytar 1
+    }
+    qaytar 0
+}
+
+amal oy_kunlari(yil, oy) {
+    agar oy == 2 {
+        agar kabisa_yilimi(yil) == 1 { qaytar 29 }
+        qaytar 28
+    }
+    agar oy == 4 yoki oy == 6 yoki oy == 9 yoki oy == 11 {
+        qaytar 30
+    }
+    qaytar 31
+}
+
+amal vaqt_format_iso(ms) {
+    sekund = ms / 1000
+    kun_sekund = sekund % 86400
+    agar kun_sekund < 0 {
+        kun_sekund = kun_sekund + 86400
+    }
+    soat = kun_sekund / 3600
+    daqiqa = (kun_sekund % 3600) / 60
+    soniya = kun_sekund % 60
+
+    kunlar = sekund / 86400
+    yil = 1970
+    toki 1 {
+        yil_kun = 365
+        agar kabisa_yilimi(yil) == 1 {
+            yil_kun = 366
+        }
+        agar kunlar >= yil_kun {
+            kunlar = kunlar - yil_kun
+            yil = yil + 1
+        } aks {
+            toxtat
+        }
+    }
+
+    oy = 1
+    toki oy <= 12 {
+        m_kun = oy_kunlari(yil, oy)
+        agar kunlar >= m_kun {
+            kunlar = kunlar - m_kun
+            oy = oy + 1
+        } aks {
+            toxtat
+        }
+    }
+    kun = kunlar + 1
+
+    yil_str = son_matnga(yil)
+    oy_str = matn_chap_toldir(son_matnga(oy), 2, "0")
+    kun_str = matn_chap_toldir(son_matnga(kun), 2, "0")
+    soat_str = matn_chap_toldir(son_matnga(soat), 2, "0")
+    daqiqa_str = matn_chap_toldir(son_matnga(daqiqa), 2, "0")
+    soniya_str = matn_chap_toldir(son_matnga(soniya), 2, "0")
+
+    qaytar yil_str + "-" + oy_str + "-" + kun_str + " " + soat_str + ":" + daqiqa_str + ":" + soniya_str
+}

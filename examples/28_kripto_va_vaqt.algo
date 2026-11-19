@@ -1,0 +1,44 @@
+// Algo Dasturlash Tili - Kriptografiya va Vaqt Standart Kutubxonasi Testi
+yukla "std/kripto.algo"
+yukla "std/vaqt.algo"
+
+amal asosiy() {
+    chiqar("=== 1. Kriptografiya: Base64 Kodlash va Yechish ===")
+    matn = "Algo tili - x86_64 mashina kodida, zero-libc!"
+    kodlangan = baza64_kodla(matn)
+    chiqar("Asl matn:", matn)
+    chiqar("Base64:", kodlangan)
+
+    qaytarilgan = baza64_yech(kodlangan)
+    chiqar("Qayta yechilgan:", qaytarilgan)
+    tasdiqla(matn == qaytarilgan, "Base64 simmetriyasi buzildi")
+
+    chiqar("\n=== 2. Kriptografiya: FNV-1a Xesh va XOR Shifrlash ===")
+    xesh1 = xesh_fnv1a("parol123")
+    xesh2 = xesh_fnv1a("parol124")
+    chiqar("'parol123' xeshi:", xesh1)
+    chiqar("'parol124' xeshi:", xesh2)
+    tasdiqla(xesh1 != xesh2, "Xesh to'qnashuvi")
+
+    kalit = "maxfiy_kalit"
+    shifr = shifr_xor("Maxfiy xabar", kalit)
+    asliga = shifr_xor(shifr, kalit)
+    chiqar("XOR asliga qaytdi:", asliga)
+    tasdiqla(asliga == "Maxfiy xabar", "XOR shifrlash xato")
+
+    onolti = son_onolti(255)
+    chiqar("255 ning 16-lik (HEX) shakli:", onolti)
+    tasdiqla(onolti == "FF", "Hex format xato")
+
+    chiqar("\n=== 3. Vaqt va Sana: ISO 8601 Formatlash ===")
+    hozir = vaqt_ms()
+    chiqar("Joriy Unix vaqt (ms):", hozir)
+    tasdiqla(hozir > 1700000000000, "Vaqt musbat va real bolishi kerak")
+
+    iso = vaqt_format_iso(hozir)
+    chiqar("Formatlangan sana va vaqt (ISO 8601 UTC):", iso)
+    tasdiqla(uzunlik(iso) == 19, "ISO sana uzunligi 19 bolishi kerak")
+
+    chiqar("\nKriptografiya va Vaqt kutubxonalari 100% muvaffaqiyatli ishladi!")
+    qaytar 0
+}

@@ -59,6 +59,14 @@ typedef enum {
     TOKEN_LTE,        // <=
     TOKEN_GT,         // >
     TOKEN_GTE,        // >=
+
+    // Bitwise operatorlari
+    TOKEN_AMP,        // &
+    TOKEN_PIPE,       // |
+    TOKEN_CARET,      // ^
+    TOKEN_TILDE,      // ~
+    TOKEN_SHL,        // <<
+    TOKEN_SHR,        // >>
 } TokenType;
 
 typedef struct {

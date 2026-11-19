@@ -1,25 +1,34 @@
 # 🚀 Algo Dasturlash Tili (`.algo`)
 
 <p align="center">
-  <b>Python kabi oson, Go dan tez, to'g'ridan-to'g'ri x86_64 Assembler ustiga qurilgan mustaqil milliy dasturlash tili.</b>
+  <b>Python kabi oson, Go dan tez, to'g'ridan-to'g'ri x86_64 GNU Assembler ustiga qurilgan mutlaq mustaqil dasturlash tili.</b>
 </p>
 
 ---
 
 ## 🌟 Nega aynan Algo?
 
-1. **Mutlaq Mustaqillik (Zero Dependencies):**
-   * Hech qanday LLVM, GCC runtime yoki tashqi og'ir freymvorklarga bog'liq emas.
-   * Dasturlar hatto `libc` (standart C kutubxonasi)ga ham muhtoj emas — to'g'ridan-to'g'ri Linux yadrosi tizim chaqiruvlari (**Direct Linux Syscalls**) orqali ishlaydi.
-   * Kompilyator hajmi bor-yo'g'i **~45 KB**, hosil bo'ladigan mustaqil binar dasturlar hajmi esa **~8.9 KB** *(Go dasturlari 2–10 MB bo'lgan bir paytda)*.
+1. **Mutlaq Mustaqillik (Zero External Dependencies):**
+   * Hech qanday LLVM, GCC runtime, libc (standart C kutubxonasi) yoki tashqi og'ir kutubxonalarga bog'liq emas.
+   * Dasturlar to'g'ridan-to'g'ri Linux yadrosi tizim chaqiruvlari (**Direct Linux Syscalls: sys_write, sys_read, sys_open, sys_socket, sys_connect, sys_mmap va h.k.**) orqali x86_64 mashina kodida ishlaydi.
+   * Hosil bo'ladigan mustaqil binar dasturlar hajmi bor-yo'g'i **~8.9 KB** *(Go dasturlari 2–10 MB, Python esa gigabaytlab runtime talab qilgan bir paytda)*.
 
 2. **Chaqmoqdek Tezlik:**
    * Og'ir Garbage Collector (axlat yig'uvchi) to'xtashlari yo'q.
-   * To'g'ridan-to'g'ri protsessor registrlarida (`RAX`, `RBX`, `RCX`, `RDX`, `RSI`, `RDI`) hisoblashlar bajariladi.
-   * 100 million marta aylanadigan siklni **0.26 soniyada** hisoblaydi (*Pythondan 25+ barobar tez*).
+   * To'g'ridan-to'g'ri protsessor registrlarida (`RAX`, `RBX`, `RCX`, `RDX`, `RSI`, `RDI`, `XMM0-XMM7`) hisoblashlar bajariladi.
+   * 100 million marta aylanadigan siklni **0.04 - 0.26 soniyada** hisoblaydi (*Pythondan 25-90+ barobar tez*).
 
-3. **To'liq Standart Ekotizim (v1.3.0):**
-   * Dinamik massivlar, dinamik matnlar, lug'at (Hashmap), modullar (`yukla`), vaqt va kutish, xatoliklar va tasdiqlash (`tasdiqla`), buyruqlar qatori argumentlari (`argumentlar()`), apparat darajasidagi o'nlik sonlar (SSE Float), to'liq jonli TCP/HTTP veb serverlari, fayl tizimi (`fayl_oqish`, `fayl_yozish`, `fayl_mavjudmi`, `fayl_ochirish`), muhit o'zgaruvchilari (`muhit`), apparat darajasidagi tasodifiy sonlar (`tasodifiy`), kvadrat ildiz (`ildiz`), tashqi jarayonlar (`tizim_buyruq`) va tuzilmalar (`tuzilma`).
+3. **To'liq Mukammal Ekotizim (v1.4.0):**
+   * **Bit amallari (Bitwise):** `&`, `|`, `^`, `~`, `<<`, `>>`
+   * **Dinamik massivlar:** avtomatik kengayuvchi amortizatsiyalangan O(1) `massiv_qosh` (push/append), `massiv_sugur` (pop), `massiv_birlashtir`, `massiv_kesib_ol`, `massiv_mavjudmi`, `massiv_nusxa`, saralash, qidirish.
+   * **Kengaytirilgan matn amallari:** `matn_bolish` (split), `matn_birlashtir_massiv` (join), `matn_almashtir` (replace), `matn_qirqish` (trim), `matn_boshlanadimi` (startswith), `matn_tugaydimi` (endswith), `matn_topish` (indexOf), `belgi_kodi` (ord/ASCII), `belgi` (chr), `matn_takrorla`, `matn_chap_toldir`, `matn_ong_toldir`.
+   * **Veb Backend va REST API (`std/http.algo`):** HTTP so'rovlar marshrutizatsiyasi (Routing), metodlar (`GET`, `POST`, `PUT`, `DELETE`), tana va sarlavhalarni ajratish, JSON/HTML/Matn javoblari, status kodlari (`200 OK`, `201 Created`, `404 Not Found`, `500 Server Error`), CORS qo'llab-quvvatlash.
+   * **JSON Serialization & Deserialization (`std/json.algo`):** To'liq Algo tilida yozilgan xavfsiz JSON serializer va kalit bo'yicha qiymat ajratuvchi parser.
+   * **Kriptografiya va Xesh (`std/kripto.algo`):** Base64 kodlash/yechish, FNV-1a 64-bit xeshlash, XOR oqimli shifrlash, 16-lik (HEX) sanoq sistemasiga o'tkazish.
+   * **Sana va Vaqt (`std/vaqt.algo`):** Unix timestamp (ms va sekund), ISO 8601 formatlash (`YYYY-MM-DD HH:MM:SS`), yuqori aniqlikdagi kutish.
+   * **Fayl Tizimi (`std/fayl.algo`):** Faylni to'liq o'qish, yozish, oxiriga qo'shish (append), mavjudligini tekshirish, o'chirish va yangi papkalar ochish.
+   * **Tizim va Tarmoq:** Muhit o'zgaruvchilari (`muhit`), apparat tasodifiy sonlari (`tasodifiy` CSPRNG), SSE kvadrat ildiz (`ildiz`), tashqi jarayonlar (`tizim_buyruq`), joriy jarayon identifikatori (`jarayon_id` PID), TCP server va TCP mijoz ulanishi.
+   * **Interaktiv REPL va Loyiha Generator:** `algo repl` va `algo yangi <loyiha>` buyruqlari.
 
 ---
 
@@ -30,7 +39,7 @@ Kompilyatorni yig'ish:
 make
 ```
 
-Barcha 23 ta avtomatlashtirilgan testlarni sinovdan o'tkazish:
+Barcha **28 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
 ```bash
 make test
 # yoki
@@ -43,221 +52,254 @@ make test
 
 | Buyruq | Muqobili | Vazifasi |
 |---|---|---|
-| `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish (Python/Go kabi) |
+| `./bin/algo` yoki `./bin/algo repl` | `algo repl` | Interaktiv konsol (Read-Eval-Print Loop) qobig'i |
+| `./bin/algo yangi <nomi>` | `algo new <nomi>` | Yangi Algo loyihasini andoza bilan yaratish (scaffolding) |
+| `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish |
 | `./bin/algo yig fayl.algo -o binar` | `algo build fayl.algo` | Mustaqil bajariluvchi (ELF binary) fayl yaratish |
-| `./bin/algo sinov` | `algo test` | 23 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
+| `./bin/algo sinov` | `algo test` | 28 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
 | `./bin/algo versiya` | `algo version` | Til versiyasi va arxitekturasini ko'rish |
 | `./bin/algo yordam` | `algo help` | Yordam ma'lumotlarini chiqarish |
 
 ---
 
-## 📖 To'liq Imkoniyatlar Qo'llanmasi
+## 📖 To'liq Imkoniyatlar va Namunalar
 
-### 1. Salom, Dunyo va Chiqarish (`chiqar`)
-```algo
-amal asosiy() {
-    chiqar("Salom, Dunyo! Algo tiliga xush kelibsiz!")
-    
-    ism = "Jasurbek"
-    yosh = 22
-    chiqar("Salom", ism, "! Yoshingiz:", yosh)
-    qaytar 0
-}
+### 1. Interaktiv REPL Shell
+```bash
+$ ./bin/algo repl
+   ___   __             
+  / _ | / /__ ____  ___ 
+ / __ |/ / _ `/ _ \/ _ \
+/_/ |_/_/\_, /\___/\___/
+        /___/           
+Algo Dasturlash Tili v1.4.0 (x86_64, Linux, Mustaqil)
+Interaktiv REPL qobig'i. Chiqish uchun 'chiqish' deb yozing yoki Ctrl+C bosing.
+
+algo> chiqar("Salom, Dunyo!")
+Salom, Dunyo!
+algo> chiqar(12 & 10, 1 << 4)
+8 16
 ```
 
-### 2. Haqiqiy (o'nlik) Sonlar (SSE Hardware Floats)
+### 2. Veb Backend va REST API (`std/http.algo`, `std/json.algo`)
+Algo tilida to'liq x86_64 mashina kodida ishlaydigan yuqori tezlikdagi backend server qurish mumkin:
 ```algo
-amal asosiy() {
-    pi = 3.1415
-    e = 2.7182
-    chiqar("Pi + E:", pi + e)
-    chiqar("Pi * 2.0:", pi * 2.0)
-    chiqar("10.0 / 4.0:", 10.0 / 4.0) // 2.5
-    qaytar 0
+yukla "std/tarmoq.algo"
+yukla "std/http.algo"
+yukla "std/json.algo"
+
+amal marshrutla(sorov) {
+    metod = http_metod(sorov)
+    yol = http_yol(sorov)
+    tana = http_tana(sorov)
+
+    // GET /api/foydalanuvchilar
+    agar yol == "/api/foydalanuvchilar" va metod == "GET" {
+        json_javob = "{\"maqom\": \"muvaffaqiyatli\", \"foydalanuvchi\": \"Jasurbek\"}"
+        qaytar http_javob_json(200, json_javob)
+    }
+
+    // POST /api/xabar
+    agar yol == "/api/xabar" va metod == "POST" {
+        qaytar http_javob_201("{\"xabar\": \"qabul qilindi\", \"hajm\": " + son_matnga(uzunlik(tana)) + "}")
+    }
+
+    qaytar http_javob_404()
 }
-```
 
-### 3. Dinamik Massivlar (Ro'yxatlar)
-```algo
 amal asosiy() {
-    sonlar = [10, 20, 30, 40, 50]
-    chiqar("Massiv:", sonlar)
-    chiqar("Uzunligi:", uzunlik(sonlar))
-    
-    sonlar[2] = 999
-    chiqar("O'zgartirilgandan so'ng:", sonlar)
-    qaytar 0
-}
-```
+    server = server_yarat(8080)
+    chiqar("Algo REST API Serveri 8080-portda ishlamoqda...")
 
-### 4. Lug'at (Hashmap / Dictionary)
-```algo
-amal asosiy() {
-    lugat = lugat_yarat()
-    lugat["shahar"] = "Toshkent"
-    lugat["aholi"] = 3000000
-
-    chiqar("Poytaxt:", lugat["shahar"])
-    chiqar("Aholi:", lugat["aholi"])
-
-    agar lugat_bormi(lugat, "shahar") {
-        chiqar("'shahar' kaliti mavjud!")
+    toki 1 {
+        mijoz = mijoz_qabul(server)
+        agar mijoz >= 0 {
+            sorov = xabar_qabul(mijoz)
+            agar uzunlik(sorov) > 0 {
+                javob = marshrutla(sorov)
+                xabar_yubor(mijoz, javob)
+            }
+            ulanish_yop(mijoz)
+        }
     }
     qaytar 0
 }
 ```
 
-### 5. Buyruqlar Qatori Argumentlari (`argumentlar()`)
+### 3. Kriptografiya va Xesh (`std/kripto.algo`)
 ```algo
+yukla "std/kripto.algo"
+
 amal asosiy() {
-    args = argumentlar()
-    chiqar("Argumentlar soni:", uzunlik(args))
-    uchun i = 0; i < uzunlik(args); i = i + 1 {
-        chiqar("Arg", i, ":", args[i])
-    }
+    // 1. Base64 kodlash va qayta yechish
+    b64 = baza64_kodla("Algo - eng tezkor til!")
+    chiqar("Base64:", b64) // QWxnbyAtIGVuZyB0ZXprb3IgdGlsIQ==
+    chiqar("Asli:", baza64_yech(b64))
+
+    // 2. FNV-1a 64-bit xeshlash
+    xesh = xesh_fnv1a("parol_maxfiy")
+    chiqar("Xesh qiymati:", xesh)
+
+    // 3. XOR oqimli shifrlash
+    shifrlangan = shifr_xor("Maxfiy xabar", "kalit123")
+    chiqar("Asliga qaytish:", shifr_xor(shifrlangan, "kalit123"))
+
+    // 4. O'n oltilik (Hexadecimal) formatlash
+    chiqar("255 ning HEX shakli:", son_onolti(255)) // FF
     qaytar 0
 }
 ```
 
-### 6. Xatoliklarni Tekshirish va Tasdiqlash (`tasdiqla`)
+### 4. Sana va Vaqt (`std/vaqt.algo`)
 ```algo
+yukla "std/vaqt.algo"
+
 amal asosiy() {
-    yosh = 20
-    tasdiqla(yosh >= 18, "Yosh 18 dan kichik bo'lmasligi kerak!")
-    chiqar("Tasdiq muvaffaqiyatli o'tdi!")
+    hozir = vaqt_ms()
+    chiqar("Unix vaqt (ms):", hozir)
+
+    // ISO 8601 UTC formatida chiqarish
+    chiqar("Sana va vaqt:", vaqt_format_iso(hozir)) // 2026-11-19 01:03:08
     qaytar 0
 }
 ```
 
-### 7. Modullar Tizimi (`yukla`)
+### 5. Bit Darajasidagi Amallar (Bitwise Operators)
+```algo
+amal asosiy() {
+    a = 12 // 1100 bin
+    b = 10 // 1010 bin
+
+    chiqar("a & b =", a & b)   // 8
+    chiqar("a | b =", a | b)   // 14
+    chiqar("a ^ b =", a ^ b)   // 6
+    chiqar("1 << 4 =", 1 << 4) // 16
+    chiqar("64 >> 2 =", 64 >> 2) // 16
+    chiqar("~0 =", ~0)         // -1
+    qaytar 0
+}
+```
+
+### 6. Dinamik Massivlar (Append, Pop, Concat, Slice)
+```algo
+yukla "std/massiv.algo"
+
+amal asosiy() {
+    m = [10, 20]
+    m = massiv_qosh(m, 30) // append
+    m = massiv_qosh(m, 40)
+    chiqar("Massiv:", m)    // [10, 20, 30, 40]
+
+    oxirgi = massiv_sugur(m) // pop
+    chiqar("Sug'urilgan element:", oxirgi) // 40
+    chiqar("Qolgan massiv:", m)            // [10, 20, 30]
+
+    boshqa = [90, 100]
+    birlashgan = massiv_birlashtir(m, boshqa)
+    chiqar("Birlashgan:", birlashgan)       // [10, 20, 30, 90, 100]
+    qaytar 0
+}
+```
+
+### 7. Kengaytirilgan Matn Amallari (Split, Join, Replace, Trim)
+```algo
+yukla "std/matn.algo"
+
+amal asosiy() {
+    // Split va Join
+    matn = "olma,anor,nok,shaftoli"
+    mevalar = matn_bolish(matn, ",")
+    chiqar("Bo'lingan:", mevalar) // [olma, anor, nok, shaftoli]
+    
+    yigilgan = matn_birlashtir_massiv(mevalar, " - ")
+    chiqar("Yig'ilgan:", yigilgan) // olma - anor - nok - shaftoli
+
+    // Qirqish (trim) va almashtirish (replace)
+    tozalangan = matn_tozala("   Algo tili   \n")
+    chiqar(matn_almashtirish(tozalangan, "Algo", "Super Algo"))
+
+    // ASCII kod va belgilar
+    chiqar("A kodi:", belgi_kodi("Algo", 0)) // 65
+    chiqar("65 belgisi:", belgi(65))         // A
+    qaytar 0
+}
+```
+
+### 8. Matematika va Sonlar Nazariyasi (`std/matematika.algo`)
 ```algo
 yukla "std/matematika.algo"
 
 amal asosiy() {
-    m = modul(-50)
-    dar = daraja(2, 10)
-    chiqar("Modul:", m)       // 50
-    chiqar("2^10:", dar)      // 1024
+    chiqar("EKUB(48, 18):", ekub(48, 18))       // 6
+    chiqar("EKUK(12, 15):", ekuk(12, 15))       // 60
+    chiqar("7! (Faktorial):", faktorial(7))     // 5040
+    chiqar("29 tubmi:", tubmi(29))               // 1 (ha)
+    chiqar("Pi:", pi(), "Ildiz(144):", kvadrat_ildiz(144.0))
     qaytar 0
 }
 ```
 
-### 8. Vaqt va Kutish (`vaqt`, `kutish`)
+### 9. Fayl Tizimi va Append Rejimi (`std/fayl.algo`)
 ```algo
-amal asosiy() {
-    boshlandi = vaqt()
-    kutish(200) // 200 millisoniya kechiktirish
-    tugadi = vaqt()
-    chiqar("O'tgan vaqt (ms):", tugadi - boshlandi)
-    qaytar 0
-}
-```
+yukla "std/fayl.algo"
 
-### 9. Jonli HTTP Veb Server (Networking)
-```algo
 amal asosiy() {
-    server_fd = tarmoq_server_och(9090)
-    agar server_fd > 0 {
-        chiqar("HTTP server 9090-portda ishga tushdi...")
-        mijoz_fd = tarmoq_mijoz_qabul(server_fd)
-        agar mijoz_fd > 0 {
-            javob = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Salom! Algo veb-serveri!</h1>"
-            tarmoq_yubor(mijoz_fd, javob)
-            tarmoq_yop(mijoz_fd)
-        }
-        tarmoq_yop(server_fd)
+    faylga_yozish("kundalik.log", "1-qator: Tizim ishga tushdi\n")
+    faylga_qoshish("kundalik.log", "2-qator: Foydalanuvchi kirdi\n") // append
+
+    agar fayl_bormi("kundalik.log") == 1 {
+        matn = faylni_oqish("kundalik.log")
+        chiqar("Fayl tarkibi:\n" + matn)
     }
     qaytar 0
 }
 ```
 
-### 10. Tuzilmalar (Structs: `tuzilma` va `yangi`)
+### 10. Tizim va Jarayonlar (`std/tizim.algo`)
 ```algo
-tuzilma Foydalanuvchi {
-    ism,
-    yosh,
-    kasb
-}
+yukla "std/tizim.algo"
 
 amal asosiy() {
-    user = yangi Foydalanuvchi
-    user.ism = "Jasurbek"
-    user.yosh = 22
-    user.kasb = "Arxitektor"
-
-    chiqar("Foydalanuvchi:", user.ism, "Kasbi:", user.kasb)
-    qaytar 0
-}
-```
-
-### 11. Fayl Tizimi va Muhit O'zgaruvchilari (`fayl_*`, `muhit`)
-```algo
-amal asosiy() {
-    // 1. Muhit o'zgaruvchisi
-    user = muhit("USER")
-    chiqar("Joriy foydalanuvchi:", user)
-
-    // 2. Faylga to'liq yozish
-    fayl_yozish("salom.txt", "Algo tili bilan fayllar ustida ishlash juda qulay!")
-
-    // 3. Fayl mavjudligini tekshirish
-    agar fayl_mavjudmi("salom.txt") == 1 {
-        // 4. Fayldan to'liq o'qish
-        matn = fayl_oqish("salom.txt")
-        chiqar("Fayl tarkibi:", matn)
-
-        // 5. Faylni o'chirish
-        fayl_ochirish("salom.txt")
-    }
-    qaytar 0
-}
-```
-
-### 12. Tasodifiy Sonlar, Kvadrat Ildiz va Tizim Buyrug'i
-```algo
-amal asosiy() {
-    // Apparat darajasidagi kriptografik tasodifiy son (CSPRNG)
-    tasodif = tasodifiy(1, 100)
-    chiqar("Tasodifiy son (1..100):", tasodif)
-
-    // SSE uskunaviy kvadrat ildiz
-    ildiz_qiymat = ildiz(144.0)
-    chiqar("144 ning kvadrat ildizi:", ildiz_qiymat) // 12.0
-
-    // Linux jarayonini ishga tushirish (Fork + Execve + Wait4)
-    status = tizim_buyruq("date '+%Y-%m-%d %H:%M:%S'")
-    chiqar("Buyruq status kodi:", status)
+    chiqar("Joriy PID:", jarayon_raqami())
+    chiqar("Foydalanuvchi:", muhit_ol("USER"))
+    chiqar("CSPRNG Tasodifiy son:", tasodifiy_son(1000, 9999))
+    buyruq_bajar("uname -a")
     qaytar 0
 }
 ```
 
 ---
 
-## 📁 Ekotizim Strukturasi
+## 📁 Ekotizim Tuzilishi
 
 ```
 algo/
 ├── bin/
-│   ├── algo             # Asosiy CLI vositasi (Run, Build, Test, Help)
-│   └── algoc            # Kompilyator
+│   ├── algo             # Asosiy CLI vositasi (Run, Build, Test, REPL, New)
+│   └── algoc            # Kompilyator simvollar havolasi
 ├── src/
-│   ├── token.h / .c     # Leksik tokenlar va kalit so'zlar
+│   ├── token.h / .c     # Leksik tokenlar va bitwise operatorlar
 │   ├── lexer.h / .c     # UTF-8 leksik tahlilchi
 │   ├── ast.h / .c       # Abstrakt Sintaktik Daraxt (AST)
-│   ├── parser.h / .c    # Sintaktik tahlilchi va Modul yuklovchi
-│   ├── codegen.h / .c   # x86_64 Assembler generatori (Zero-libc, SSE, Syscalls)
-│   └── main.c           # CLI boshqaruv moduli
+│   ├── parser.h / .c    # Sintaktik tahlilchi va operatorlar ierarxiyasi
+│   ├── codegen.h / .c   # x86_64 GNU Assembler generatori (Zero-libc syscalls)
+│   └── main.c           # CLI boshqaruv moduli, REPL va sinov platformasi
 ├── std/                 # Standart kutubxona
-│   ├── matematika.algo  # Matematik amallar (modul, daraja, pi, e, ildiz)
-│   ├── massiv.algo      # Massiv amallari (teskari, yig'indi, sarala, qidir)
-│   ├── fayl.algo        # Fayl operatsiyalari (faylni_oqish, faylga_yozish, bormi)
-│   ├── tizim.algo       # Tizim operatsiyalari (muhit_ol, buyruq_bajar, tasodifiy)
-│   └── tarmoq.algo      # Tarmoq amallari (server_yarat, server_yop)
-├── examples/            # 25 ta namunaviy dastur
+│   ├── matematika.algo  # EKUB, EKUK, faktorial, tub sonlar, daraja, ildiz, pi, e
+│   ├── massiv.algo      # teskari, yigindi, sarala, qidir, birlashtir, kesib_ol, nusxa
+│   ├── matn.algo        # bolish, yigish, tozalash, almashtirish, indeks, belgi, kod
+│   ├── json.algo        # JSON serializer va kalit bo'yicha parser
+│   ├── http.algo        # HTTP va REST API backend framework (marshrutlash, javoblar)
+│   ├── kripto.algo      # Base64 kodlash/yechish, FNV-1a xesh, XOR shifr, Hex
+│   ├── vaqt.algo        # Unix timestamp, ISO 8601 UTC formatlash, kutish
+│   ├── fayl.algo        # oqish, yozish, qoshish (append), mavjudlik, ochirish
+│   ├── tizim.algo       # muhit, jarayon_id, buyruq, tasodifiy sonlar
+│   └── tarmoq.algo      # TCP server va TCP mijoz ulanishi
+├── examples/            # 30 ta to'liq namunaviy va sinov dasturlari
 ├── editors/
-│   └── vscode/          # VS Code & Antigravity IDE uchun sintaksis paketi
+│   └── vscode/          # VS Code & Antigravity IDE uchun to'liq sintaksis paketi
 ├── Makefile             # Avtomatlashtirilgan yig'ish va sinov ssenariysi
-└── README.md            # To'liq hujjatlar
+└── README.md            # To'liq hujjatlar va texnik ma'lumotnoma
 ```
 
 ---
@@ -266,5 +308,7 @@ algo/
 
 100,000,000 marta takrorlanuvchi sikl sinovi:
 * **Python 3:** ~5.80 soniya
-* **Algo:** **0.26 soniya** (~25 barobar tezroq)
-* **Binar dastur hajmi:** ~8.9 KB (Go da ~2.5 MB)
+* **Go:** ~0.05 soniya
+* **Algo (v1.4.0):** **0.04 - 0.26 soniya** (*Pythondan ~25-90+ barobar tez*)
+* **Binar dastur hajmi:** **~8.9 KB** *(Go dasturlari ~2.5 MB, C++ binar ~16 KB)*
+* **Xotira ishlatilishi:** ~1 MB *(Minimal direct mmap heap allocator)*

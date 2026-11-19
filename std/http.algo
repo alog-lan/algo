@@ -1,0 +1,80 @@
+// Algo Dasturlash Tili - Standart HTTP va REST Backend Kutubxonasi (std/http.algo)
+// To'liq mustaqil x86_64, zero-libc, yuqori unumdor veb backend framework
+
+amal http_metod(sorov) {
+    agar (uzunlik(sorov) == 0) { qaytar "" }
+    bosh_boshliq = matn_topish(sorov, " ")
+    agar (bosh_boshliq <= 0) { qaytar "" }
+    qaytar matn_kesish(sorov, 0, bosh_boshliq)
+}
+
+amal http_yol(sorov) {
+    agar (uzunlik(sorov) == 0) { qaytar "/" }
+    bosh_boshliq = matn_topish(sorov, " ")
+    agar (bosh_boshliq < 0) { qaytar "/" }
+    
+    // Ikkinchi bo'shliqni topish (metod va versiya orasidagi yo'l)
+    qolgan = matn_kesish(sorov, bosh_boshliq + 1, uzunlik(sorov) - (bosh_boshliq + 1))
+    ikkinchi_boshliq = matn_topish(qolgan, " ")
+    agar (ikkinchi_boshliq < 0) {
+        qaytar qolgan
+    }
+    qaytar matn_kesish(qolgan, 0, ikkinchi_boshliq)
+}
+
+amal http_tana(sorov) {
+    sep_idx = matn_topish(sorov, "\r\n\r\n")
+    agar (sep_idx >= 0) {
+        qaytar matn_kesish(sorov, sep_idx + 4, uzunlik(sorov) - (sep_idx + 4))
+    }
+    sep2 = matn_topish(sorov, "\n\n")
+    agar (sep2 >= 0) {
+        qaytar matn_kesish(sorov, sep2 + 2, uzunlik(sorov) - (sep2 + 2))
+    }
+    qaytar ""
+}
+
+amal http_status_matni(status_kodi) {
+    agar (status_kodi == 200) { qaytar "200 OK" }
+    agar (status_kodi == 201) { qaytar "201 Created" }
+    agar (status_kodi == 204) { qaytar "204 No Content" }
+    agar (status_kodi == 301) { qaytar "301 Moved Permanently" }
+    agar (status_kodi == 302) { qaytar "302 Found" }
+    agar (status_kodi == 400) { qaytar "400 Bad Request" }
+    agar (status_kodi == 401) { qaytar "401 Unauthorized" }
+    agar (status_kodi == 403) { qaytar "403 Forbidden" }
+    agar (status_kodi == 404) { qaytar "404 Not Found" }
+    agar (status_kodi == 405) { qaytar "405 Method Not Allowed" }
+    agar (status_kodi == 500) { qaytar "500 Internal Server Error" }
+    qaytar son_matnga(status_kodi) + " Status"
+}
+
+amal http_javob_qur(status_kodi, content_type, tana) {
+    status_satr = http_status_matni(status_kodi)
+    uzun = son_matnga(uzunlik(tana))
+    qaytar "HTTP/1.1 " + status_satr + "\r\nContent-Type: " + content_type + "\r\nContent-Length: " + uzun + "\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\n\r\n" + tana
+}
+
+amal http_javob_json(status_kodi, json_matn) {
+    qaytar http_javob_qur(status_kodi, "application/json; charset=utf-8", json_matn)
+}
+
+amal http_javob_matn(status_kodi, matn) {
+    qaytar http_javob_qur(status_kodi, "text/plain; charset=utf-8", matn)
+}
+
+amal http_javob_html(status_kodi, html_matn) {
+    qaytar http_javob_qur(status_kodi, "text/html; charset=utf-8", html_matn)
+}
+
+amal http_javob_404() {
+    qaytar http_javob_json(404, "{\"xato\": \"Sahifa topilmadi\", \"kod\": 404}")
+}
+
+amal http_javob_500(xabar) {
+    qaytar http_javob_json(500, "{\"xato\": \"" + xabar + "\", \"kod\": 500}")
+}
+
+amal http_javob_201(json_matn) {
+    qaytar http_javob_json(201, json_matn)
+}

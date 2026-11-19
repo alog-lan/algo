@@ -1,0 +1,77 @@
+// Algo Dasturlash Tili - Bitwise, Dinamik Massiv va Kengaytirilgan Matn Amallari Testi
+
+amal asosiy() {
+    chiqar("=== 1. Bit Darajasidagi Amallar (Bitwise Operators) ===")
+    a = 12 // 1100 bin
+    b = 10 // 1010 bin
+
+    va_bit = a & b
+    yoki_bit = a | b
+    xor_bit = a ^ b
+    shl_bit = 1 << 4
+    shr_bit = 64 >> 2
+    not_bit = ~0
+
+    chiqar("12 & 10 =", va_bit)
+    chiqar("12 | 10 =", yoki_bit)
+    chiqar("12 ^ 10 =", xor_bit)
+    chiqar("1 << 4 =", shl_bit)
+    chiqar("64 >> 2 =", shr_bit)
+    chiqar("~0 =", not_bit)
+
+    tasdiqla(va_bit == 8, "Bitwise AND xato")
+    tasdiqla(yoki_bit == 14, "Bitwise OR xato")
+    tasdiqla(xor_bit == 6, "Bitwise XOR xato")
+    tasdiqla(shl_bit == 16, "Shift Left xato")
+    tasdiqla(shr_bit == 16, "Shift Right xato")
+    tasdiqla(not_bit == -1, "Bitwise NOT xato")
+
+    chiqar("\n=== 2. Dinamik Massiv (massiv_qosh va massiv_sugur) ===")
+    m = [10, 20]
+    chiqar("Boshlang'ich massiv:", m)
+    
+    m = massiv_qosh(m, 30)
+    m = massiv_qosh(m, 40)
+    m = massiv_qosh(m, 50)
+    chiqar("Qo'shilgandan so'ng massiv:", m)
+    chiqar("Yangi uzunlik:", uzunlik(m))
+    tasdiqla(uzunlik(m) == 5, "Uzunlik 5 bo'lishi kerak")
+    tasdiqla(m[4] == 50, "Oxirgi element 50 bo'lishi kerak")
+
+    sugurildi = massiv_sugur(m)
+    chiqar("Sug'urib olingan oxirgi element:", sugurildi)
+    chiqar("Sug'urilgandan keyingi massiv:", m)
+    chiqar("Yangi uzunlik:", uzunlik(m))
+    tasdiqla(sugurildi == 50, "Sug'urilgan element 50 bo'lishi kerak")
+    tasdiqla(uzunlik(m) == 4, "Uzunlik 4 bo'lishi kerak")
+
+    chiqar("\n=== 3. Kengaytirilgan Matn Amallari (startswith, endswith, trim, replace) ===")
+    matn = "  Algo - zamonaviy va tezkor til!  \n"
+    tozalangan = matn_qirqish(matn)
+    chiqar("Tozalangan matn:", tozalangan)
+    tasdiqla(tozalangan == "Algo - zamonaviy va tezkor til!", "matn_qirqish xato")
+
+    chiqar("Boshlanadimi ('Algo'):", matn_boshlanadimi(tozalangan, "Algo"))
+    chiqar("Tugaydimi ('til!'):", matn_tugaydimi(tozalangan, "til!"))
+    tasdiqla(matn_boshlanadimi(tozalangan, "Algo") == 1, "matn_boshlanadimi xato")
+    tasdiqla(matn_tugaydimi(tozalangan, "til!") == 1, "matn_tugaydimi xato")
+
+    almashtirilgan = matn_almashtir("olma, anor, olma", "olma", "nok")
+    chiqar("Almashtirilgan matn:", almashtirilgan)
+    tasdiqla(almashtirilgan == "nok, anor, nok", "matn_almashtir xato")
+
+    chiqar("\n=== 4. Matnni Bo'lish va Birlashtirish (split va join) ===")
+    mevalar = "olma,anor,nok,shaftoli"
+    bolaklar = matn_bolish(mevalar, ",")
+    chiqar("Bo'lingan massiv:", bolaklar)
+    tasdiqla(uzunlik(bolaklar) == 4, "Bo'laklar soni 4 bo'lishi kerak")
+    tasdiqla(bolaklar[0] == "olma", "1-bo'lak olma bo'lishi kerak")
+    tasdiqla(bolaklar[3] == "shaftoli", "4-bo'lak shaftoli bo'lishi kerak")
+
+    yigilgan = matn_birlashtir_massiv(bolaklar, " - ")
+    chiqar("Qayta yig'ilgan matn:", yigilgan)
+    tasdiqla(yigilgan == "olma - anor - nok - shaftoli", "Birlashtirish xato")
+
+    chiqar("\nBarcha yangi imkoniyatlar 100% muvaffaqiyatli ishladi!")
+    qaytar 0
+}

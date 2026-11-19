@@ -1,3 +1,5 @@
+// Algo Dasturlash Tili - Standart Matematika Kutubxonasi (std/matematika.algo)
+
 amal modul(son) {
     agar son < 0 {
         qaytar -son
@@ -37,4 +39,46 @@ amal e() {
 
 amal kvadrat_ildiz(x) {
     qaytar ildiz(x)
+}
+
+amal ekub(a, b) {
+    x = a
+    y = b
+    agar x < 0 { x = -x }
+    agar y < 0 { y = -y }
+    toki y != 0 {
+        t = y
+        y = x % y
+        x = t
+    }
+    qaytar x
+}
+
+amal ekuk(a, b) {
+    agar a == 0 yoki b == 0 { qaytar 0 }
+    e = ekub(a, b)
+    qaytar (a * b) / e
+}
+
+amal faktorial(n) {
+    agar n <= 1 { qaytar 1 }
+    f = 1
+    uchun i = 2; i <= n; i = i + 1 {
+        f = f * i
+    }
+    qaytar f
+}
+
+amal tubmi(n) {
+    agar n <= 1 { qaytar 0 }
+    agar n <= 3 { qaytar 1 }
+    agar n % 2 == 0 yoki n % 3 == 0 { qaytar 0 }
+    i = 5
+    toki i * i <= n {
+        agar n % i == 0 yoki n % (i + 2) == 0 {
+            qaytar 0
+        }
+        i = i + 6
+    }
+    qaytar 1
 }

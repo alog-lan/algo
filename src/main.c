@@ -3,11 +3,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <time.h>
 #include "parser.h"
 #include "codegen.h"
 
-#define ALGO_VERSION "1.0.0"
+#define ALGO_VERSION "1.4.0"
 
 static char *read_file(const char *path) {
     FILE *file = fopen(path, "rb");
@@ -107,11 +108,109 @@ static void print_help(void) {
     printf("  \033[1;32malgo ishga-tushir <fayl.algo>\033[0m (yoki \033[1;32malgo run\033[0m)  Kompilyatsiya qilib, darhol ishga tushirish\n");
     printf("  \033[1;32malgo yig <fayl.algo> [-o nom]\033[0m (yoki \033[1;32malgo build\033[0m) Binar mashina kodiga yig'ish\n");
     printf("  \033[1;32malgo sinov\033[0m                   (yoki \033[1;32malgo test\033[0m)  Barcha testlarni tekshirish\n");
+    printf("  \033[1;32malgo yangi <loyiha_nomi>\033[0m     (yoki \033[1;32malgo new\033[0m)   Yangi Algo loyihasini yaratish\n");
+    printf("  \033[1;32malgo repl\033[0m                                      Interaktiv buyruqlar satri (REPL)\n");
     printf("  \033[1;32malgo versiya\033[0m                 (yoki \033[1;32malgo version\033[0m) Til versiyasini ko'rish\n");
     printf("  \033[1;32malgo yordam\033[0m                  (yoki \033[1;32malgo help\033[0m)    Ushbu yordam oynasi\n\n");
     printf("\033[1mParametrlar:\033[0m\n");
     printf("  -s    Assembler (.s) kodini saqlab qolish\n");
     printf("  -o    Chiqariluvchi binar fayl nomi\n");
+}
+
+static int run_new_project(const char *name) {
+    mkdir(name, 0755);
+
+    char main_path[512];
+    snprintf(main_path, sizeof(main_path), "%s/asosiy.algo", name);
+    FILE *f = fopen(main_path, "w");
+    if (f) {
+        fprintf(f, "// %s loyihasi - Algo dasturlash tili\n\n"
+                   "amal asosiy() {\n"
+                   "    chiqar(\"Salom, Dunyo! '%s' loyihasi muvaffaqiyatli ishga tushdi!\")\n"
+                   "    qaytar 0\n"
+                   "}\n", name, name);
+        fclose(f);
+    }
+
+    char makefile_path[512];
+    snprintf(makefile_path, sizeof(makefile_path), "%s/Makefile", name);
+    f = fopen(makefile_path, "w");
+    if (f) {
+        fprintf(f, "ishga-tushir:\n\talgo ishga-tushir asosiy.algo\n\n"
+                   "yig:\n\talgo yig asosiy.algo -o dastur\n\n"
+                   "tozala:\n\trm -f dastur *.o *.s\n");
+        fclose(f);
+    }
+
+    char readme_path[512];
+    snprintf(readme_path, sizeof(readme_path), "%s/README.md", name);
+    f = fopen(readme_path, "w");
+    if (f) {
+        fprintf(f, "# %s\n\nUshbu loyiha mustaqil Algo dasturlash tilida yaratilgan.\n\n"
+                   "## Ishga tushirish:\n```bash\nalgo ishga-tushir asosiy.algo\n```\n", name);
+        fclose(f);
+    }
+
+    printf("\033[1;32m✓ '%s' loyihasi muvaffaqiyatli yaratildi!\033[0m\n\n", name);
+    printf("Boshlash uchun:\n");
+    printf("  cd %s\n", name);
+    printf("  algo ishga-tushir asosiy.algo\n\n");
+    return 0;
+}
+
+static void run_repl(void) {
+    print_banner();
+    printf("Algo REPL v%s - Interaktiv buyruqlar satri\n", ALGO_VERSION);
+    printf("Chiqish uchun 'chiq' yoki 'exit' deb yozing.\n\n");
+
+    char line[1024];
+    while (1) {
+        printf("\033[1;34malgo>\033[0m ");
+        fflush(stdout);
+        if (!fgets(line, sizeof(line), stdin)) break;
+
+        size_t len = strlen(line);
+        while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
+            line[--len] = '\0';
+        }
+        if (len == 0) continue;
+
+        if (strcmp(line, "chiq") == 0 || strcmp(line, "exit") == 0 || strcmp(line, "quit") == 0) {
+            printf("Xayr!\n");
+            break;
+        }
+
+        char temp_algo[256];
+        char temp_bin[256];
+        snprintf(temp_algo, sizeof(temp_algo), "/tmp/algo_repl_%d.algo", (int)getpid());
+        snprintf(temp_bin, sizeof(temp_bin), "/tmp/algo_repl_%d", (int)getpid());
+
+        FILE *f = fopen(temp_algo, "w");
+        if (!f) continue;
+
+        if (strstr(line, "amal ") != NULL) {
+            fprintf(f, "%s\n", line);
+        } else if (strncmp(line, "chiqar(", 7) == 0 || strchr(line, '=') != NULL) {
+            fprintf(f, "amal asosiy() {\n    %s\n    qaytar 0\n}\n", line);
+        } else {
+            fprintf(f, "amal asosiy() {\n    chiqar(%s)\n    qaytar 0\n}\n", line);
+        }
+        fclose(f);
+
+        int res = compile_algo_file(temp_algo, temp_bin, 0, 0);
+        if (res == 0) {
+            pid_t pid = fork();
+            if (pid == 0) {
+                execl(temp_bin, temp_bin, NULL);
+                exit(127);
+            } else {
+                int status;
+                waitpid(pid, &status, 0);
+            }
+            unlink(temp_bin);
+        }
+        unlink(temp_algo);
+    }
 }
 
 static int run_command_algo(const char *file) {
@@ -159,7 +258,12 @@ static void run_all_tests(void) {
         "examples/20_argumentlar.algo",
         "examples/21_tasdiqla.algo",
         "examples/24_tizim_imkoniyatlari.algo",
-        "examples/25_standart_kutubxona.algo"
+        "examples/25_standart_kutubxona.algo",
+        "examples/26_bit_va_massiv_amallari.algo",
+        "examples/27_json_sinov.algo",
+        "examples/28_kripto_va_vaqt.algo",
+        "examples/29_backend_rest_api.algo",
+        "examples/30_kengaytirilgan_matematika_massiv.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);
@@ -194,11 +298,21 @@ static void run_all_tests(void) {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        print_help();
-        return 1;
+        run_repl();
+        return 0;
     }
 
     const char *cmd = argv[1];
+
+    if (strcmp(cmd, "repl") == 0) {
+        run_repl();
+        return 0;
+    }
+
+    if (strcmp(cmd, "yangi") == 0 || strcmp(cmd, "new") == 0 || strcmp(cmd, "init") == 0) {
+        const char *proj_name = (argc >= 3) ? argv[2] : "yangi_loyiha";
+        return run_new_project(proj_name);
+    }
 
     if (strcmp(cmd, "yordam") == 0 || strcmp(cmd, "help") == 0 || strcmp(cmd, "--help") == 0 || strcmp(cmd, "-h") == 0) {
         print_help();

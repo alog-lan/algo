@@ -1,0 +1,79 @@
+// Algo Dasturlash Tili - Standart Matn Kutubxonasi (std/matn.algo)
+
+amal matn_boshlanishi(s, prefiks) {
+    qaytar matn_boshlanadimi(s, prefiks)
+}
+
+amal matn_tugashi(s, suffiks) {
+    qaytar matn_tugaydimi(s, suffiks)
+}
+
+amal matn_tozala(s) {
+    qaytar matn_qirqish(s)
+}
+
+amal matn_almashtirish(s, eski, yangi_matn) {
+    qaytar matn_almashtir(s, eski, yangi_matn)
+}
+
+amal matnni_bolish(s, ajratuvchi) {
+    qaytar matn_bolish(s, ajratuvchi)
+}
+
+amal matnni_yigish(massiv, ajratuvchi) {
+    qaytar matn_birlashtir_massiv(massiv, ajratuvchi)
+}
+
+amal matn_katta_harf(s) {
+    qaytar matn_katta(s)
+}
+
+amal matn_kichik_harf(s) {
+    qaytar matn_kichik(s)
+}
+
+amal matn_ichidami(s, qidirilayotgan) {
+    qaytar matn_ichida(s, qidirilayotgan)
+}
+
+amal matn_indeks(s, qidiruv) {
+    qaytar matn_topish(s, qidiruv)
+}
+
+amal matn_belgi(s, indeks) {
+    qaytar matn_kesish(s, indeks, 1)
+}
+
+amal matn_belgi_kodi(s, indeks) {
+    qaytar belgi_kodi(s, indeks)
+}
+
+amal matn_belgisi(ascii_kod) {
+    qaytar belgi(ascii_kod)
+}
+
+amal matn_takrorla(s, marta) {
+    natija = ""
+    uchun i = 0; i < marta; i = i + 1 {
+        natija = natija + s
+    }
+    qaytar natija
+}
+
+amal matn_chap_toldir(s, kerakli_uzunlik, toldiruvchi) {
+    hozirgi = uzunlik(s)
+    agar hozirgi >= kerakli_uzunlik {
+        qaytar s
+    }
+    kam = kerakli_uzunlik - hozirgi
+    qaytar matn_takrorla(toldiruvchi, kam) + s
+}
+
+amal matn_ong_toldir(s, kerakli_uzunlik, toldiruvchi) {
+    hozirgi = uzunlik(s)
+    agar hozirgi >= kerakli_uzunlik {
+        qaytar s
+    }
+    kam = kerakli_uzunlik - hozirgi
+    qaytar s + matn_takrorla(toldiruvchi, kam)
+}

@@ -47,6 +47,12 @@ const char *token_type_to_string(TokenType type) {
         case TOKEN_LTE: return "<=";
         case TOKEN_GT: return ">";
         case TOKEN_GTE: return ">=";
+        case TOKEN_AMP: return "&";
+        case TOKEN_PIPE: return "|";
+        case TOKEN_CARET: return "^";
+        case TOKEN_TILDE: return "~";
+        case TOKEN_SHL: return "<<";
+        case TOKEN_SHR: return ">>";
         default: return "NOMA'LUM";
     }
 }
