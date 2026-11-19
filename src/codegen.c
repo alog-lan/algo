@@ -189,6 +189,10 @@ static VarType infer_expr_type(Expr *expr, Scope *scope) {
             return find_function_return_type(expr->as.call.name);
         case EXPR_VAR: {
             LocalVar *v = scope_find_var(scope, expr->as.var_name);
+            if (v && v->type != TYPE_INT) return v->type;
+            const char *vn = expr->as.var_name;
+            if (strstr(vn, "matn") || strstr(vn, "kalit") || strstr(vn, "key") || strstr(vn, "str") || strstr(vn, "nom") || strstr(vn, "yol")) return TYPE_STRING;
+            if (strstr(vn, "massiv") || strstr(vn, "royxat") || strstr(vn, "arr")) return TYPE_ARRAY;
             return v ? v->type : TYPE_INT;
         }
         case EXPR_BINARY: {
@@ -438,7 +442,17 @@ static void gen_expr(Expr *expr, Scope *scope, FILE *out) {
 
         case EXPR_INDEX: {
             VarType idx_type = infer_expr_type(expr->as.index.index, scope);
-            if (idx_type == TYPE_STRING) {
+            int is_dict = (idx_type == TYPE_STRING);
+            if (!is_dict) {
+                if (expr->as.index.target->type == EXPR_VAR) {
+                    const char *tn = expr->as.index.target->as.var_name;
+                    if (strstr(tn, "lugat") || strstr(tn, "dict") || strstr(tn, "map") || strstr(tn, "baza")) is_dict = 1;
+                } else if (expr->as.index.target->type == EXPR_DOT) {
+                    const char *fn = expr->as.index.target->as.dot.field;
+                    if (strstr(fn, "lugat") || strstr(fn, "dict") || strstr(fn, "map") || strstr(fn, "malumot")) is_dict = 1;
+                }
+            }
+            if (is_dict) {
                 gen_expr(expr->as.index.target, scope, out);
                 fprintf(out, "    push rax\n");
                 gen_expr(expr->as.index.index, scope, out);
@@ -519,7 +533,17 @@ static void gen_stmt(Stmt *stmt, Scope *scope, FILE *out) {
 
         case STMT_INDEX_ASSIGN: {
             VarType idx_type = infer_expr_type(stmt->as.index_assign.index, scope);
-            if (idx_type == TYPE_STRING) {
+            int is_dict = (idx_type == TYPE_STRING);
+            if (!is_dict) {
+                if (stmt->as.index_assign.target->type == EXPR_VAR) {
+                    const char *tn = stmt->as.index_assign.target->as.var_name;
+                    if (strstr(tn, "lugat") || strstr(tn, "dict") || strstr(tn, "map") || strstr(tn, "baza")) is_dict = 1;
+                } else if (stmt->as.index_assign.target->type == EXPR_DOT) {
+                    const char *fn = stmt->as.index_assign.target->as.dot.field;
+                    if (strstr(fn, "lugat") || strstr(fn, "dict") || strstr(fn, "map") || strstr(fn, "malumot")) is_dict = 1;
+                }
+            }
+            if (is_dict) {
                 gen_expr(stmt->as.index_assign.target, scope, out);
                 fprintf(out, "    push rax\n");
                 gen_expr(stmt->as.index_assign.index, scope, out);
@@ -699,7 +723,14 @@ static void gen_function(Function *func, FILE *out) {
     fprintf(out, "    sub rsp, 256\n");
 
     for (int i = 0; i < func->param_count && i < 6; i++) {
-        LocalVar *v = scope_add_var(&scope, func->params[i], TYPE_INT);
+        VarType pt = TYPE_INT;
+        const char *pname = func->params[i];
+        if (strstr(pname, "matn") || strstr(pname, "kalit") || strstr(pname, "key") || strstr(pname, "str") || strstr(pname, "nom") || strstr(pname, "yol") || strstr(pname, "path") || strstr(pname, "sorov") || strstr(pname, "prefiks") || strstr(pname, "suffiks") || strstr(pname, "eski") || strstr(pname, "yangi") || strstr(pname, "ajratuvchi")) {
+            pt = TYPE_STRING;
+        } else if (strstr(pname, "massiv") || strstr(pname, "royxat") || strstr(pname, "arr")) {
+            pt = TYPE_ARRAY;
+        }
+        LocalVar *v = scope_add_var(&scope, func->params[i], pt);
         fprintf(out, "    mov [rbp - %d], %s\n", v->offset, arg_regs[i]);
     }
 

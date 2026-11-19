@@ -56,8 +56,8 @@ amal ekub(a, b) {
 
 amal ekuk(a, b) {
     agar a == 0 yoki b == 0 { qaytar 0 }
-    e = ekub(a, b)
-    qaytar (a * b) / e
+    e_val = ekub(a, b)
+    qaytar (a * b) / e_val
 }
 
 amal faktorial(n) {
@@ -81,4 +81,26 @@ amal tubmi(n) {
         i = i + 6
     }
     qaytar 1
+}
+
+amal sinus(x) {
+    x2 = x * x
+    x3 = x * x2
+    x5 = x3 * x2
+    x7 = x5 * x2
+    qaytar x - (x3 / 6.0) + (x5 / 120.0) - (x7 / 5040.0)
+}
+
+amal kosinus(x) {
+    x2 = x * x
+    x4 = x2 * x2
+    x6 = x4 * x2
+    qaytar 1.0 - (x2 / 2.0) + (x4 / 24.0) - (x6 / 720.0)
+}
+
+amal tangens(x) {
+    s = sinus(x)
+    c = kosinus(x)
+    agar c == 0.0 { qaytar 0.0 }
+    qaytar s / c
 }

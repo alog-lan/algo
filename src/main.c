@@ -107,6 +107,8 @@ static void print_help(void) {
     printf("\033[1mBuyruqlar (Commands):\033[0m\n");
     printf("  \033[1;32malgo ishga-tushir <fayl.algo>\033[0m (yoki \033[1;32malgo run\033[0m)  Kompilyatsiya qilib, darhol ishga tushirish\n");
     printf("  \033[1;32malgo yig <fayl.algo> [-o nom]\033[0m (yoki \033[1;32malgo build\033[0m) Binar mashina kodiga yig'ish\n");
+    printf("  \033[1;32malgo format <fayl.algo>\033[0m      (yoki \033[1;32malgo fmt\033[0m)    Kodni chiroyli formatlash (gofmt kabi)\n");
+    printf("  \033[1;32malgo tezlik <fayl.algo>\033[0m      (yoki \033[1;32malgo bench\033[0m)  Tezlik va unumdorlik sinovi (Benchmark)\n");
     printf("  \033[1;32malgo sinov\033[0m                   (yoki \033[1;32malgo test\033[0m)  Barcha testlarni tekshirish\n");
     printf("  \033[1;32malgo yangi <loyiha_nomi>\033[0m     (yoki \033[1;32malgo new\033[0m)   Yangi Algo loyihasini yaratish\n");
     printf("  \033[1;32malgo repl\033[0m                                      Interaktiv buyruqlar satri (REPL)\n");
@@ -115,6 +117,138 @@ static void print_help(void) {
     printf("\033[1mParametrlar:\033[0m\n");
     printf("  -s    Assembler (.s) kodini saqlab qolish\n");
     printf("  -o    Chiqariluvchi binar fayl nomi\n");
+}
+
+static int run_format_algo(const char *filepath) {
+    FILE *f = fopen(filepath, "r");
+    if (!f) {
+        fprintf(stderr, "\033[1;31mXatolik:\033[0m '%s' fayli topilmadi.\n", filepath);
+        return 1;
+    }
+
+    fseek(f, 0, SEEK_END);
+    long sz = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    char *src = (char *)malloc(sz + 1);
+    if (!src) { fclose(f); return 1; }
+    size_t rd = fread(src, 1, sz, f);
+    src[rd] = '\0';
+    fclose(f);
+
+    char *out_buf = (char *)malloc(sz * 2 + 1024);
+    if (!out_buf) { free(src); return 1; }
+    out_buf[0] = '\0';
+
+    int indent = 0;
+    char *line = strtok(src, "\n");
+    while (line != NULL) {
+        while (*line == ' ' || *line == '\t' || *line == '\r') line++;
+        int len = strlen(line);
+        while (len > 0 && (line[len - 1] == ' ' || line[len - 1] == '\t' || line[len - 1] == '\r')) {
+            line[--len] = '\0';
+        }
+
+        if (len > 0) {
+            int leading_close = 0;
+            if (line[0] == '}') {
+                leading_close = 1;
+                if (indent > 0) indent--;
+            }
+
+            for (int i = 0; i < indent * 4; i++) {
+                strcat(out_buf, " ");
+            }
+            strcat(out_buf, line);
+            strcat(out_buf, "\n");
+
+            int open_c = 0;
+            int close_c = 0;
+            int in_str = 0;
+            for (int i = (leading_close ? 1 : 0); i < len; i++) {
+                if (line[i] == '"' && (i == 0 || line[i - 1] != '\\')) {
+                    in_str = !in_str;
+                } else if (!in_str) {
+                    if (line[i] == '{') open_c++;
+                    else if (line[i] == '}') close_c++;
+                }
+            }
+            indent += open_c;
+            indent -= close_c;
+            if (indent < 0) indent = 0;
+        } else {
+            strcat(out_buf, "\n");
+        }
+        line = strtok(NULL, "\n");
+    }
+
+    FILE *out_f = fopen(filepath, "w");
+    if (!out_f) {
+        free(src);
+        free(out_buf);
+        return 1;
+    }
+    fputs(out_buf, out_f);
+    fclose(out_f);
+
+    free(src);
+    free(out_buf);
+
+    printf("\033[1;32m✓ '%s' muvaffaqiyatli formatlandi!\033[0m\n", filepath);
+    return 0;
+}
+
+static int run_benchmark_algo(const char *filepath) {
+    printf("\033[1;34m[Algo Benchmark v%s]\033[0m\n", ALGO_VERSION);
+    printf("Fayl: %s unumdorlik sinovi...\n\n", filepath);
+
+    char temp_bin[256];
+    snprintf(temp_bin, sizeof(temp_bin), "/tmp/algo_bench_%d", (int)time(NULL));
+
+    clock_t c_start = clock();
+    int res = compile_algo_file(filepath, temp_bin, 0, 0);
+    clock_t c_end = clock();
+    if (res != 0) {
+        fprintf(stderr, "\033[1;31mKompilyatsiya xatosi.\033[0m\n");
+        return 1;
+    }
+    double compile_ms = ((double)(c_end - c_start) / CLOCKS_PER_SEC) * 1000.0;
+    printf("Kompilyatsiya vaqti: \033[1;32m%.2f ms\033[0m (x86_64 sof mashina kodi)\n", compile_ms);
+
+    struct stat st;
+    long bin_size = 0;
+    if (stat(temp_bin, &st) == 0) {
+        bin_size = st.st_size;
+    }
+    printf("Binar fayl hajmi:     \033[1;32m%ld bayt\033[0m (%.1f KB - zero-libc mustaqil)\n\n", bin_size, bin_size / 1024.0);
+
+    int iterations = 5;
+    double total_ms = 0;
+    double min_ms = 1e9;
+    double max_ms = 0;
+
+    printf("Bajarilish sinovlari (%d marta):\n", iterations);
+    for (int i = 0; i < iterations; i++) {
+        clock_t r_start = clock();
+        int run_res = system(temp_bin);
+        clock_t r_end = clock();
+        (void)run_res;
+
+        double r_ms = ((double)(r_end - r_start) / CLOCKS_PER_SEC) * 1000.0;
+        total_ms += r_ms;
+        if (r_ms < min_ms) min_ms = r_ms;
+        if (r_ms > max_ms) max_ms = r_ms;
+        printf("  Sinov %d: %.3f ms\n", i + 1, r_ms);
+    }
+
+    double avg_ms = total_ms / iterations;
+    printf("\n\033[1;32m--- Benchmark Natijalari ---\033[0m\n");
+    printf("O'rtacha vaqt: \033[1;33m%.3f ms\033[0m\n", avg_ms);
+    printf("Minimal vaqt:  \033[1;32m%.3f ms\033[0m\n", min_ms);
+    printf("Maksimal vaqt: \033[1;31m%.3f ms\033[0m\n", max_ms);
+
+    unlink(temp_bin);
+    return 0;
 }
 
 static int run_new_project(const char *name) {
@@ -263,7 +397,8 @@ static void run_all_tests(void) {
         "examples/27_json_sinov.algo",
         "examples/28_kripto_va_vaqt.algo",
         "examples/29_backend_rest_api.algo",
-        "examples/30_kengaytirilgan_matematika_massiv.algo"
+        "examples/30_kengaytirilgan_matematika_massiv.algo",
+        "examples/31_baza_va_navbat.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);
@@ -327,6 +462,22 @@ int main(int argc, char **argv) {
     if (strcmp(cmd, "sinov") == 0 || strcmp(cmd, "test") == 0) {
         run_all_tests();
         return 0;
+    }
+
+    if (strcmp(cmd, "format") == 0 || strcmp(cmd, "fmt") == 0 || strcmp(cmd, "tekisla") == 0) {
+        if (argc < 3) {
+            fprintf(stderr, "Foydalanish: algo format <fayl.algo>\n");
+            return 1;
+        }
+        return run_format_algo(argv[2]);
+    }
+
+    if (strcmp(cmd, "tezlik") == 0 || strcmp(cmd, "bench") == 0 || strcmp(cmd, "benchmark") == 0) {
+        if (argc < 3) {
+            fprintf(stderr, "Foydalanish: algo tezlik <fayl.algo>\n");
+            return 1;
+        }
+        return run_benchmark_algo(argv[2]);
     }
 
     if (strcmp(cmd, "ishga-tushir") == 0 || strcmp(cmd, "run") == 0) {

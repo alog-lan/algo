@@ -1,0 +1,101 @@
+// Algo Dasturlash Tili - Doimiy Saqlanuvchi Kalit-Qiymat Ma'lumotlar Bazasi (std/baza.algo)
+// Hech qanday tashqi kutubxonasiz (SQLite yoki MySQL talab qilinmaydi) to'g'ridan-to'g'ri diskda ishlaydi
+
+yukla "std/matn.algo"
+yukla "std/massiv.algo"
+yukla "std/fayl.algo"
+
+tuzilma Baza {
+    fayl,
+    malumotlar,
+    kalitlar
+}
+
+amal baza_och(fayl_yoli) {
+    b = yangi Baza
+    b.fayl = fayl_yoli
+    b.malumotlar = lugat_yarat()
+    b.kalitlar = []
+
+    agar fayl_bormi(fayl_yoli) == 1 {
+        matn = faylni_oqish(fayl_yoli)
+        agar uzunlik(matn) > 0 {
+            satrlar = matnni_bolish(matn, "\n")
+            uchun i = 0; i < uzunlik(satrlar); i = i + 1 {
+                satr = matn_tozala(satrlar[i])
+                agar uzunlik(satr) > 0 {
+                    teng_idx = matn_indeks(satr, "=")
+                    agar teng_idx > 0 {
+                        k = matn_kesish(satr, 0, teng_idx)
+                        v = matn_kesish(satr, teng_idx + 1, uzunlik(satr) - (teng_idx + 1))
+                        b.malumotlar[k] = v
+                        agar massiv_mavjudmi(b.kalitlar, k) == 0 {
+                            b.kalitlar = massiv_qosh(b.kalitlar, k)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    qaytar b
+}
+
+amal baza_qoy(b, kalit, qiymat) {
+    agar lugat_bormi(b.malumotlar, kalit) == 0 {
+        b.kalitlar = massiv_qosh(b.kalitlar, kalit)
+    }
+    b.malumotlar[kalit] = qiymat
+}
+
+amal baza_ol(b, kalit) {
+    agar lugat_bormi(b.malumotlar, kalit) == 1 {
+        qaytar b.malumotlar[kalit]
+    }
+    qaytar ""
+}
+
+amal baza_mavjudmi(b, kalit) {
+    agar lugat_bormi(b.malumotlar, kalit) == 1 {
+        val = b.malumotlar[kalit]
+        agar uzunlik(val) > 0 {
+            qaytar 1
+        }
+    }
+    qaytar 0
+}
+
+amal baza_ochir(b, kalit) {
+    b.malumotlar[kalit] = ""
+}
+
+amal baza_saqla(b) {
+    matn = ""
+    uchun i = 0; i < uzunlik(b.kalitlar); i = i + 1 {
+        k = b.kalitlar[i]
+        agar lugat_bormi(b.malumotlar, k) == 1 {
+            v = b.malumotlar[k]
+            agar uzunlik(v) > 0 {
+                matn = matn + k + "=" + v + "\n"
+            }
+        }
+    }
+    qaytar faylga_yozish(b.fayl, matn)
+}
+
+amal baza_kalitlari(b) {
+    qaytar b.kalitlar
+}
+
+amal baza_jami(b) {
+    sanoq = 0
+    uchun i = 0; i < uzunlik(b.kalitlar); i = i + 1 {
+        k = b.kalitlar[i]
+        agar lugat_bormi(b.malumotlar, k) == 1 {
+            v = b.malumotlar[k]
+            agar uzunlik(v) > 0 {
+                sanoq = sanoq + 1
+            }
+        }
+    }
+    qaytar sanoq
+}

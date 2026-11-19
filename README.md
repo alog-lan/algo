@@ -39,7 +39,7 @@ Kompilyatorni yig'ish:
 make
 ```
 
-Barcha **28 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
+Barcha **29 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
 ```bash
 make test
 # yoki
@@ -53,10 +53,12 @@ make test
 | Buyruq | Muqobili | Vazifasi |
 |---|---|---|
 | `./bin/algo` yoki `./bin/algo repl` | `algo repl` | Interaktiv konsol (Read-Eval-Print Loop) qobig'i |
+| `./bin/algo format <fayl.algo>` | `algo fmt` | Kodni avtomatik chiroyli formatlash (`gofmt` kabi) |
+| `./bin/algo tezlik <fayl.algo>` | `algo bench` | Benchmark va unumdorlik sinovi (ms, KB, iterations) |
 | `./bin/algo yangi <nomi>` | `algo new <nomi>` | Yangi Algo loyihasini andoza bilan yaratish (scaffolding) |
 | `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish |
 | `./bin/algo yig fayl.algo -o binar` | `algo build fayl.algo` | Mustaqil bajariluvchi (ELF binary) fayl yaratish |
-| `./bin/algo sinov` | `algo test` | 28 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
+| `./bin/algo sinov` | `algo test` | 29 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
 | `./bin/algo versiya` | `algo version` | Til versiyasi va arxitekturasini ko'rish |
 | `./bin/algo yordam` | `algo help` | Yordam ma'lumotlarini chiqarish |
 
@@ -268,6 +270,44 @@ amal asosiy() {
 }
 ```
 
+### 11. Kalit-Qiymat Ma'lumotlar Bazasi (`std/baza.algo`)
+Tashqi serverlarsiz (SQLite yoki Redis kabi) doimiy diskda saqlanuvchi tezkor NoSQL baza:
+```algo
+yukla "std/baza.algo"
+
+amal asosiy() {
+    db = baza_och("ilovamiz.db")
+    baza_qoy(db, "foydalanuvchi_1", "Jasurbek")
+    baza_qoy(db, "rol", "Bosh Dasturchi")
+    baza_saqla(db) // Diskka doimiy saqlash
+
+    // Boshqa sessiyada ochib o'qish
+    db2 = baza_och("ilovamiz.db")
+    chiqar("Foydalanuvchi:", baza_ol(db2, "foydalanuvchi_1"))
+    qaytar 0
+}
+```
+
+### 12. Stek va Navbat Tuzilmalari (`std/navbat.algo`)
+```algo
+yukla "std/navbat.algo"
+
+amal asosiy() {
+    // Stek (LIFO)
+    s = stek_yarat()
+    s = stek_tiq(s, 100)
+    s = stek_tiq(s, 200)
+    chiqar("Stek cho'qqisi:", stek_choqqi(s)) // 200
+
+    // Navbat (FIFO)
+    q = navbat_yarat()
+    q = navbat_qosh(q, "birinchi")
+    q = navbat_qosh(q, "ikkinchi")
+    chiqar("Navbat boshi:", navbat_boshi(q)) // birinchi
+    qaytar 0
+}
+```
+
 ---
 
 ## 📁 Ekotizim Tuzilishi
@@ -275,7 +315,7 @@ amal asosiy() {
 ```
 algo/
 ├── bin/
-│   ├── algo             # Asosiy CLI vositasi (Run, Build, Test, REPL, New)
+│   ├── algo             # Asosiy CLI vositasi (Run, Build, Test, REPL, New, Format, Bench)
 │   └── algoc            # Kompilyator simvollar havolasi
 ├── src/
 │   ├── token.h / .c     # Leksik tokenlar va bitwise operatorlar
@@ -283,19 +323,21 @@ algo/
 │   ├── ast.h / .c       # Abstrakt Sintaktik Daraxt (AST)
 │   ├── parser.h / .c    # Sintaktik tahlilchi va operatorlar ierarxiyasi
 │   ├── codegen.h / .c   # x86_64 GNU Assembler generatori (Zero-libc syscalls)
-│   └── main.c           # CLI boshqaruv moduli, REPL va sinov platformasi
+│   └── main.c           # CLI boshqaruv moduli, REPL, Formatter va Benchmark
 ├── std/                 # Standart kutubxona
-│   ├── matematika.algo  # EKUB, EKUK, faktorial, tub sonlar, daraja, ildiz, pi, e
+│   ├── baza.algo        # Doimiy saqlanuvchi kalit-qiymat NoSQL ma'lumotlar bazasi
+│   ├── navbat.algo      # Stek (LIFO) va Navbat (FIFO) ma'lumotlar tuzilmalari
+│   ├── matematika.algo  # EKUB, EKUK, faktorial, tub sonlar, sinus, kosinus, daraja
 │   ├── massiv.algo      # teskari, yigindi, sarala, qidir, birlashtir, kesib_ol, nusxa
 │   ├── matn.algo        # bolish, yigish, tozalash, almashtirish, indeks, belgi, kod
 │   ├── json.algo        # JSON serializer va kalit bo'yicha parser
-│   ├── http.algo        # HTTP va REST API backend framework (marshrutlash, javoblar)
+│   ├── http.algo        # HTTP va REST API backend framework (marshrutlash, parametrlar)
 │   ├── kripto.algo      # Base64 kodlash/yechish, FNV-1a xesh, XOR shifr, Hex
 │   ├── vaqt.algo        # Unix timestamp, ISO 8601 UTC formatlash, kutish
 │   ├── fayl.algo        # oqish, yozish, qoshish (append), mavjudlik, ochirish
 │   ├── tizim.algo       # muhit, jarayon_id, buyruq, tasodifiy sonlar
 │   └── tarmoq.algo      # TCP server va TCP mijoz ulanishi
-├── examples/            # 30 ta to'liq namunaviy va sinov dasturlari
+├── examples/            # 31 ta to'liq namunaviy va sinov dasturlari
 ├── editors/
 │   └── vscode/          # VS Code & Antigravity IDE uchun to'liq sintaksis paketi
 ├── Makefile             # Avtomatlashtirilgan yig'ish va sinov ssenariysi

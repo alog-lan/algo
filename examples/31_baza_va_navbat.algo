@@ -1,0 +1,76 @@
+// Algo Dasturlash Tili - Baza, Navbat, Stek va HTTP Parametrlar Testi
+yukla "std/baza.algo"
+yukla "std/navbat.algo"
+yukla "std/http.algo"
+yukla "std/matematika.algo"
+
+amal asosiy() {
+    chiqar("=== 1. Kalit-Qiymat Ma'lumotlar Bazasi (std/baza.algo) ===")
+    baza_fayl = "/tmp/algo_test_baza.db"
+    agar fayl_mavjudmi(baza_fayl) == 1 {
+        fayl_ochirish(baza_fayl)
+    }
+
+    // 1. Bazani yaratish va ma'lumotlar yozish
+    db = baza_och(baza_fayl)
+    baza_qoy(db, "foydalanuvchi_1", "Jasurbek")
+    baza_qoy(db, "rol", "Bosh Arxitektor")
+    baza_qoy(db, "shahar", "Toshkent")
+    baza_saqla(db)
+    chiqar("Baza saqlandi, jami yozuvlar:", baza_jami(db))
+    tasdiqla(baza_jami(db) == 3, "Jami yozuvlar 3 ta bolishi kerak")
+
+    // 2. Bazani diskdan qayta yuklash va tekshirish
+    db_yuklangan = baza_och(baza_fayl)
+    chiqar("Qayta ochilgan bazadan 'foydalanuvchi_1':", baza_ol(db_yuklangan, "foydalanuvchi_1"))
+    chiqar("Qayta ochilgan bazadan 'rol':", baza_ol(db_yuklangan, "rol"))
+    tasdiqla(baza_ol(db_yuklangan, "foydalanuvchi_1") == "Jasurbek", "Foydalanuvchi nomi xato")
+    tasdiqla(baza_ol(db_yuklangan, "rol") == "Bosh Arxitektor", "Rol xato")
+    tasdiqla(baza_mavjudmi(db_yuklangan, "shahar") == 1, "Shahar kaliti mavjud bolishi kerak")
+
+    // Tozalash
+    fayl_ochirish(baza_fayl)
+
+    chiqar("\n=== 2. Stek va Navbat Tuzilmalari (std/navbat.algo) ===")
+    // Stek (LIFO)
+    s = stek_yarat()
+    s = stek_tiq(s, 100)
+    s = stek_tiq(s, 200)
+    s = stek_tiq(s, 300)
+    chiqar("Stek cho'qqisi:", stek_choqqi(s))
+    tasdiqla(stek_choqqi(s) == 300, "Choqqi 300 bolishi kerak")
+    
+    chiqar("Stekdan sug'urildi:", stek_ol(s))
+    chiqar("Yangi cho'qqi:", stek_choqqi(s))
+    tasdiqla(stek_choqqi(s) == 200, "Yangi choqqi 200 bolishi kerak")
+
+    // Navbat (FIFO)
+    q = navbat_yarat()
+    q = navbat_qosh(q, 1)
+    q = navbat_qosh(q, 2)
+    q = navbat_qosh(q, 3)
+    chiqar("Navbat boshi:", navbat_boshi(q))
+    tasdiqla(navbat_boshi(q) == 1, "Navbat boshi 1 bolishi kerak")
+
+    chiqar("\n=== 3. HTTP URL Parametrlarini Tahlil Qilish ===")
+    url = "/api/tovarlar?sahifa=2&izlash=noutbuk&saralash=narx"
+    sahifa = http_parametr_ol(url, "sahifa")
+    izlash = http_parametr_ol(url, "izlash")
+    saralash = http_parametr_ol(url, "saralash")
+    chiqar("Parametr 'sahifa':", sahifa)
+    chiqar("Parametr 'izlash':", izlash)
+    chiqar("Parametr 'saralash':", saralash)
+    tasdiqla(sahifa == "2", "Sahifa 2 bolishi kerak")
+    tasdiqla(izlash == "noutbuk", "Izlash noutbuk bolishi kerak")
+    tasdiqla(saralash == "narx", "Saralash narx bolishi kerak")
+
+    chiqar("\n=== 4. Trigonometrik Amallar (Sinus, Kosinus) ===")
+    sin0 = sinus(0.0)
+    cos0 = kosinus(0.0)
+    chiqar("sin(0.0):", sin0)
+    chiqar("cos(0.0):", cos0)
+    tasdiqla(cos0 > 0.999, "cos(0.0) 1.0 bolishi kerak")
+
+    chiqar("\nBarcha yangi kutubxonalar (baza, navbat, parametrlar, trigonometriya) 100% ishladi!")
+    qaytar 0
+}

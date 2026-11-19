@@ -1,0 +1,61 @@
+// Algo Dasturlash Tili - Stek va Navbat Ma'lumotlar Tuzilmalari (std/navbat.algo)
+
+yukla "std/massiv.algo"
+
+// === 1. Stek (Stack: LIFO - Oxirgi kirgan birinchi chiqadi) ===
+amal stek_yarat() {
+    qaytar []
+}
+
+amal stek_tiq(s, element) {
+    qaytar massiv_qosh(s, element)
+}
+
+amal stek_ol(s) {
+    qaytar massiv_sugur(s)
+}
+
+amal stek_boshmi(s) {
+    agar uzunlik(s) == 0 { qaytar 1 }
+    qaytar 0
+}
+
+amal stek_choqqi(s) {
+    n = uzunlik(s)
+    agar n == 0 { qaytar 0 }
+    qaytar s[n - 1]
+}
+
+amal stek_hajmi(s) {
+    qaytar uzunlik(s)
+}
+
+// === 2. Navbat (Queue: FIFO - Birinchi kirgan birinchi chiqadi) ===
+amal navbat_yarat() {
+    qaytar []
+}
+
+amal navbat_qosh(q, element) {
+    qaytar massiv_qosh(q, element)
+}
+
+amal navbat_boshmi(q) {
+    agar uzunlik(q) == 0 { qaytar 1 }
+    qaytar 0
+}
+
+amal navbat_boshi(q) {
+    n = uzunlik(q)
+    agar n == 0 { qaytar 0 }
+    qaytar q[0]
+}
+
+amal navbat_hajmi(q) {
+    qaytar uzunlik(q)
+}
+
+amal navbat_ol(q) {
+    n = uzunlik(q)
+    agar n == 0 { qaytar q }
+    qaytar massiv_kesib_ol(q, 1, n - 1)
+}
