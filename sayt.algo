@@ -62,33 +62,25 @@ amal asosiy() {
             dl_sahifa = fayl_oqish("docs/yuklab-olish.html")
             javob = http_javob_html(200, dl_sahifa)
             xabar_yubor(mijoz_fd, javob)
-        } aks agar yol == "/assets/styles.css" {
-            css_sahifa = fayl_oqish("docs/assets/styles.css")
-            javob = http_javob_qur(200, "text/css; charset=utf-8", css_sahifa)
+        } aks agar yol == "/favicon.ico" {
+            icon_fayl = fayl_oqish("docs/assets/icon.svg")
+            javob = http_javob_qur(200, "image/svg+xml", icon_fayl)
             xabar_yubor(mijoz_fd, javob)
-        } aks agar yol == "/assets/app.js" {
-            js_sahifa = fayl_oqish("docs/assets/app.js")
-            javob = http_javob_qur(200, "application/javascript; charset=utf-8", js_sahifa)
-            xabar_yubor(mijoz_fd, javob)
-        } aks agar yol == "/assets/icon.svg" yoki yol == "/favicon.ico" {
-            icon_svg = fayl_oqish("docs/assets/icon.svg")
-            javob = http_javob_qur(200, "image/svg+xml", icon_svg)
-            xabar_yubor(mijoz_fd, javob)
-        } aks agar yol == "/assets/logo.svg" {
-            logo_svg = fayl_oqish("docs/assets/logo.svg")
-            javob = http_javob_qur(200, "image/svg+xml", logo_svg)
-            xabar_yubor(mijoz_fd, javob)
-        } aks agar matn_boshlanishi(yol, "/assets/fonts/") {
+        } aks agar matn_boshlanishi(yol, "/assets/") {
             fayl_yoli = "docs" + yol
             agar fayl_bormi(fayl_yoli) {
-                shrift_matn = fayl_oqish(fayl_yoli)
-                mime = "font/woff2"
-                agar matn_tugashi(yol, ".otf") {
-                    mime = "font/otf"
-                } aks agar matn_tugashi(yol, ".ttf") {
-                    mime = "font/ttf"
-                }
-                javob = http_javob_qur(200, mime, shrift_matn)
+                fayl_matn = fayl_oqish(fayl_yoli)
+                mime = "application/octet-stream"
+                agar matn_tugashi(yol, ".css") { mime = "text/css; charset=utf-8" }
+                aks agar matn_tugashi(yol, ".js") { mime = "application/javascript; charset=utf-8" }
+                aks agar matn_tugashi(yol, ".svg") { mime = "image/svg+xml" }
+                aks agar matn_tugashi(yol, ".png") { mime = "image/png" }
+                aks agar matn_tugashi(yol, ".ico") { mime = "image/x-icon" }
+                aks agar matn_tugashi(yol, ".woff2") { mime = "font/woff2" }
+                aks agar matn_tugashi(yol, ".ttf") { mime = "font/ttf" }
+                aks agar matn_tugashi(yol, ".otf") { mime = "font/otf" }
+                aks agar matn_tugashi(yol, ".json") { mime = "application/json; charset=utf-8" }
+                javob = http_javob_qur(200, mime, fayl_matn)
                 xabar_yubor(mijoz_fd, javob)
             } aks {
                 javob = http_javob_404()
