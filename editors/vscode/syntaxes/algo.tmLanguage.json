@@ -43,7 +43,7 @@
         },
         {
           "name": "support.function.builtin.algo",
-          "match": "\\b(chiqar|chop|kirit|uzunlik|vaqt|kutish|fayl_och|fayl_yoz|fayl_oqi|fayl_yop|lugat_yarat|lugat_qoy|lugat_ol|lugat_bormi|lugat_ochir|matn_kesish|matn_teng|matn_ichida|matn_katta|matn_kichik|son_matnga|matn_songa|tarmoq_server_och|tarmoq_mijoz_qabul|tarmoq_ulan|tarmoq_yubor|tarmoq_qabul|tarmoq_yop)\\b"
+          "match": "\\b(chiqar|chop|kirit|uzunlik|vaqt|kutish|tasdiqla|argumentlar|muhit|tasodifiy|ildiz|fayl_oqish|fayl_yozish|fayl_mavjudmi|fayl_ochirish|papka_yaratish|tizim_buyruq|chiqish|fayl_och|fayl_yoz|fayl_oqi|fayl_yop|lugat_yarat|lugat_qoy|lugat_ol|lugat_bormi|lugat_ochir|matn_kesish|matn_teng|matn_ichida|matn_katta|matn_kichik|son_matnga|matn_songa|tarmoq_server_och|tarmoq_mijoz_qabul|tarmoq_ulan|tarmoq_yubor|tarmoq_qabul|tarmoq_yop)\\b"
         },
         {
           "name": "keyword.operator.logical.algo",
@@ -64,7 +64,7 @@
     },
     "numbers": {
       "name": "constant.numeric.algo",
-      "match": "\\b[0-9]+\\b"
+      "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
     },
     "functions": {
       "name": "entity.name.function.algo",

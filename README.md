@@ -18,8 +18,8 @@
    * To'g'ridan-to'g'ri protsessor registrlarida (`RAX`, `RBX`, `RCX`, `RDX`, `RSI`, `RDI`) hisoblashlar bajariladi.
    * 100 million marta aylanadigan siklni **0.26 soniyada** hisoblaydi (*Pythondan 25+ barobar tez*).
 
-3. **To'liq Standart Ekotizim (v1.2.0):**
-   * Dinamik massivlar, dinamik matnlar, lug'at (Hashmap), modullar (`yukla`), vaqt va kutish, xatoliklar va tasdiqlash (`tasdiqla`), buyruqlar qatori argumentlari (`argumentlar()`), apparat darajasidagi o'nlik sonlar (SSE Float), to'liq jonli TCP/HTTP veb serverlari, fayl tizimi va tuzilmalar (`tuzilma`).
+3. **To'liq Standart Ekotizim (v1.3.0):**
+   * Dinamik massivlar, dinamik matnlar, lug'at (Hashmap), modullar (`yukla`), vaqt va kutish, xatoliklar va tasdiqlash (`tasdiqla`), buyruqlar qatori argumentlari (`argumentlar()`), apparat darajasidagi o'nlik sonlar (SSE Float), to'liq jonli TCP/HTTP veb serverlari, fayl tizimi (`fayl_oqish`, `fayl_yozish`, `fayl_mavjudmi`, `fayl_ochirish`), muhit o'zgaruvchilari (`muhit`), apparat darajasidagi tasodifiy sonlar (`tasodifiy`), kvadrat ildiz (`ildiz`), tashqi jarayonlar (`tizim_buyruq`) va tuzilmalar (`tuzilma`).
 
 ---
 
@@ -30,7 +30,7 @@ Kompilyatorni yig'ish:
 make
 ```
 
-Barcha 21 ta avtomatlashtirilgan testlarni sinovdan o'tkazish:
+Barcha 23 ta avtomatlashtirilgan testlarni sinovdan o'tkazish:
 ```bash
 make test
 # yoki
@@ -45,7 +45,7 @@ make test
 |---|---|---|
 | `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish (Python/Go kabi) |
 | `./bin/algo yig fayl.algo -o binar` | `algo build fayl.algo` | Mustaqil bajariluvchi (ELF binary) fayl yaratish |
-| `./bin/algo sinov` | `algo test` | 21 ta avtomatik testni to'liq tekshirish |
+| `./bin/algo sinov` | `algo test` | 23 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
 | `./bin/algo versiya` | `algo version` | Til versiyasi va arxitekturasini ko'rish |
 | `./bin/algo yordam` | `algo help` | Yordam ma'lumotlarini chiqarish |
 
@@ -190,6 +190,47 @@ amal asosiy() {
 }
 ```
 
+### 11. Fayl Tizimi va Muhit O'zgaruvchilari (`fayl_*`, `muhit`)
+```algo
+amal asosiy() {
+    // 1. Muhit o'zgaruvchisi
+    user = muhit("USER")
+    chiqar("Joriy foydalanuvchi:", user)
+
+    // 2. Faylga to'liq yozish
+    fayl_yozish("salom.txt", "Algo tili bilan fayllar ustida ishlash juda qulay!")
+
+    // 3. Fayl mavjudligini tekshirish
+    agar fayl_mavjudmi("salom.txt") == 1 {
+        // 4. Fayldan to'liq o'qish
+        matn = fayl_oqish("salom.txt")
+        chiqar("Fayl tarkibi:", matn)
+
+        // 5. Faylni o'chirish
+        fayl_ochirish("salom.txt")
+    }
+    qaytar 0
+}
+```
+
+### 12. Tasodifiy Sonlar, Kvadrat Ildiz va Tizim Buyrug'i
+```algo
+amal asosiy() {
+    // Apparat darajasidagi kriptografik tasodifiy son (CSPRNG)
+    tasodif = tasodifiy(1, 100)
+    chiqar("Tasodifiy son (1..100):", tasodif)
+
+    // SSE uskunaviy kvadrat ildiz
+    ildiz_qiymat = ildiz(144.0)
+    chiqar("144 ning kvadrat ildizi:", ildiz_qiymat) // 12.0
+
+    // Linux jarayonini ishga tushirish (Fork + Execve + Wait4)
+    status = tizim_buyruq("date '+%Y-%m-%d %H:%M:%S'")
+    chiqar("Buyruq status kodi:", status)
+    qaytar 0
+}
+```
+
 ---
 
 ## 📁 Ekotizim Strukturasi
@@ -207,10 +248,12 @@ algo/
 │   ├── codegen.h / .c   # x86_64 Assembler generatori (Zero-libc, SSE, Syscalls)
 │   └── main.c           # CLI boshqaruv moduli
 ├── std/                 # Standart kutubxona
-│   ├── matematika.algo  # Matematik amallar (modul, daraja, max, min)
-│   ├── massiv.algo      # Massiv amallari (teskari, yig'indi, max)
+│   ├── matematika.algo  # Matematik amallar (modul, daraja, pi, e, ildiz)
+│   ├── massiv.algo      # Massiv amallari (teskari, yig'indi, sarala, qidir)
+│   ├── fayl.algo        # Fayl operatsiyalari (faylni_oqish, faylga_yozish, bormi)
+│   ├── tizim.algo       # Tizim operatsiyalari (muhit_ol, buyruq_bajar, tasodifiy)
 │   └── tarmoq.algo      # Tarmoq amallari (server_yarat, server_yop)
-├── examples/            # 22 ta namunaviy dastur
+├── examples/            # 25 ta namunaviy dastur
 ├── editors/
 │   └── vscode/          # VS Code & Antigravity IDE uchun sintaksis paketi
 ├── Makefile             # Avtomatlashtirilgan yig'ish va sinov ssenariysi

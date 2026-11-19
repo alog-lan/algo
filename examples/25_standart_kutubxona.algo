@@ -1,0 +1,54 @@
+// Algo Dasturlash Tili - Standart Kutubxonalar (std/) To'liq Sinovi
+
+yukla "std/matematika.algo"
+yukla "std/massiv.algo"
+yukla "std/fayl.algo"
+yukla "std/tizim.algo"
+
+amal asosiy() {
+    chiqar("=== 1. Matematika Kutubxonasi (std/matematika.algo) ===")
+    p = pi()
+    eyler = e()
+    chiqar("Pi qiymati:", p)
+    chiqar("Eyler (e) qiymati:", eyler)
+    ildiz_100 = kvadrat_ildiz(100.0)
+    chiqar("kvadrat_ildiz(100.0):", ildiz_100)
+    tasdiqla(modul(-50) == 50, "Modul xato")
+    tasdiqla(maksimum(10, 20) == 20, "Maksimum xato")
+    tasdiqla(minimum(10, 20) == 10, "Minimum xato")
+    tasdiqla(daraja(2, 8) == 256, "Daraja xato")
+
+    chiqar("\n=== 2. Massiv Kutubxonasi (std/massiv.algo) ===")
+    m = [45, 12, 89, 3, 27]
+    chiqar("Boshlang'ich massiv:", m)
+    chiqar("Yig'indisi:", massiv_yigindi(m))
+    chiqar("Maksimumi:", massiv_maksimum(m))
+    chiqar("Minimumi:", massiv_minimum(m))
+    
+    indeks_89 = massiv_qidir(m, 89)
+    chiqar("89 sonining indeksi:", indeks_89)
+    tasdiqla(indeks_89 == 2, "Qidiruv xato")
+
+    saralangan = massiv_sarala(m)
+    chiqar("Tartiblangan massiv:", saralangan)
+    tasdiqla(saralangan[0] == 3 va saralangan[4] == 89, "Saralash xato")
+
+    chiqar("\n=== 3. Fayl va Tizim Kutubxonalari (std/fayl.algo, std/tizim.algo) ===")
+    test_fayl = "std_sinov.txt"
+    faylga_yozish(test_fayl, "Standart kutubxona muvaffaqiyatli ishlamoqda!")
+    tasdiqla(fayl_bormi(test_fayl) == 1, "Fayl yaratilmadi")
+    
+    matn = faylni_oqish(test_fayl)
+    chiqar("Fayl tarkibi:", matn)
+    tasdiqla(matn == "Standart kutubxona muvaffaqiyatli ishlamoqda!", "Fayl tarkibi mos emas")
+
+    faylni_ochirish(test_fayl)
+    tasdiqla(fayl_bormi(test_fayl) == 0, "Fayl o'chirilmadi")
+
+    foydalanuvchi = muhit_ol("USER")
+    chiqar("Muhitdan USER:", foydalanuvchi)
+    tasdiqla(uzunlik(foydalanuvchi) > 0, "USER olinmadi")
+
+    chiqar("\nStandart kutubxona modullari (std/) 100% to'liq va mukammal ishladi!")
+    qaytar 0
+}

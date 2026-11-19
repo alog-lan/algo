@@ -12,6 +12,7 @@ typedef struct {
 } Parser;
 
 void parser_init(Parser *parser, const char *source);
+void parser_reset_modules(void);
 Program *parser_parse(Parser *parser);
 
 #endif // PARSER_H

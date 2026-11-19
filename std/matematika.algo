@@ -26,3 +26,15 @@ amal daraja(asos, daraja_son) {
     }
     qaytar natija
 }
+
+amal pi() {
+    qaytar 3.1415926535
+}
+
+amal e() {
+    qaytar 2.7182818284
+}
+
+amal kvadrat_ildiz(x) {
+    qaytar ildiz(x)
+}

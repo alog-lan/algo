@@ -1,0 +1,21 @@
+// Algo Dasturlash Tili - Standart Fayl Kutubxonasi (std/fayl.algo)
+
+amal faylni_oqish(fayl_nomi) {
+    qaytar fayl_oqish(fayl_nomi)
+}
+
+amal faylga_yozish(fayl_nomi, matn) {
+    qaytar fayl_yozish(fayl_nomi, matn)
+}
+
+amal fayl_bormi(fayl_nomi) {
+    qaytar fayl_mavjudmi(fayl_nomi)
+}
+
+amal faylni_ochirish(fayl_nomi) {
+    qaytar fayl_ochirish(fayl_nomi)
+}
+
+amal yangi_papka(papka_nomi) {
+    qaytar papka_yaratish(papka_nomi)
+}

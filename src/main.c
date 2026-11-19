@@ -34,6 +34,7 @@ static int compile_algo_file(const char *input_file, const char *output_file, in
     char *source = read_file(input_file);
     if (!source) return 1;
 
+    parser_reset_modules();
     Parser parser;
     parser_init(&parser, source);
     Program *prog = parser_parse(&parser);
@@ -156,7 +157,9 @@ static void run_all_tests(void) {
         "examples/18_veb_server.algo",
         "examples/19_haqiqiy_sonlar.algo",
         "examples/20_argumentlar.algo",
-        "examples/21_tasdiqla.algo"
+        "examples/21_tasdiqla.algo",
+        "examples/24_tizim_imkoniyatlari.algo",
+        "examples/25_standart_kutubxona.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);

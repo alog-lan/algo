@@ -370,6 +370,14 @@ static StructDef *parse_struct(Parser *parser) {
 static char *visited_modules[256];
 static int visited_module_count = 0;
 
+void parser_reset_modules(void) {
+    for (int i = 0; i < visited_module_count; i++) {
+        if (visited_modules[i]) free(visited_modules[i]);
+        visited_modules[i] = NULL;
+    }
+    visited_module_count = 0;
+}
+
 static int is_module_visited(const char *path) {
     for (int i = 0; i < visited_module_count; i++) {
         if (strcmp(visited_modules[i], path) == 0) return 1;

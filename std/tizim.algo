@@ -1,0 +1,17 @@
+// Algo Dasturlash Tili - Standart Tizim Kutubxonasi (std/tizim.algo)
+
+amal muhit_ol(nom) {
+    qaytar muhit(nom)
+}
+
+amal buyruq_bajar(buyruq) {
+    qaytar tizim_buyruq(buyruq)
+}
+
+amal tasodifiy_son(min, max) {
+    qaytar tasodifiy(min, max)
+}
+
+amal dasturdan_chiq(kod) {
+    chiqish(kod)
+}

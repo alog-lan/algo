@@ -1,0 +1,56 @@
+// Algo Dasturlash Tili - Tizim va Fayl Imkoniyatlari Testi
+
+amal asosiy() {
+    chiqar("=== 1. Tizim Muhit O'zgaruvchilari (muhit) ===")
+    user = muhit("USER")
+    chiqar("Joriy foydalanuvchi (USER):", user)
+    tasdiqla(uzunlik(user) > 0, "USER o'zgaruvchisi bo'sh bo'lmasligi kerak")
+
+    chiqar("\n=== 2. Uskunaviy Tasodifiy Sonlar (tasodifiy - CSPRNG) ===")
+    r1 = tasodifiy(1, 100)
+    r2 = tasodifiy(1000, 9999)
+    chiqar("Tasodifiy son (1..100):", r1)
+    chiqar("Tasodifiy son (1000..9999):", r2)
+    tasdiqla(r1 >= 1 va r1 <= 100, "Tasodifiy son oraliqdan chiqib ketdi")
+    tasdiqla(r2 >= 1000 va r2 <= 9999, "Tasodifiy son oraliqdan chiqib ketdi")
+
+    chiqar("\n=== 3. SSE Uskunaviy Kvadrat Ildiz (ildiz) ===")
+    ildiz1 = ildiz(144.0)
+    ildiz2 = ildiz(81)
+    chiqar("ildiz(144.0) =", ildiz1)
+    chiqar("ildiz(81) =", ildiz2)
+
+    chiqar("\n=== 4. Fayl Tizimi Amallari (yozish, tekshirish, o'qish, o'chirish) ===")
+    sinov_nomi = "test_algo_fayl.txt"
+    matn = "Algo dasturlash tili - to'liq mustaqil, x86_64 mashina kodida!"
+    
+    // Faylga to'liq yozish
+    yozildi = fayl_yozish(sinov_nomi, matn)
+    chiqar("Faylga yozilgan baytlar soni:", yozildi)
+    tasdiqla(yozildi > 0, "Faylga yozishda xatolik")
+
+    // Fayl mavjudligini tekshirish
+    mavjud = fayl_mavjudmi(sinov_nomi)
+    chiqar("Fayl mavjudmi (1=ha):", mavjud)
+    tasdiqla(mavjud == 1, "Fayl mavjud bo'lishi kerak")
+
+    // Fayldan to'liq o'qish
+    oqildi = fayl_oqish(sinov_nomi)
+    chiqar("Fayldan o'qilgan matn:", oqildi)
+    tasdiqla(matn == oqildi, "O'qilgan matn yozilgan matnga teng bo'lishi kerak")
+
+    // Faylni o'chirish
+    ochirildi = fayl_ochirish(sinov_nomi)
+    mavjud_emas = fayl_mavjudmi(sinov_nomi)
+    chiqar("Fayl o'chirilgach mavjudmi (0=yo'q):", mavjud_emas)
+    tasdiqla(mavjud_emas == 0, "O'chirilgan fayl mavjud bo'lmasligi kerak")
+
+    chiqar("\n=== 5. Tashqi Jarayon va Tizim Buyrug'i (tizim_buyruq) ===")
+    chiqar("Tizim buyrug'i bajarilmoqda (uname -s)...")
+    status = tizim_buyruq("uname -s")
+    chiqar("Buyruq chiqish kodi (status):", status)
+    tasdiqla(status == 0, "Tizim buyrug'i xatosiz (0) tugashi kerak")
+
+    chiqar("\nBarcha yangi imkoniyatlar (muhit, ildiz, tasodifiy, fayl, tizim) 100% muvaffaqiyatli ishladi!")
+    qaytar 0
+}

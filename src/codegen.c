@@ -113,6 +113,31 @@ static void register_function_meta(const char *name, VarType ret_type) {
 }
 
 static VarType find_function_return_type(const char *name) {
+    if (strcmp(name, "matn_kesish") == 0 ||
+        strcmp(name, "matn_katta") == 0 ||
+        strcmp(name, "matn_kichik") == 0 ||
+        strcmp(name, "son_matnga") == 0 ||
+        strcmp(name, "fayl_oqish") == 0 ||
+        strcmp(name, "faylni_oqish") == 0 ||
+        strcmp(name, "muhit") == 0 ||
+        strcmp(name, "muhit_ol") == 0) {
+        return TYPE_STRING;
+    }
+    if (strcmp(name, "ildiz") == 0 ||
+        strcmp(name, "kvadrat_ildiz") == 0 ||
+        strcmp(name, "pi") == 0 ||
+        strcmp(name, "e") == 0) {
+        return TYPE_FLOAT;
+    }
+    if (strcmp(name, "massiv_kesish") == 0 ||
+        strcmp(name, "massiv_nusxa") == 0 ||
+        strcmp(name, "massiv_birlashtir") == 0 ||
+        strcmp(name, "massiv_sarala") == 0 ||
+        strcmp(name, "massiv_teskari") == 0 ||
+        strcmp(name, "algo_argumentlar") == 0 ||
+        strcmp(name, "argumentlar") == 0) {
+        return TYPE_ARRAY;
+    }
     for (int i = 0; i < func_meta_count; i++) {
         if (strcmp(func_metas[i].name, name) == 0) {
             return func_metas[i].return_type;
@@ -227,6 +252,21 @@ static void gen_expr(Expr *expr, Scope *scope, FILE *out) {
         case EXPR_BINARY: {
             VarType lt = infer_expr_type(expr->as.binary.left, scope);
             VarType rt = infer_expr_type(expr->as.binary.right, scope);
+
+            // Matnlarni taqqoslash (string equality: str == str yoki str != str)
+            if ((expr->as.binary.op == TOKEN_EQ || expr->as.binary.op == TOKEN_NEQ) &&
+                (lt == TYPE_STRING || rt == TYPE_STRING)) {
+                gen_expr(expr->as.binary.left, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(expr->as.binary.right, scope, out);
+                fprintf(out, "    mov rsi, rax\n");
+                fprintf(out, "    pop rdi\n");
+                fprintf(out, "    call algo_matn_teng\n");
+                if (expr->as.binary.op == TOKEN_NEQ) {
+                    fprintf(out, "    xor rax, 1\n");
+                }
+                break;
+            }
 
             // Matnlarni birlashtirish (string concatenation: str + str)
             if (expr->as.binary.op == TOKEN_PLUS && (lt == TYPE_STRING || rt == TYPE_STRING)) {
@@ -650,28 +690,40 @@ static void gen_function(Function *func, FILE *out) {
 
 void codegen_generate(Program *prog, FILE *out) {
     current_prog = prog;
+    string_count = 0;
+    float_count = 0;
+    label_counter = 0;
+    func_meta_count = 0;
 
-    // Funksiyalarning qaytarish turlarini tahlil qilish
-    for (int f = 0; f < prog->function_count; f++) {
-        Function *func = prog->functions[f];
-        VarType ret_type = TYPE_INT;
-        for (int s = 0; s < func->body_count; s++) {
-            if (func->body[s]->type == STMT_RETURN) {
-                Expr *ret_expr = func->body[s]->as.return_expr;
-                if (ret_expr) {
-                    if (ret_expr->type == EXPR_ARRAY_LITERAL) ret_type = TYPE_ARRAY;
-                    else if (ret_expr->type == EXPR_STRING || ret_expr->type == EXPR_KIRIT) ret_type = TYPE_STRING;
-                    else if (ret_expr->type == EXPR_VAR) {
-                        if (strstr(ret_expr->as.var_name, "massiv") || strstr(ret_expr->as.var_name, "royxat") || strstr(ret_expr->as.var_name, "arr")) {
-                            ret_type = TYPE_ARRAY;
-                        } else if (strstr(ret_expr->as.var_name, "matn") || strstr(ret_expr->as.var_name, "satr") || strstr(ret_expr->as.var_name, "str")) {
-                            ret_type = TYPE_STRING;
+    // Funksiyalarning qaytarish turlarini tahlil qilish (2 o'tish bilan)
+    for (int pass = 0; pass < 2; pass++) {
+        for (int f = 0; f < prog->function_count; f++) {
+            Function *func = prog->functions[f];
+            VarType ret_type = find_function_return_type(func->name);
+            for (int s = 0; s < func->body_count; s++) {
+                if (func->body[s]->type == STMT_RETURN) {
+                    Expr *ret_expr = func->body[s]->as.return_expr;
+                    if (ret_expr) {
+                        if (ret_expr->type == EXPR_ARRAY_LITERAL) ret_type = TYPE_ARRAY;
+                        else if (ret_expr->type == EXPR_STRING || ret_expr->type == EXPR_KIRIT) ret_type = TYPE_STRING;
+                        else if (ret_expr->type == EXPR_FLOAT) ret_type = TYPE_FLOAT;
+                        else if (ret_expr->type == EXPR_CALL) {
+                            VarType ct = find_function_return_type(ret_expr->as.call.name);
+                            if (ct != TYPE_INT) ret_type = ct;
+                        } else if (ret_expr->type == EXPR_VAR) {
+                            if (strstr(ret_expr->as.var_name, "massiv") || strstr(ret_expr->as.var_name, "royxat") || strstr(ret_expr->as.var_name, "arr")) {
+                                ret_type = TYPE_ARRAY;
+                            } else if (strstr(ret_expr->as.var_name, "matn") || strstr(ret_expr->as.var_name, "satr") || strstr(ret_expr->as.var_name, "str")) {
+                                ret_type = TYPE_STRING;
+                            } else if (strstr(ret_expr->as.var_name, "float") || strstr(ret_expr->as.var_name, "ildiz")) {
+                                ret_type = TYPE_FLOAT;
+                            }
                         }
                     }
                 }
             }
+            register_function_meta(func->name, ret_type);
         }
-        register_function_meta(func->name, ret_type);
     }
 
     fprintf(out, ".intel_syntax noprefix\n");
@@ -684,6 +736,9 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "    mov [rip + algo_argc], rax\n");
     fprintf(out, "    lea rax, [rsp + 8]\n");
     fprintf(out, "    mov [rip + algo_argv], rax\n");
+    fprintf(out, "    mov rcx, [rsp]\n");
+    fprintf(out, "    lea rax, [rsp + 16 + rcx * 8]\n");
+    fprintf(out, "    mov [rip + algo_envp], rax\n");
     fprintf(out, "    call algo_asosiy\n");
     fprintf(out, "    mov rdi, rax\n");
     fprintf(out, "    mov rax, 60\n"); // sys_exit
@@ -1647,6 +1702,363 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "    pop rbp\n");
     fprintf(out, "    ret\n\n");
 
+    // 15. Dasturdan chiqish (Exit)
+    fprintf(out, "algo_chiqish:\n");
+    fprintf(out, "    mov rax, 60\n"); // sys_exit
+    fprintf(out, "    syscall\n\n");
+
+    // 16. Muhit o'zgaruvchilari (Environment variables)
+    fprintf(out, "algo_muhit:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push r15\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    test r12, r12\n");
+    fprintf(out, "    jz .L_muhit_empty\n");
+    fprintf(out, "    mov r13, [r12]\n");
+    fprintf(out, "    lea r12, [r12 + 8]\n");
+    fprintf(out, "    mov rbx, [rip + algo_envp]\n");
+    fprintf(out, "    test rbx, rbx\n");
+    fprintf(out, "    jz .L_muhit_empty\n");
+    fprintf(out, ".L_muhit_env_loop:\n");
+    fprintf(out, "    mov r14, [rbx]\n");
+    fprintf(out, "    test r14, r14\n");
+    fprintf(out, "    jz .L_muhit_empty\n");
+    fprintf(out, "    xor rcx, rcx\n");
+    fprintf(out, ".L_muhit_cmp_loop:\n");
+    fprintf(out, "    cmp rcx, r13\n");
+    fprintf(out, "    je .L_muhit_cmp_check_eq\n");
+    fprintf(out, "    mov al, [r12 + rcx]\n");
+    fprintf(out, "    cmp al, [r14 + rcx]\n");
+    fprintf(out, "    jne .L_muhit_next_env\n");
+    fprintf(out, "    inc rcx\n");
+    fprintf(out, "    jmp .L_muhit_cmp_loop\n");
+    fprintf(out, ".L_muhit_cmp_check_eq:\n");
+    fprintf(out, "    cmp byte ptr [r14 + r13], 61\n"); // '='
+    fprintf(out, "    jne .L_muhit_next_env\n");
+    fprintf(out, "    lea r15, [r14 + r13 + 1]\n");
+    fprintf(out, "    xor rcx, rcx\n");
+    fprintf(out, ".L_muhit_val_len:\n");
+    fprintf(out, "    cmp byte ptr [r15 + rcx], 0\n");
+    fprintf(out, "    je .L_muhit_val_len_done\n");
+    fprintf(out, "    inc rcx\n");
+    fprintf(out, "    jmp .L_muhit_val_len\n");
+    fprintf(out, ".L_muhit_val_len_done:\n");
+    fprintf(out, "    push rcx\n");
+    fprintf(out, "    push r15\n");
+    fprintf(out, "    mov rax, rcx\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop rcx\n");
+    fprintf(out, "    mov [rax], rcx\n");
+    fprintf(out, "    lea rdi, [rax + 8]\n");
+    fprintf(out, "    mov rsi, r15\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    rep movsb\n");
+    fprintf(out, "    mov byte ptr [rdi], 0\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    jmp .L_muhit_done\n");
+    fprintf(out, ".L_muhit_next_env:\n");
+    fprintf(out, "    add rbx, 8\n");
+    fprintf(out, "    jmp .L_muhit_env_loop\n");
+    fprintf(out, ".L_muhit_empty:\n");
+    fprintf(out, "    mov rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov qword ptr [rax], 0\n");
+    fprintf(out, "    mov byte ptr [rax + 8], 0\n");
+    fprintf(out, ".L_muhit_done:\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r15\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 17. Butun faylni matn sifatida o'qish (Read entire file)
+    fprintf(out, "algo_fayl_oqish:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_file_read_err\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    mov rax, 2\n"); // sys_open
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    js .L_file_read_err\n");
+    fprintf(out, "    mov r12, rax\n");
+    fprintf(out, "    mov rax, 8\n"); // sys_lseek SEEK_END
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    mov rdx, 2\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    js .L_file_read_close_err\n");
+    fprintf(out, "    mov r13, rax\n"); // file size
+    fprintf(out, "    mov rax, 8\n"); // sys_lseek SEEK_SET
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov r14, rax\n");
+    fprintf(out, "    mov [r14], r13\n");
+    fprintf(out, "    test r13, r13\n");
+    fprintf(out, "    jz .L_file_read_finish\n");
+    fprintf(out, "    mov rax, 0\n"); // sys_read
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    lea rsi, [r14 + 8]\n");
+    fprintf(out, "    mov rdx, r13\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, ".L_file_read_finish:\n");
+    fprintf(out, "    mov byte ptr [r14 + 8 + r13], 0\n");
+    fprintf(out, "    mov rax, 3\n"); // sys_close
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rax, r14\n");
+    fprintf(out, "    jmp .L_file_read_ret\n");
+    fprintf(out, ".L_file_read_close_err:\n");
+    fprintf(out, "    mov rax, 3\n");
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, ".L_file_read_err:\n");
+    fprintf(out, "    mov rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov qword ptr [rax], 0\n");
+    fprintf(out, "    mov byte ptr [rax + 8], 0\n");
+    fprintf(out, ".L_file_read_ret:\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 18. Matnni faylga to'liq yozish (Write entire string to file)
+    fprintf(out, "algo_fayl_yozish:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_file_write_err\n");
+    fprintf(out, "    test rsi, rsi\n");
+    fprintf(out, "    jz .L_file_write_err\n");
+    fprintf(out, "    mov r13, rsi\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    mov rsi, 577\n"); // O_WRONLY | O_CREAT | O_TRUNC
+    fprintf(out, "    mov rdx, 420\n"); // 0644
+    fprintf(out, "    mov rax, 2\n");   // sys_open
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    js .L_file_write_err\n");
+    fprintf(out, "    mov r12, rax\n");
+    fprintf(out, "    mov rdx, [r13]\n");
+    fprintf(out, "    lea rsi, [r13 + 8]\n");
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    mov rax, 1\n");   // sys_write
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    mov rax, 3\n");   // sys_close
+    fprintf(out, "    mov rdi, r12\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    jmp .L_file_write_done\n");
+    fprintf(out, ".L_file_write_err:\n");
+    fprintf(out, "    mov rax, -1\n");
+    fprintf(out, ".L_file_write_done:\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 19. Fayl mavjudligini tekshirish (Check if file exists)
+    fprintf(out, "algo_fayl_mavjudmi:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_fexist_no\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    mov rax, 21\n"); // sys_access
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jnz .L_fexist_no\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_fexist_no:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 20. Faylni o'chirish (Delete file)
+    fprintf(out, "algo_fayl_ochirish:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_frm_err\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    mov rax, 87\n"); // sys_unlink
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    jmp .L_frm_done\n");
+    fprintf(out, ".L_frm_err:\n");
+    fprintf(out, "    mov rax, -1\n");
+    fprintf(out, ".L_frm_done:\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 21. Papka yaratish (Make directory)
+    fprintf(out, "algo_papka_yaratish:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_fmkdir_err\n");
+    fprintf(out, "    lea rdi, [rdi + 8]\n");
+    fprintf(out, "    mov rsi, 493\n"); // 0755
+    fprintf(out, "    mov rax, 83\n");  // sys_mkdir
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    jmp .L_fmkdir_done\n");
+    fprintf(out, ".L_fmkdir_err:\n");
+    fprintf(out, "    mov rax, -1\n");
+    fprintf(out, ".L_fmkdir_done:\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 22. Tasodifiy son hosil qilish (Random number via sys_getrandom)
+    fprintf(out, "algo_tasodifiy:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    mov r12, rdi\n");
+    fprintf(out, "    mov r13, rsi\n");
+    fprintf(out, "    cmp r13, r12\n");
+    fprintf(out, "    jge .L_rnd_valid\n");
+    fprintf(out, "    xchg r12, r13\n");
+    fprintf(out, ".L_rnd_valid:\n");
+    fprintf(out, "    mov rbx, r13\n");
+    fprintf(out, "    sub rbx, r12\n");
+    fprintf(out, "    inc rbx\n");
+    fprintf(out, "    sub rsp, 16\n");
+    fprintf(out, "    mov rax, 318\n"); // sys_getrandom
+    fprintf(out, "    mov rdi, rsp\n");
+    fprintf(out, "    mov rsi, 8\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rax, [rsp]\n");
+    fprintf(out, "    add rsp, 16\n");
+    fprintf(out, "    mov rdx, 0x7FFFFFFFFFFFFFFF\n");
+    fprintf(out, "    and rax, rdx\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    div rbx\n");
+    fprintf(out, "    mov rax, rdx\n");
+    fprintf(out, "    add rax, r12\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 23. Kvadrat ildiz (Hardware SSE square root)
+    fprintf(out, "algo_ildiz:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    mov r8, rdi\n");
+    fprintf(out, "    mov rax, 1000000000000000\n");
+    fprintf(out, "    cmp r8, rax\n");
+    fprintf(out, "    jge .L_ildiz_double\n");
+    fprintf(out, "    mov rax, -1000000000000000\n");
+    fprintf(out, "    cmp r8, rax\n");
+    fprintf(out, "    jle .L_ildiz_double\n");
+    fprintf(out, "    cvtsi2sd xmm0, rdi\n");
+    fprintf(out, "    sqrtsd xmm0, xmm0\n");
+    fprintf(out, "    movq rax, xmm0\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n");
+    fprintf(out, ".L_ildiz_double:\n");
+    fprintf(out, "    movq xmm0, rdi\n");
+    fprintf(out, "    sqrtsd xmm0, xmm0\n");
+    fprintf(out, "    movq rax, xmm0\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 24. Tizim buyrug'i (Process execution via fork, execve, wait4)
+    fprintf(out, "algo_tizim_buyruq:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_tizim_err\n");
+    fprintf(out, "    lea r12, [rdi + 8]\n");
+    fprintf(out, "    mov rax, 57\n"); // sys_fork
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    js .L_tizim_err\n");
+    fprintf(out, "    jz .L_tizim_child\n");
+    fprintf(out, "    mov r13, rax\n"); // child pid
+    fprintf(out, "    sub rsp, 16\n");
+    fprintf(out, "    mov rdi, r13\n");
+    fprintf(out, "    mov rsi, rsp\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    xor r10, r10\n");
+    fprintf(out, "    mov rax, 61\n"); // sys_wait4
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov eax, dword ptr [rsp]\n");
+    fprintf(out, "    shr eax, 8\n");
+    fprintf(out, "    and eax, 0xFF\n");
+    fprintf(out, "    add rsp, 16\n");
+    fprintf(out, "    jmp .L_tizim_done\n");
+    fprintf(out, ".L_tizim_child:\n");
+    fprintf(out, "    lea r8, [rip + algo_str_bin_sh]\n");
+    fprintf(out, "    lea r9, [rip + algo_str_sh_c]\n");
+    fprintf(out, "    sub rsp, 32\n");
+    fprintf(out, "    mov [rsp], r8\n");
+    fprintf(out, "    mov [rsp + 8], r9\n");
+    fprintf(out, "    mov [rsp + 16], r12\n");
+    fprintf(out, "    mov qword ptr [rsp + 24], 0\n");
+    fprintf(out, "    mov rax, 59\n"); // sys_execve
+    fprintf(out, "    mov rdi, r8\n");
+    fprintf(out, "    mov rsi, rsp\n");
+    fprintf(out, "    mov rdx, [rip + algo_envp]\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rdi, 127\n");
+    fprintf(out, "    mov rax, 60\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, ".L_tizim_err:\n");
+    fprintf(out, "    mov rax, -1\n");
+    fprintf(out, ".L_tizim_done:\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
     // Barcha foydalanuvchi funksiyalarini generatsiya qilish
     for (int i = 0; i < prog->function_count; i++) {
         gen_function(prog->functions[i], out);
@@ -1656,12 +2068,15 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "\n.section .data\n");
     fprintf(out, "algo_argc:       .quad 0\n");
     fprintf(out, "algo_argv:       .quad 0\n");
+    fprintf(out, "algo_envp:       .quad 0\n");
     fprintf(out, "algo_heap_start: .quad 0\n");
     fprintf(out, "algo_heap_ptr:   .quad 0\n");
     fprintf(out, "algo_heap_end:   .quad 0\n");
 
     fprintf(out, "\n.section .rodata\n");
     fprintf(out, "algo_rodata_start:\n");
+    fprintf(out, "algo_str_bin_sh:\n    .string \"/bin/sh\"\n");
+    fprintf(out, "algo_str_sh_c:\n    .string \"-c\"\n");
     fprintf(out, "algo_newline:\n    .byte 10\n");
     fprintf(out, "algo_space:\n    .byte 32\n");
     fprintf(out, "algo_lbracket:\n    .byte 91\n");
