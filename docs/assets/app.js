@@ -230,16 +230,72 @@ function renderEditor() {
   }
 }
 
+let customConsoleOutput = null;
+
 function renderConsole() {
   const consoleEl = document.getElementById('console-output');
-  if (!consoleEl || !SAMPLES[currentTab]) return;
+  if (!consoleEl) return;
   
-  const raw = SAMPLES[currentTab].output;
+  const raw = customConsoleOutput ? customConsoleOutput : (SAMPLES[currentTab] ? SAMPLES[currentTab].output : '');
+  customConsoleOutput = null;
   consoleEl.innerHTML = raw
     .replace(/(Natija.*|Salom.*|Muallif.*|Tizim.*|ildiz.*)/g, '<span class="c-highlight">$1</span>')
     .replace(/(^.*Syscalls:.*$)/gm, '<span class="c-badge">$1</span>')
     .replace(/(^ELF x86_64.*$)/gm, '<span class="c-badge">$1</span>')
     .replace(/(^Kernel-level.*$)/gm, '<span class="c-badge">$1</span>');
+}
+
+let currentDictCategory = 'all';
+
+function filterDictionary(cat, btn) {
+  currentDictCategory = cat;
+  if (btn) {
+    document.querySelectorAll('.dict-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  applyDictFilters();
+}
+
+function searchDictionary(val) {
+  applyDictFilters();
+}
+
+function applyDictFilters() {
+  const box = document.getElementById('dict-search-box');
+  const q = box ? box.value.toLowerCase().trim() : '';
+  document.querySelectorAll('.dict-card').forEach(card => {
+    const cat = card.getAttribute('data-cat') || '';
+    const term = (card.querySelector('.dict-term')?.innerText || '').toLowerCase();
+    const desc = (card.querySelector('.dict-desc')?.innerText || '').toLowerCase();
+    const syntax = (card.querySelector('.dict-syntax-box')?.innerText || '').toLowerCase();
+
+    const matchesCat = (currentDictCategory === 'all' || cat === currentDictCategory);
+    const matchesQuery = !q || term.includes(q) || desc.includes(q) || syntax.includes(q);
+
+    if (matchesCat && matchesQuery) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function loadSnippetIntoWorkbench(code, output) {
+  const ed = document.getElementById('code-editor');
+  if (ed) {
+    ed.value = code;
+    if (output) {
+      customConsoleOutput = output;
+    }
+    setView('algo');
+    const wb = document.getElementById('workbench');
+    if (wb) {
+      wb.scrollIntoView({ behavior: 'smooth' });
+    }
+    setTimeout(() => {
+      executeCode();
+    }, 350);
+  }
 }
 
 function executeCode() {

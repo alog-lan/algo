@@ -1263,3 +1263,206 @@ code, kbd, samp, pre {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==============================================================================
+   TIL LUG'ATI VA SINTAKSISI (DICTIONARY & SYNTAX REFERENCE)
+   ============================================================================== */
+.dict-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-32);
+}
+
+.dict-search-row {
+  display: flex;
+  gap: var(--spacing-16);
+  flex-wrap: wrap;
+}
+
+.dict-search-input {
+  flex-grow: 1;
+  max-width: 520px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-inputs);
+  padding: 10px 16px;
+  color: var(--color-bone);
+  font-size: var(--text-body-sm);
+  transition: border-color 0.15s ease;
+}
+
+.dict-search-input:focus {
+  border-color: var(--color-soft-indigo);
+}
+
+.dict-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  flex-wrap: wrap;
+}
+
+.dict-filter-btn {
+  font-family: var(--font-inter);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--color-ash);
+  background: var(--surface-card);
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-navpills);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dict-filter-btn:hover {
+  color: var(--color-bone);
+  border-color: var(--color-slate-edge);
+}
+
+.dict-filter-btn.active {
+  color: var(--color-bone);
+  background: var(--surface-elevated);
+  border-color: var(--color-soft-indigo);
+}
+
+.dict-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--spacing-20);
+}
+
+.dict-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-cards);
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.dict-card:hover {
+  border-color: var(--color-slate-edge);
+}
+
+.dict-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-12);
+}
+
+.dict-term {
+  font-family: var(--font-jetbrains-mono);
+  font-size: var(--text-heading-sm);
+  font-weight: 600;
+  color: var(--color-bone);
+}
+
+.dict-badge {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-tags);
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--color-slate-edge);
+  color: var(--color-ash);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dict-badge.badge-kw {
+  color: var(--color-soft-indigo);
+  border-color: rgba(103, 152, 255, 0.3);
+  background-color: rgba(103, 152, 255, 0.08);
+}
+
+.dict-badge.badge-fn {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.dict-badge.badge-type {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.dict-badge.badge-mod {
+  color: #a855f7;
+  border-color: rgba(168, 85, 247, 0.3);
+  background-color: rgba(168, 85, 247, 0.08);
+}
+
+.dict-desc {
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  color: var(--color-ash);
+  margin-bottom: var(--spacing-16);
+}
+
+.dict-syntax-box {
+  background-color: var(--color-pure-black);
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-tags);
+  padding: 8px 12px;
+  font-family: var(--font-jetbrains-mono);
+  font-size: 12px;
+  color: var(--color-bone);
+  margin-bottom: var(--spacing-12);
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.dict-code-box {
+  background-color: #050505;
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-tags);
+  padding: 10px 12px;
+  font-family: var(--font-jetbrains-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #d4d4d8;
+  position: relative;
+  margin-bottom: var(--spacing-12);
+  white-space: pre-wrap;
+}
+
+.dict-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: var(--spacing-8);
+  border-top: 1px solid rgba(30, 30, 30, 0.6);
+}
+
+.btn-dict-try {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  color: var(--color-soft-indigo);
+  background: transparent;
+  border: 1px solid rgba(103, 152, 255, 0.25);
+  border-radius: var(--radius-tags);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-dict-try:hover {
+  background: rgba(103, 152, 255, 0.1);
+  border-color: var(--color-soft-indigo);
+  color: var(--color-bone);
+}
+
+@media (max-width: 640px) {
+  .dict-grid {
+    grid-template-columns: 1fr;
+  }
+}

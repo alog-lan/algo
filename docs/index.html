@@ -42,6 +42,7 @@
 
       <ul class="nav-links">
         <li><a href="#workbench" class="nav-link">Sinov Maydoni</a></li>
+        <li><a href="#lugat" class="nav-link">Til Lug'ati</a></li>
         <li><a href="#arxitektura" class="nav-link">Arxitektura</a></li>
         <li><a href="#benchmarks" class="nav-link">Unumdorlik</a></li>
         <li><a href="#kutubxona" class="nav-link">Standart Kutubxona</a></li>
@@ -170,6 +171,249 @@
               <span>Linux Syscalls / ELF Execution</span>
             </div>
             <div class="console-body" id="console-output"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       TIL LUG'ATI VA SINTAKSISI (DICTIONARY & GRAMMAR REFERENCE)
+       ============================================================================== -->
+  <section class="section" id="lugat">
+    <div class="container">
+      <div class="section-eyebrow">Til Spetsifikatsiyasi va Grammatikasi</div>
+      <h2 class="section-heading">Algo Tili Lug'ati va Sintaksisi</h2>
+      <p class="section-summary">
+        Algo dasturlash tilining barcha kalit so'zlari, o'rnatilgan amallari va sintaksis qoidalari to'liq O'zbek tilidagi lug'atda jamlangan. Har bir amalni to'g'ridan-to'g'ri sinov maydonida sinab ko'rishingiz mumkin.
+      </p>
+
+      <div class="dict-controls">
+        <div class="dict-search-row">
+          <input type="text" id="dict-search-box" class="dict-search-input" placeholder="Lug'atdan qidirish (masalan: amal, toki, chiqar, butun)..." oninput="searchDictionary(this.value)">
+          <div class="dict-filters">
+            <button class="dict-filter-btn active" onclick="filterDictionary('all', this)">Barchasi</button>
+            <button class="dict-filter-btn" onclick="filterDictionary('kw', this)">Kalit So'zlar</button>
+            <button class="dict-filter-btn" onclick="filterDictionary('fn', this)">O'rnatilgan Amallar</button>
+            <button class="dict-filter-btn" onclick="filterDictionary('type', this)">Turlar &amp; Operatorlar</button>
+            <button class="dict-filter-btn" onclick="filterDictionary('mod', this)">Standart Kutubxona</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dict-grid" id="dict-container">
+        <!-- Kalit so'zlar -->
+        <div class="dict-card" data-cat="kw">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">amal</span>
+              <span class="dict-badge badge-kw">Kalit So'z</span>
+            </div>
+            <p class="dict-desc">Funksiya va protseduralarni e'lon qilish uchun asosiy kalit so'z. Argumentlarni qabul qiladi va natija qaytaradi.</p>
+            <div class="dict-syntax-box">amal nom(arg1, arg2) { qaytar natija }</div>
+            <div class="dict-code-box">amal kvadrat(x) {
+    qaytar x * x
+}
+amal asosiy() {
+    chiqar("5 ning kvadrati:", kvadrat(5))
+    qaytar 0
+}</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`// Funksiya (amal) namunasi\namal kvadrat(x) {\n    qaytar x * x\n}\namal asosiy() {\n    chiqar(\"5 ning kvadrati:\", kvadrat(5))\n    qaytar 0\n}`, `5 ning kvadrati: 25\n--------------------------------------------------\nAmal chaqiruvi muvaffaqiyatli yakunlandi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="kw">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">asosiy</span>
+              <span class="dict-badge badge-kw">Kirish Nuqtasi</span>
+            </div>
+            <p class="dict-desc">Dasturning asosiy boshlang'ich nuqtasi (main function). Linux ELF binarining _start yorlig'idan chaqiriladi.</p>
+            <div class="dict-syntax-box">amal asosiy() { ... qaytar 0 }</div>
+            <div class="dict-code-box">amal asosiy() {
+    chiqar("Algo dasturi boshlandi!")
+    qaytar 0
+}</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    chiqar(\"Algo dasturi muvaffaqiyatli ishga tushdi!\")\n    qaytar 0\n}`, `Algo dasturi muvaffaqiyatli ishga tushdi!\n--------------------------------------------------\nChiqish kodi: 0`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="kw">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">agar / aks agar / aks</span>
+              <span class="dict-badge badge-kw">Shart Operatorlari</span>
+            </div>
+            <p class="dict-desc">Mantiqiy ifodaga ko'ra kod blokini shartli bajarish. 'if', 'else if' va 'else' muqobili.</p>
+            <div class="dict-syntax-box">agar shart { ... } aks agar shart2 { ... } aks { ... }</div>
+            <div class="dict-code-box">ball = 88
+agar ball >= 90 {
+    chiqar("A'lo")
+} aks agar ball >= 70 {
+    chiqar("Yaxshi")
+} aks {
+    chiqar("Qoniqarsiz")
+}</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    ball = 88\n    agar ball >= 90 {\n        chiqar(\"Baho: A'lo\")\n    } aks agar ball >= 70 {\n        chiqar(\"Baho: Yaxshi\")\n    } aks {\n        chiqar(\"Baho: Qoniqarsiz\")\n    }\n    qaytar 0\n}`, `Baho: Yaxshi\n--------------------------------------------------\nShart tarmoqlanishi bajarildi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="kw">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">toki</span>
+              <span class="dict-badge badge-kw">Sikl (While)</span>
+            </div>
+            <p class="dict-desc">Belgilangan shart rost (1) bo'lib turguniga qadar blokni takroran bajaradi.</p>
+            <div class="dict-syntax-box">toki shart { ... }</div>
+            <div class="dict-code-box">i = 1
+toki i <= 5 {
+    chiqar("Sikl qadami:", i)
+    i = i + 1
+}</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    i = 1\n    toki i <= 5 {\n        chiqar(\"Qadam:\", i)\n        i = i + 1\n    }\n    qaytar 0\n}`, `Qadam: 1\nQadam: 2\nQadam: 3\nQadam: 4\nQadam: 5\n--------------------------------------------------\nSikl 5 marta takrorlandi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="kw">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">uchun / ichida</span>
+              <span class="dict-badge badge-kw">Sikl (For .. In)</span>
+            </div>
+            <p class="dict-desc">Sonlar oralig'i (a..b) yoki massiv elementlari bo'ylab iteratsiya qilish uchun ishlatiladi.</p>
+            <div class="dict-syntax-box">uchun i ichida 1..10 { ... }</div>
+            <div class="dict-code-box">yigindi = 0
+uchun son ichida 1..5 {
+    yigindi = yigindi + son
+}
+chiqar("Yig'indi:", yigindi)</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    yigindi = 0\n    uchun son ichida 1..5 {\n        yigindi = yigindi + son\n    }\n    chiqar(\"1 dan 5 gacha yig'indi:\", yigindi)\n    qaytar 0\n}`, `1 dan 5 gacha yig'indi: 15\n--------------------------------------------------\nUchun sikli hisoblandi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="kw">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">tuzilma</span>
+              <span class="dict-badge badge-kw">Tuzilma (Struct)</span>
+            </div>
+            <p class="dict-desc">Bir nechta maydonlarni o'z ichiga oluvchi yangi ma'lumotlar turini e'lon qilish.</p>
+            <div class="dict-syntax-box">tuzilma Nom { maydon1, maydon2 }</div>
+            <div class="dict-code-box">tuzilma Muhandis { ism, unvon }
+nodir = Muhandis("Nodir", "Senior")
+chiqar(nodir.ism, nodir.unvon)</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`tuzilma Muhandis { ism, unvon }\namal asosiy() {\n    nodir = Muhandis(\"Nodir\", \"Senior\")\n    chiqar(\"Ism:\", nodir.ism)\n    chiqar(\"Unvon:\", nodir.unvon)\n    qaytar 0\n}`, `Ism: Nodir\nUnvon: Senior\n--------------------------------------------------\nTuzilma xotirada joylashdi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="fn">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">chiqar(...)</span>
+              <span class="dict-badge badge-fn">O'rnatilgan Amal</span>
+            </div>
+            <p class="dict-desc">Linux 'sys_write' tizim chaqiruvi orqali konsolga matn yoki qiymatlarni chop etadi.</p>
+            <div class="dict-syntax-box">chiqar(arg1, arg2, ...)</div>
+            <div class="dict-code-box">chiqar("Salom, Dunyo!")
+chiqar("Qiymatlar:", 10, 20.5, "Algo")</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    chiqar(\"Salom, Dunyo!\")\n    chiqar(\"Hisoblash:\", 25 * 4)\n    qaytar 0\n}`, `Salom, Dunyo!\nHisoblash: 100\n--------------------------------------------------\nsys_write bajarildi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="fn">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">ildiz(x)</span>
+              <span class="dict-badge badge-fn">Uskunaviy Amal</span>
+            </div>
+            <p class="dict-desc">x86_64 protsessorining SSE2 SQRTSD ko'rsatmasi orqali tezkor apparatli kvadrat ildiz hisoblash.</p>
+            <div class="dict-syntax-box">ildiz(son) -> kasr haqiqiy son</div>
+            <div class="dict-code-box">chiqar("144 ning ildizi:", ildiz(144.0))
+chiqar("2 ning ildizi:", ildiz(2.0))</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    chiqar(\"ildiz(144.0) =\", ildiz(144.0))\n    chiqar(\"ildiz(2.0)   =\", ildiz(2.0))\n    qaytar 0\n}`, `ildiz(144.0) = 12.00000\nildiz(2.0)   = 1.41421\n--------------------------------------------------\nSSE2 sqrtsd uskunaviy hisoblash.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="fn">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">tasodifiy(a, b)</span>
+              <span class="dict-badge badge-fn">Kripto Amal</span>
+            </div>
+            <p class="dict-desc">Linux yadrosi /dev/urandom yoki RDRAND ko'rsatmasidan xavfsiz tasodifiy butun son olish.</p>
+            <div class="dict-syntax-box">tasodifiy(min, max) -> butun son</div>
+            <div class="dict-code-box">tasodifiy_son = tasodifiy(100, 999)
+chiqar("Tasodifiy PIN:", tasodifiy_son)</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    pin = tasodifiy(1000, 9999)\n    chiqar(\"Generatsiya qilingan PIN:\", pin)\n    qaytar 0\n}`, `Generatsiya qilingan PIN: 7482\n--------------------------------------------------\nCSPRNG apparatli tasodifiy son.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="type">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">Massivlar va Indekslar</span>
+              <span class="dict-badge badge-type">Ma'lumot Turi</span>
+            </div>
+            <p class="dict-desc">Dinamik xotira massivlari. 0-dan boshlanuvchi indekslar, element o'qish va o'zgartirish.</p>
+            <div class="dict-syntax-box">[element1, element2, ...] | massiv[i]</div>
+            <div class="dict-code-box">sonlar = [10, 20, 30, 40]
+sonlar[1] = 99
+chiqar("Uzunligi:", uzunlik(sonlar))</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    sonlar = [10, 20, 30, 40]\n    sonlar[1] = 99\n    chiqar(\"Birinchi:\", sonlar[0])\n    chiqar(\"O'zgargan:\", sonlar[1])\n    chiqar(\"Uzunligi:\", uzunlik(sonlar))\n    qaytar 0\n}`, `Birinchi: 10\nO'zgargan: 99\nUzunligi: 4\n--------------------------------------------------\nDinamik massiv operatsiyalari.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="type">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">Lug'atlar (Hashmap)</span>
+              <span class="dict-badge badge-type">Ma'lumot Turi</span>
+            </div>
+            <p class="dict-desc">Kalit-qiymat ko'rinishidagi assotsiativ massivlar (JSON obyektlari kabi).</p>
+            <div class="dict-syntax-box">{"kalit": qiymat, ...}</div>
+            <div class="dict-code-box">davlat = {"nom": "O'zbekiston", "poytaxt": "Toshkent"}
+chiqar("Poytaxt:", davlat["poytaxt"])</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`amal asosiy() {\n    davlat = {\"nom\": \"O'zbekiston\", \"poytaxt\": \"Toshkent\"}\n    chiqar(\"Poytaxt:\", davlat[\"poytaxt\"])\n    qaytar 0\n}`, `Poytaxt: Toshkent\n--------------------------------------------------\nHashmap kalit orqali topildi.`)">&#9654; Sinov maydonida sinash</button>
+          </div>
+        </div>
+
+        <div class="dict-card" data-cat="mod">
+          <div>
+            <div class="dict-header">
+              <span class="dict-term">std/baza.algo</span>
+              <span class="dict-badge badge-mod">Standart Modul</span>
+            </div>
+            <p class="dict-desc">Diskda saqlanuvchi tranzaksiyali lokal Key-Value ma'lumotlar bazasi dvijogi.</p>
+            <div class="dict-syntax-box">yukla "std/baza.algo"</div>
+            <div class="dict-code-box">baza_och("ilovam.db")
+baza_yoz("foydalanuvchi", "Jasurbek")
+baza_saqla("ilovam.db")</div>
+          </div>
+          <div class="dict-footer">
+            <button class="btn-dict-try" onclick="loadSnippetIntoWorkbench(`yukla \"std/baza.algo\"\namal asosiy() {\n    baza_och(\"test.db\")\n    baza_yoz(\"muallif\", \"Jasurbek\")\n    chiqar(\"Saqlangan muallif:\", baza_oqish(\"muallif\"))\n    qaytar 0\n}`, `Saqlangan muallif: Jasurbek\n--------------------------------------------------\nBaza tranzaksiyasi diskka yozildi.`)">&#9654; Sinov maydonida sinash</button>
           </div>
         </div>
       </div>
