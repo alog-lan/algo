@@ -1,0 +1,26 @@
+name: Algo CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repozitoriyni yuklash
+      uses: actions/checkout@v4
+
+    - name: Kompilyatorni yig'ish (make)
+      run: make
+
+    - name: Barcha 31 ta sinovlarni tekshirish (algo sinov)
+      run: ./bin/algo sinov
+
+    - name: Versiya va yordamni tekshirish
+      run: |
+        ./bin/algo versiya
+        ./bin/algo yordam

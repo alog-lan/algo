@@ -1,0 +1,89 @@
+/*
+  Algo Dasturlash Tili - v1.5.0 Mukammal Imkoniyatlar Sinovi
+  Ushbu test fayli ko'p qatorli izohlar, ANSI ranglar, bayroqlar,
+  shablonlar, arxivlash va ko'p jarayonli parallel ishlashni tekshiradi.
+*/
+
+yukla "std/sinov.algo"
+yukla "std/rang.algo"
+yukla "std/bayroq.algo"
+yukla "std/shablon.algo"
+yukla "std/arxiv.algo"
+
+amal asosiy() {
+    s = sinovchi_yarat("Mukammal Imkoniyatlar Sinovi")
+
+    /*
+       1. Terminal ANSI Ranglari Sinovi
+    */
+    qizil_matn = rang_qizil("XATO")
+    sinov_rost(s, matn_ichida(qizil_matn, "XATO"), "rang_qizil() matnni saqlaydi")
+
+    yashil_matn = rang_yashil("OK")
+    sinov_rost(s, matn_ichida(yashil_matn, "OK"), "rang_yashil() matnni saqlaydi")
+
+    qalin_matn = rang_qalin("MUHIM")
+    sinov_rost(s, matn_ichida(qalin_matn, "MUHIM"), "rang_qalin() matnni saqlaydi")
+
+    /*
+       2. CLI Bayroqlar (Flags) Tahlili
+    */
+    standart_port = bayroq_butun_ol("--port", 8080)
+    sinov_teng_butun(s, 8080, standart_port, "bayroq_butun_ol standart qiymat qaytardi")
+
+    standart_xost = bayroq_matn_ol("--host", "127.0.0.1")
+    sinov_teng_matn(s, "127.0.0.1", standart_xost, "bayroq_matn_ol standart qiymat qaytardi")
+
+    mavjud_emas = bayroq_bormi("--bunday-bayroq-yoq")
+    sinov_teng_butun(s, 0, mavjud_emas, "mavjud bo'lmagan bayroq aniqlanmadi")
+
+    /*
+       3. Shablonlashtirgich (Template Engine)
+    */
+    xom_shablon = "Salom, {{ism}}! Sizning balingiz: {{ball}}."
+    shablon_natija = shablon_almashtir(xom_shablon, "ism", "Jasurbek")
+    shablon_natija = shablon_almashtir(shablon_natija, "ball", "100")
+    sinov_teng_matn(s, "Salom, Jasurbek! Sizning balingiz: 100.", shablon_natija, "shablon_almashtir()")
+
+    xavfsiz_html = shablon_html_xavfsiz("<div>Salom & Dunyo</div>")
+    sinov_teng_matn(s, "&lt;div&gt;Salom &amp; Dunyo&lt;/div&gt;", xavfsiz_html, "shablon_html_xavfsiz()")
+
+    /*
+       4. Ma'lumotlarni Siqish va Ochish (Arxivlash)
+    */
+    asl_malumot = "AAAAABBBCCCCCCCCDD"
+    siqilgan = arxiv_siqish_rle(asl_malumot)
+    sinov_rost(s, uzunlik(siqilgan) < uzunlik(asl_malumot), "siqilgan hajm kichikroq bo'ldi")
+
+    qayta_ochilgan = arxiv_ochish_rle(siqilgan)
+    sinov_teng_matn(s, asl_malumot, qayta_ochilgan, "arxiv_ochish_rle() asl holatga qaytardi")
+
+    /*
+       5. Xotirani Boshqarish (Heap Arena Checkpoint & Restore)
+    */
+    nuqta = xotira_holati()
+    sinov_rost(s, nuqta >= 0, "xotira_holati() joriy xotira ko'rsatkichini qaytardi")
+    vaqtinchalik_matn = "vaqtinchalik xotira sinovi"
+    xotira_tikla(nuqta)
+    sinov_rost(s, 1, "xotira_tikla() muvaffaqiyatli tiklandi")
+
+    /*
+       6. Ko'p Jarayonli Tizim (Fork Concurrency)
+    */
+    bolalar_pid = jarayon_yarat()
+    agar bolalar_pid == 0 {
+        // Bu bola jarayon (child process)
+        chiqish(0)
+    } aks agar bolalar_pid > 0 {
+        // Bu ota jarayon (parent process), bola tugashini kutadi
+        jarayon_kut(bolalar_pid)
+        sinov_rost(s, bolalar_pid > 0, "jarayon_yarat() va jarayon_kut() muvaffaqiyatli ishladi")
+    }
+
+    natija = sinovchi_yakunla(s)
+    agar natija == 1 {
+        qaytar 0
+    } yoqsa {
+        qaytar 1
+    }
+}

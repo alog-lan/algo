@@ -1,0 +1,26 @@
+// Algo Dasturlash Tili - Standart Shablonlashtirgich (Template Engine) (std/shablon.algo)
+// HTML va matn shablonlaridagi parametrlarni almashtirish (Jinja2 / Go html/template kabi)
+
+amal shablon_almashtir(shablon_matn, kalit, qiymat) {
+    belgi_kalit = "{{" + kalit + "}}"
+    qaytar matn_almashtir(shablon_matn, belgi_kalit, qiymat)
+}
+
+amal shablon_lugatdan(shablon_matn, lugat, kalitlar) {
+    natija = shablon_matn
+    jami = uzunlik(kalitlar)
+    uchun i = 0; i < jami; i = i + 1 {
+        k = kalitlar[i]
+        q = lugat[k]
+        natija = shablon_almashtir(natija, k, q)
+    }
+    qaytar natija
+}
+
+amal shablon_html_xavfsiz(matn) {
+    xavfsiz = matn_almashtir(matn, "&", "&amp;")
+    xavfsiz = matn_almashtir(xavfsiz, "<", "&lt;")
+    xavfsiz = matn_almashtir(xavfsiz, ">", "&gt;")
+    xavfsiz = matn_almashtir(xavfsiz, "\"", "&quot;")
+    qaytar xavfsiz
+}

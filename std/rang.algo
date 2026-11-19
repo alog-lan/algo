@@ -1,0 +1,50 @@
+// Algo Dasturlash Tili - Standart Terminal Ranglari Kutubxonasi (std/rang.algo)
+// ANSI escape ketma-ketliklari yordamida konsolda rangli va formatlangan matn chiqarish
+
+amal rang_qizil(matn) {
+    qaytar "\e[31m" + matn + "\e[0m"
+}
+
+amal rang_yashil(matn) {
+    qaytar "\e[32m" + matn + "\e[0m"
+}
+
+amal rang_sariq(matn) {
+    qaytar "\e[33m" + matn + "\e[0m"
+}
+
+amal rang_kok(matn) {
+    qaytar "\e[34m" + matn + "\e[0m"
+}
+
+amal rang_binafsha(matn) {
+    qaytar "\e[35m" + matn + "\e[0m"
+}
+
+amal rang_moviy(matn) {
+    qaytar "\e[36m" + matn + "\e[0m"
+}
+
+amal rang_oq(matn) {
+    qaytar "\e[37m" + matn + "\e[0m"
+}
+
+amal rang_qalin(matn) {
+    qaytar "\e[1m" + matn + "\e[0m"
+}
+
+amal rang_tagchiziq(matn) {
+    qaytar "\e[4m" + matn + "\e[0m"
+}
+
+amal rang_orqa_qizil(matn) {
+    qaytar "\e[41m" + matn + "\e[0m"
+}
+
+amal rang_orqa_yashil(matn) {
+    qaytar "\e[42m" + matn + "\e[0m"
+}
+
+amal rang_tozala() {
+    qaytar "\e[2J\e[H"
+}

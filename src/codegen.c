@@ -3113,6 +3113,43 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "    mov rax, rdi\n");
     fprintf(out, "    ret\n\n");
 
+    // 46. Jarayon yaratish (sys_fork - Multi-Process Concurrency)
+    fprintf(out, "algo_jarayon_yarat:\n");
+    fprintf(out, "    mov rax, 57\n"); // sys_fork
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
+    // 47. Bolalar jarayonini kutish (sys_wait4)
+    fprintf(out, "algo_jarayon_kut:\n");
+    fprintf(out, "    mov rax, 61\n"); // sys_wait4
+    fprintf(out, "    xor rsi, rsi\n");
+    fprintf(out, "    xor rdx, rdx\n");
+    fprintf(out, "    xor r10, r10\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    ret\n\n");
+
+    // 48. Xotira havzasini tozalash va holatini saqlash (Heap Arena Checkpoint & Restore)
+    fprintf(out, "algo_xotira_holati:\n");
+    fprintf(out, "    mov rax, [rip + algo_heap_ptr]\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_xotira_tikla:\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jz .L_restore_skip\n");
+    fprintf(out, "    mov [rip + algo_heap_ptr], rdi\n");
+    fprintf(out, ".L_restore_skip:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    ret\n\n");
+
+    fprintf(out, "algo_xotira_tozala:\n");
+    fprintf(out, "    mov rax, [rip + algo_heap_start]\n");
+    fprintf(out, "    test rax, rax\n");
+    fprintf(out, "    jz .L_no_heap_yet\n");
+    fprintf(out, "    mov [rip + algo_heap_ptr], rax\n");
+    fprintf(out, ".L_no_heap_yet:\n");
+    fprintf(out, "    xor rax, rax\n");
+    fprintf(out, "    ret\n\n");
+
     // Barcha foydalanuvchi funksiyalarini generatsiya qilish
     for (int i = 0; i < prog->function_count; i++) {
         gen_function(prog->functions[i], out);

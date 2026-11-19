@@ -697,7 +697,8 @@ static void run_all_tests(void) {
         "examples/29_backend_rest_api.algo",
         "examples/30_kengaytirilgan_matematika_massiv.algo",
         "examples/31_baza_va_navbat.algo",
-        "examples/32_yangi_imkoniyatlar.algo"
+        "examples/32_yangi_imkoniyatlar.algo",
+        "examples/33_mukammal_imkoniyatlar.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);

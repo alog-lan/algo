@@ -1,0 +1,34 @@
+// Algo Dasturlash Tili - Standart Bayroqlar (CLI Flags) Kutubxonasi (std/bayroq.algo)
+// Buyruqlar satridan argumentlar va parametrlarni tahlil qilish (Go flag / Python argparse kabi)
+
+amal bayroq_matn_ol(bayroq_nomi, standart_qiymat) {
+    args = argumentlar()
+    jami = uzunlik(args)
+    uchun i = 0; i < jami; i = i + 1 {
+        agar args[i] == bayroq_nomi {
+            agar i + 1 < jami {
+                qaytar args[i + 1]
+            }
+        }
+    }
+    qaytar standart_qiymat
+}
+
+amal bayroq_butun_ol(bayroq_nomi, standart_qiymat) {
+    str_val = bayroq_matn_ol(bayroq_nomi, "")
+    agar uzunlik(str_val) == 0 {
+        qaytar standart_qiymat
+    }
+    qaytar matn_songa(str_val)
+}
+
+amal bayroq_bormi(bayroq_nomi) {
+    args = argumentlar()
+    jami = uzunlik(args)
+    uchun i = 0; i < jami; i = i + 1 {
+        agar args[i] == bayroq_nomi {
+            qaytar 1
+        }
+    }
+    qaytar 0
+}

@@ -1,0 +1,49 @@
+// Algo Dasturlash Tili - Standart Ma'lumotlarni Siqish Kutubxonasi (std/arxiv.algo)
+// Run-Length Encoding (RLE) asosida ma'lumotlarni siqish va ochish algoritmi
+
+amal arxiv_siqish_rle(matn) {
+    uzun = uzunlik(matn)
+    agar uzun == 0 { qaytar "" }
+    natija = ""
+    hisob = 1
+    joriy_b = belgi(belgi_kodi(matn, 0))
+
+    uchun i = 1; i < uzun; i = i + 1 {
+        b = belgi(belgi_kodi(matn, i))
+        agar b == joriy_b {
+            hisob = hisob + 1
+        } aks {
+            natija = natija + son_matnga(hisob) + "#" + joriy_b
+            joriy_b = b
+            hisob = 1
+        }
+    }
+    natija = natija + son_matnga(hisob) + "#" + joriy_b
+    qaytar natija
+}
+
+amal arxiv_ochish_rle(siqilgan) {
+    uzun = uzunlik(siqilgan)
+    agar uzun == 0 { qaytar "" }
+    natija = ""
+    son_str = ""
+    i = 0
+    toki i < uzun {
+        b = belgi(belgi_kodi(siqilgan, i))
+        agar b == "#" {
+            takror_soni = matn_songa(son_str)
+            i = i + 1
+            agar i < uzun {
+                harf = belgi(belgi_kodi(siqilgan, i))
+                uchun k = 0; k < takror_soni; k = k + 1 {
+                    natija = natija + harf
+                }
+            }
+            son_str = ""
+        } aks {
+            son_str = son_str + b
+        }
+        i = i + 1
+    }
+    qaytar natija
+}

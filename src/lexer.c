@@ -39,6 +39,17 @@ static void skip_whitespace_and_comments(Lexer *lexer) {
             while (peek(lexer) != '\n' && peek(lexer) != '\0') {
                 advance(lexer);
             }
+        } else if (c == '/' && peek_next(lexer) == '*') {
+            advance(lexer); // '/' o'tkazish
+            advance(lexer); // '*' o'tkazish
+            while (peek(lexer) != '\0') {
+                if (peek(lexer) == '*' && peek_next(lexer) == '/') {
+                    advance(lexer); // '*' o'tkazish
+                    advance(lexer); // '/' o'tkazish
+                    break;
+                }
+                advance(lexer);
+            }
         } else if (c == '#') {
             while (peek(lexer) != '\n' && peek(lexer) != '\0') {
                 advance(lexer);
@@ -156,6 +167,7 @@ Token lexer_next_token(Lexer *lexer) {
                 else if (esc == 't') ch = '\t';
                 else if (esc == 'r') ch = '\r';
                 else if (esc == '0') ch = '\0';
+                else if (esc == 'e') ch = 27; // ESC (ASCII 27)
                 else if (esc == '"') ch = '"';
                 else if (esc == '\\') ch = '\\';
                 else ch = esc;

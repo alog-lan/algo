@@ -19,6 +19,13 @@
    * 100 million marta aylanadigan siklni **0.04 - 0.26 soniyada** hisoblaydi (*Pythondan 25-90+ barobar tez*).
 
 3. **To'liq Mukammal Ekotizim (v1.5.0):**
+   * **Ko'p Jarayonli Parallel Ishlash (Multi-Process Concurrency):** To'g'ridan-to'g'ri Linux `sys_fork` (57) va `sys_wait4` (61) orqali `jarayon_yarat()` va `jarayon_kut()` — CPU yadrolarida parallel hisoblash.
+   * **Xotira Boshqaruvi va Arena Checkpoint:** `xotira_holati()` va `xotira_tikla()` orqali serverlarda xotirani to'liq boshqarish va qayta tiklash.
+   * **Ko'p Qatorli Izohlar (`/* ... */`):** C, Go, Rust kabi ko'p qatorli kod bloklarini izohlash.
+   * **Terminal Ranglari va UI (`std/rang.algo`):** `rang_qizil`, `rang_yashil`, `rang_sariq`, `rang_kok`, `rang_binafsha`, `rang_moviy`, `rang_oq`, `rang_qalin`, `rang_tagchiziq`.
+   * **CLI Bayroqlar Tahlilchisi (`std/bayroq.algo`):** `bayroq_matn_ol`, `bayroq_butun_ol`, `bayroq_bormi` (Go `flag` / Python `argparse` kabi).
+   * **Shablonlashtirish Tizimi (`std/shablon.algo`):** `shablon_almashtir`, `shablon_lugatdan`, `shablon_html_xavfsiz` (Jinja2 / Go template kabi).
+   * **Ma'lumotlarni Siqish (`std/arxiv.algo`):** Run-Length Encoding algoritmi (`arxiv_siqish_rle`, `arxiv_ochish_rle`).
    * **Birlik Sinovlari Freymvorki (`std/sinov.algo`):** Rasmiy test tizimi (`sinovchi_yarat`, `sinov_teng_butun`, `sinov_teng_matn`, `sinov_rost`, `sinov_yolgon`, `sinovchi_yakunla`).
    * **Avtomatik Hujjatlash Tizimi (`algo doc`):** Kod izohlaridan avtomatik chiroyli konsol va Markdown API hujjatlari generatsiyasi (`godoc` kabi).
    * **Paket Menejeri (`algo paket` / `algo ornat`):** To'liq o'rnatilgan paket boshqaruvi (`paket.json`, o'rnatish, ro'yxat).
@@ -48,7 +55,7 @@ Kompilyatorni yig'ish:
 make
 ```
 
-Barcha **30 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
+Barcha **31 ta avtomatlashtirilgan testlarni** sinovdan o'tkazish:
 ```bash
 make test
 # yoki
@@ -71,7 +78,7 @@ make test
 | `./bin/algo yangi <nomi>` | `algo new <nomi>` | Yangi Algo loyihasini andoza bilan yaratish (scaffolding) |
 | `./bin/algo ishga-tushir fayl.algo` | `algo run fayl.algo` | Kompilyatsiya qilib darhol ishga tushirish |
 | `./bin/algo yig fayl.algo -o binar` | `algo build fayl.algo` | Mustaqil bajariluvchi (ELF binary) fayl yaratish |
-| `./bin/algo sinov [fayl.algo]` | `algo test` | 30 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
+| `./bin/algo sinov [fayl.algo]` | `algo test` | 31 ta avtomatik testni to'liq tekshirish (100% muvaffaqiyat) |
 | `./bin/algo versiya` | `algo version` | Til versiyasi va arxitekturasini ko'rish |
 | `./bin/algo yordam` | `algo help` | Yordam ma'lumotlarini chiqarish |
 
