@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yuklab Olish — Algo Dasturlash Tili (Linux, macOS, Windows)</title>
+  
+  <meta name="description" content="Algo dasturlash tilini Linux, macOS, Windows va Docker tizimlariga yuklab olish va o'rnatish rasmiy sahifasi.">
+  <meta property="og:title" content="Algo Dasturlash Tilini Yuklab Olish">
+  <meta property="og:description" content="Linux, macOS, Windows va Docker uchun rasmiy binar paketlar va avtomatik o'rnatish skriptlari.">
+  <meta property="og:image" content="assets/logo.png">
+
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ==============================================================================
+       PROMO BANNER
+       ============================================================================== -->
+  <div class="promo-banner">
+    <div class="container promo-content">
+      <span class="promo-badge">RASMIY RELIZ</span>
+      <span class="promo-text">Algo v1.5.0 barcha platformalar uchun yangilandi — Linux, macOS va Windows to'liq qo'llab-quvvatlanadi.</span>
+      <a href="index.html#workbench" class="promo-link">Sinov maydoniga qaytish &rarr;</a>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       NAVBAR
+       ============================================================================== -->
+  <nav class="navbar">
+    <div class="container nav-wrapper">
+      <a href="index.html" class="brand">
+        <img src="assets/logo.svg" alt="Algo" height="28">
+        <span class="brand-badge">BETA v1.5.0</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Bosh Sahifa</a></li>
+        <li><a href="index.html#workbench" class="nav-link">Sinov Maydoni</a></li>
+        <li><a href="index.html#arxitektura" class="nav-link">Arxitektura</a></li>
+        <li><a href="index.html#benchmarks" class="nav-link">Unumdorlik</a></li>
+        <li><a href="index.html#kutubxona" class="nav-link">Kutubxona</a></li>
+        <li><a href="yuklab-olish.html" class="nav-link active" style="color: var(--color-bone); background-color: var(--surface-card);">Yuklab Olish</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener" class="nav-link-plain">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==============================================================================
+       HEADER
+       ============================================================================== -->
+  <header class="download-hero">
+    <div class="container">
+      <div class="section-eyebrow">Rasmiy Binar Tarqatmalari</div>
+      <h1 class="hero-title">
+        Algo Dasturlash Tilini O'rnatish.<br>
+        <span class="title-dim">Operatsion tizimingizni tanlang va darhol boshlang.</span>
+      </h1>
+      <p class="hero-desc">
+        Algo mustaqil kompilyatori barcha platformalarda o'rnatilgan standart kutubxona (std/) va yagona CLI toolchain bilan birga keladi. Hech qanday murakkab sozlash shart emas.
+      </p>
+
+      <!-- OS Selector Tabs -->
+      <div class="os-selector-wrapper">
+        <div class="os-tabs">
+          <button class="os-tab-btn active" id="tab-btn-linux" onclick="switchOS('linux')">
+            <span>🐧</span> Linux (x86_64)
+          </button>
+          <button class="os-tab-btn" id="tab-btn-macos" onclick="switchOS('macos')">
+            <span>🍎</span> macOS (Apple Silicon / Intel)
+          </button>
+          <button class="os-tab-btn" id="tab-btn-windows" onclick="switchOS('windows')">
+            <span>🪟</span> Windows (PowerShell / WSL2)
+          </button>
+          <button class="os-tab-btn" id="tab-btn-docker" onclick="switchOS('docker')">
+            <span>🐳</span> Docker &amp; Konteyner
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==============================================================================
+       OPERATING SYSTEM PANELS
+       ============================================================================== -->
+  <main class="container" style="padding-bottom: var(--spacing-80);">
+
+    <!-- ======================== LINUX PANEL ======================== -->
+    <div class="os-panel active" id="panel-linux">
+      <div class="dl-grid">
+        <div class="dl-card">
+          <div class="dl-card-title">
+            <span>Birlamchi O'rnatish Usuli</span>
+            <span class="brand-badge">Tavsiya etiladi</span>
+          </div>
+          <p class="dl-card-desc">
+            Quyidagi bir qatorli buyruq tizimingizni tekshiradi, zarur asboblarni tekshirib, Algo kompilyatori va standart kutubxonasini avtomatik sozlaydi.
+          </p>
+
+          <div class="install-bar" style="max-width: 100%; margin-bottom: 24px;">
+            <div class="install-cmd">
+              <span class="prompt">$</span>
+              <code>curl -fsSL https://raw.githubusercontent.com/alog-lan/algo/master/install.sh | bash</code>
+            </div>
+            <button class="copy-button" onclick="copyInstall(this, 'curl -fsSL https://raw.githubusercontent.com/alog-lan/algo/master/install.sh | bash')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Nusxa</span>
+            </button>
+          </div>
+
+          <div class="dl-card-title" style="font-size: 18px; margin-top: 8px;">To'g'ridan-to'g'ri Yuklab Olish (Tarball & Paketlar)</div>
+          
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">algo-v1.5.0-linux-x86_64.tar.gz</span>
+              <span class="dl-package-meta">Standalone ELF binar + std/ kutubxonalari &bull; 75 KB</span>
+            </div>
+            <a href="releases/algo-v1.5.0-linux-x86_64.tar.gz" class="btn-primary" download>
+              <span>Yuklab olish</span>
+            </a>
+          </div>
+
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">Debian / Ubuntu (.deb) &amp; RedHat (.rpm)</span>
+              <span class="dl-package-meta">Tizim darajasida /usr/bin paket menejeri orqali</span>
+            </div>
+            <a href="https://github.com/alog-lan/algo/releases" target="_blank" class="btn-ghost">
+              <span>Paketlarni ko'rish</span>
+            </a>
+          </div>
+
+          <div class="checksum-box">
+            <span>SHA-256:</span>
+            <span class="checksum-val">4da265c8e1b2cdf6761d974ce032ff4f9893bd7ac5fce3078c7849efd5695528</span>
+            <button class="copy-button" onclick="copyInstall(this, '4da265c8e1b2cdf6761d974ce032ff4f9893bd7ac5fce3078c7849efd5695528')">Nusxa</button>
+          </div>
+        </div>
+
+        <!-- O'ng Tomon: Qo'llanma -->
+        <div class="dl-card">
+          <div class="dl-card-title">Qo'lda O'rnatish Qo'llanmasi</div>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text">Arxivni yuklab oling va oching:<br><code>tar -xzf algo-v1.5.0-linux-x86_64.tar.gz</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text">Papkaga kiring va binarni PATH ga ulang:<br><code>sudo cp bin/algo /usr/local/bin/</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text">Standart kutubxonani uy papkangizga ko'chiring:<br><code>mkdir -p ~/.algo &amp;&amp; cp -r std ~/.algo/</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text">O'rnatishni tekshiring:<br><code>algo versiya</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== MACOS PANEL ======================== -->
+    <div class="os-panel" id="panel-macos">
+      <div class="dl-grid">
+        <div class="dl-card">
+          <div class="dl-card-title">
+            <span>macOS Uchun O'rnatish</span>
+            <span class="brand-badge">Apple Silicon &amp; Intel</span>
+          </div>
+          <p class="dl-card-desc">
+            macOS foydalanuvchilari uchun yagona terminal orqali o'rnatish skripti. Xcode Command Line Tools va mahalliy muhitni avtomatik aniqlaydi.
+          </p>
+
+          <div class="install-bar" style="max-width: 100%; margin-bottom: 24px;">
+            <div class="install-cmd">
+              <span class="prompt">$</span>
+              <code>curl -fsSL https://raw.githubusercontent.com/alog-lan/algo/master/install.sh | bash</code>
+            </div>
+            <button class="copy-button" onclick="copyInstall(this, 'curl -fsSL https://raw.githubusercontent.com/alog-lan/algo/master/install.sh | bash')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Nusxa</span>
+            </button>
+          </div>
+
+          <div class="dl-card-title" style="font-size: 18px; margin-top: 8px;">Universal macOS Binar Arxiv</div>
+          
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">algo-v1.5.0-darwin-universal.tar.gz</span>
+              <span class="dl-package-meta">M1 / M2 / M3 / M4 va Intel x86_64 qo'llab-quvvatlanadi &bull; 75 KB</span>
+            </div>
+            <a href="releases/algo-v1.5.0-darwin-universal.tar.gz" class="btn-primary" download>
+              <span>Yuklab olish</span>
+            </a>
+          </div>
+
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">Homebrew Orqali O'rnatish</span>
+              <span class="dl-package-meta">brew install alog-lan/algo/algo</span>
+            </div>
+            <button class="btn-ghost" onclick="copyInstall(this, 'brew install alog-lan/algo/algo')">
+              <span>Buyruqdan nusxa</span>
+            </button>
+          </div>
+
+          <div class="checksum-box">
+            <span>SHA-256:</span>
+            <span class="checksum-val">4da265c8e1b2cdf6761d974ce032ff4f9893bd7ac5fce3078c7849efd5695528</span>
+            <button class="copy-button" onclick="copyInstall(this, '4da265c8e1b2cdf6761d974ce032ff4f9893bd7ac5fce3078c7849efd5695528')">Nusxa</button>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div class="dl-card-title">macOS Muhiti Talablari</div>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text">Xcode Command Line Tools o'rnatilganligini tekshiring:<br><code>xcode-select --install</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text">Arxivni oching va <code>~/.local/bin</code> ga joylashtiring:<br><code>tar -xzf algo-v1.5.0-darwin-universal.tar.gz</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text">Terminal konfiguratsiyasiga (~/.zshrc) PATH qo'shing:<br><code>export PATH="$HOME/.local/bin:$PATH"</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text">Tekshirish:<br><code>algo sinov</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== WINDOWS PANEL ======================== -->
+    <div class="os-panel" id="panel-windows">
+      <div class="dl-grid">
+        <div class="dl-card">
+          <div class="dl-card-title">
+            <span>Windows PowerShell O'rnatuvchisi</span>
+            <span class="brand-badge">PowerShell 5.1 / 7+</span>
+          </div>
+          <p class="dl-card-desc">
+            Windows 10 yoki Windows 11 tizimida PowerShell orqali quyidagi bir qatorli buyruqni ishga tushiring. Skript WSL2 va mahalliy muhitni avtomatik sozlaydi.
+          </p>
+
+          <div class="install-bar" style="max-width: 100%; margin-bottom: 24px;">
+            <div class="install-cmd">
+              <span class="prompt">PS&gt;</span>
+              <code>iwr -useb https://raw.githubusercontent.com/alog-lan/algo/master/install.ps1 | iex</code>
+            </div>
+            <button class="copy-button" onclick="copyInstall(this, 'iwr -useb https://raw.githubusercontent.com/alog-lan/algo/master/install.ps1 | iex')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Nusxa</span>
+            </button>
+          </div>
+
+          <div class="dl-card-title" style="font-size: 18px; margin-top: 8px;">Windows ZIP Paketi</div>
+          
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">algo-v1.5.0-windows-x64.zip</span>
+              <span class="dl-package-meta">Standart kutubxona, install.ps1 va wrapper &bull; 78 KB</span>
+            </div>
+            <a href="releases/algo-v1.5.0-windows-x64.zip" class="btn-primary" download>
+              <span>Yuklab olish</span>
+            </a>
+          </div>
+
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">WSL2 Rejimi (Tavsiya etiladi)</span>
+              <span class="dl-package-meta">100% Linux x86_64 direct syscalls aniqligi uchun</span>
+            </div>
+            <button class="btn-ghost" onclick="copyInstall(this, 'wsl --install')">
+              <span>wsl --install</span>
+            </button>
+          </div>
+
+          <div class="checksum-box">
+            <span>SHA-256:</span>
+            <span class="checksum-val">f3bb3db361b3f84ed51568fd1549341def98963776c737764be982dfde4f8880</span>
+            <button class="copy-button" onclick="copyInstall(this, 'f3bb3db361b3f84ed51568fd1549341def98963776c737764be982dfde4f8880')">Nusxa</button>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div class="dl-card-title">Windows Foydalanuvchilari Uchun</div>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text">PowerShell-ni administrator yoki oddiy foydalanuvchi sifatida oching.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text">O'rnatish skriptini ishga tushiring:<br><code>irm https://raw.githubusercontent.com/alog-lan/algo/master/install.ps1 | iex</code></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text">Skript <code>%USERPROFILE%\.algo\bin</code> manzilini avtomatik Windows PATH ga kiritadi.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text">Yangi CMD yoki PowerShell ochib tekshiring:<br><code>algo versiya</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== DOCKER PANEL ======================== -->
+    <div class="os-panel" id="panel-docker">
+      <div class="dl-grid">
+        <div class="dl-card">
+          <div class="dl-card-title">
+            <span>Rasmiy Docker Konteyneri</span>
+            <span class="brand-badge">Multi-Arch</span>
+          </div>
+          <p class="dl-card-desc">
+            Har qanday operatsion tizimda hech narsa o'rnatmasdan Algo kompilyatorini darhol ishga tushirish uchun Docker tasviri.
+          </p>
+
+          <div class="install-bar" style="max-width: 100%; margin-bottom: 24px;">
+            <div class="install-cmd">
+              <span class="prompt">$</span>
+              <code>docker pull ghcr.io/alog-lan/algo:v1.5.0</code>
+            </div>
+            <button class="copy-button" onclick="copyInstall(this, 'docker pull ghcr.io/alog-lan/algo:v1.5.0')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Nusxa</span>
+            </button>
+          </div>
+
+          <div class="dl-card-title" style="font-size: 18px; margin-top: 8px;">Joriy Papkadagi Faylni Ishga Tushirish</div>
+          
+          <div class="install-bar" style="max-width: 100%; margin-bottom: 24px;">
+            <div class="install-cmd">
+              <span class="prompt">$</span>
+              <code>docker run --rm -v "$(pwd):/app" -w /app ghcr.io/alog-lan/algo run salom.algo</code>
+            </div>
+            <button class="copy-button" onclick="copyInstall(this, 'docker run --rm -v &quot;$(pwd):/app&quot; -w /app ghcr.io/alog-lan/algo run salom.algo')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Nusxa</span>
+            </button>
+          </div>
+
+          <div class="dl-package-row">
+            <div class="dl-package-info">
+              <span class="dl-package-name">Dockerfile Manbasi</span>
+              <span class="dl-package-meta">Alpine 3.19 asosida, binar hajm atigi 12 MB</span>
+            </div>
+            <a href="https://github.com/alog-lan/algo/blob/master/Dockerfile" target="_blank" class="btn-ghost">
+              <span>Dockerfile ni ko'rish</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div class="dl-card-title">Konteyner Foydalari</div>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">✓</div>
+              <div class="step-text"><strong>Izolyatsiya:</strong> Tizim kutubxonalari va kompilyatorlariga aralashmaydi.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">✓</div>
+              <div class="step-text"><strong>CI/CD Serverlar:</strong> GitHub Actions, GitLab CI va Jenkins-da bir zumda ishlaydi.</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">✓</div>
+              <div class="step-text"><strong>Barcha Tizimlar:</strong> Windows, macOS, Linux, ChromeOS va Cloud muhitlarida bir xil natija.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================================================
+         TIZIM TALABLARI (SYSTEM REQUIREMENTS)
+         ============================================================================== -->
+    <div class="section-eyebrow" style="margin-top: 40px;">Tizim Talablari</div>
+    <div class="bench-grid">
+      <div class="bench-metric-card">
+        <div class="metric-name">Protsessor (CPU)</div>
+        <div class="metric-value" style="font-size: 20px;">x86_64 / ARM64</div>
+        <div class="metric-compare">Intel Core, AMD Ryzen, Apple M1/M2/M3/M4</div>
+      </div>
+
+      <div class="bench-metric-card">
+        <div class="metric-name">Operativ Xotira (RAM)</div>
+        <div class="metric-value" style="font-size: 20px;">64 MB min</div>
+        <div class="metric-compare">Zero-GC sababli deyarli xotira talab qilmaydi</div>
+      </div>
+
+      <div class="bench-metric-card">
+        <div class="metric-name">Disk Hajmi</div>
+        <div class="metric-value" style="font-size: 20px;">&lt; 15 MB</div>
+        <div class="metric-compare">Kompilyator va butun standart kutubxona bilan</div>
+      </div>
+
+      <div class="bench-metric-card">
+        <div class="metric-name">Operatsion Tizim</div>
+        <div class="metric-value" style="font-size: 20px;">Linux 3.2+</div>
+        <div class="metric-compare">macOS 11+, Windows 10/11 WSL2 yoki Native</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==============================================================================
+       FOOTER
+       ============================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">
+            <img src="assets/logo.svg" alt="Algo" height="24">
+            <span class="brand-badge">v1.5.0</span>
+          </div>
+          <p>
+            To'g'ridan-to'g'ri x86_64 Linux mashina kodi generatsiya qiluvchi, libc va LLVM ga bog'lanmagan zamonaviy tizim dasturlash tili.
+          </p>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Platforma</div>
+          <ul class="footer-col-links">
+            <li><a href="index.html#arxitektura">Linux Syscalls</a></li>
+            <li><a href="index.html#benchmarks">Unumdorlik</a></li>
+            <li><a href="index.html#workbench">Jonli Sinov Maydoni</a></li>
+            <li><a href="index.html#cli">CLI Toolchain</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Yuklab Olish</div>
+          <ul class="footer-col-links">
+            <li><a href="javascript:switchOS('linux')">Linux Paketlari</a></li>
+            <li><a href="javascript:switchOS('macos')">macOS Binar</a></li>
+            <li><a href="javascript:switchOS('windows')">Windows PowerShell</a></li>
+            <li><a href="javascript:switchOS('docker')">Docker Tasviri</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Hamjamiyat</div>
+          <ul class="footer-col-links">
+            <li><a href="https://github.com/alog-lan/algo" target="_blank" rel="noopener">GitHub Ombori</a></li>
+            <li><a href="https://github.com/alog-lan/algo/releases" target="_blank" rel="noopener">Binar Chiqarilishlar</a></li>
+            <li><a href="https://github.com/alog-lan/algo/blob/master/LICENSE" target="_blank" rel="noopener">MIT Litsenziyasi</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Algo Dasturlash Tili. Barcha huquqlar himoyalangan.</div>
+        <div>Multi-Platform &bull; Linux &bull; macOS &bull; Windows</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function switchOS(os) {
+      document.querySelectorAll('.os-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.os-panel').forEach(panel => panel.classList.remove('active'));
+
+      const activeBtn = document.getElementById('tab-btn-' + os);
+      const activePanel = document.getElementById('panel-' + os);
+
+      if (activeBtn) activeBtn.classList.add('active');
+      if (activePanel) activePanel.classList.add('active');
+    }
+
+    function copyInstall(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span>✓ Nusxa olindi</span>';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+
+    // Auto-detect client OS on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const ua = navigator.userAgent.toLowerCase();
+      if (ua.includes('win')) {
+        switchOS('windows');
+      } else if (ua.includes('mac')) {
+        switchOS('macos');
+      } else {
+        switchOS('linux');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -58,6 +58,10 @@ amal asosiy() {
             html_sahifa = fayl_oqish("docs/index.html")
             javob = http_javob_html(200, html_sahifa)
             xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/yuklab-olish" yoki yol == "/yuklab-olish.html" yoki yol == "/download" yoki yol == "/download.html" {
+            dl_sahifa = fayl_oqish("docs/yuklab-olish.html")
+            javob = http_javob_html(200, dl_sahifa)
+            xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/assets/styles.css" {
             css_sahifa = fayl_oqish("docs/assets/styles.css")
             javob = http_javob_qur(200, "text/css; charset=utf-8", css_sahifa)
@@ -94,6 +98,20 @@ amal asosiy() {
             install_sh = fayl_oqish("docs/install.sh")
             javob = http_javob_qur(200, "text/plain; charset=utf-8", install_sh)
             xabar_yubor(mijoz_fd, javob)
+        } aks agar yol == "/install.ps1" {
+            install_ps1 = fayl_oqish("docs/install.ps1")
+            javob = http_javob_qur(200, "text/plain; charset=utf-8", install_ps1)
+            xabar_yubor(mijoz_fd, javob)
+        } aks agar matn_boshlanishi(yol, "/releases/") {
+            rel_yoli = "docs" + yol
+            agar fayl_bormi(rel_yoli) {
+                rel_fayl = fayl_oqish(rel_yoli)
+                javob = http_javob_qur(200, "application/octet-stream", rel_fayl)
+                xabar_yubor(mijoz_fd, javob)
+            } aks {
+                javob = http_javob_404()
+                xabar_yubor(mijoz_fd, javob)
+            }
         } aks agar yol == "/api/salomatlik" {
             javob = http_javob_json(200, "{\"holat\":\"faol\",\"til\":\"Algo v1.5.0\",\"dvijok\":\"x86_64 Direct Syscalls\"}")
             xabar_yubor(mijoz_fd, javob)
