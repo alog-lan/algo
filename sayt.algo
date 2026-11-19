@@ -26,14 +26,6 @@ amal asosiy() {
     chiqar(rang_yashil("✓") + " Server tinglamoqda: " + rang_turkuaz("http://localhost:8080") + " yoki " + rang_turkuaz("http://127.0.0.1:8080"))
     chiqar(rang_sariq("!") + " Saytni ko'rish uchun brauzerda oching. To'xtatish: Ctrl+C\n")
 
-    // Statik fayllarni xotiraga oldindan keshlab olamiz
-    html_sahifa = fayl_oqish("docs/index.html")
-    css_sahifa = fayl_oqish("docs/assets/styles.css")
-    js_sahifa = fayl_oqish("docs/assets/app.js")
-    icon_svg = fayl_oqish("docs/assets/icon.svg")
-    logo_svg = fayl_oqish("docs/assets/logo.svg")
-    install_sh = fayl_oqish("docs/install.sh")
-
     // Cheksiz mijozlarni qabul qilish sikli
     toki 1 == 1 {
         mijoz_fd = mijoz_kut(server_fd)
@@ -60,30 +52,35 @@ amal asosiy() {
         
         chiqar(rang_turkuaz("[HTTP]") + " " + rang_qalin(metod) + " " + yol)
         
-        // Marshrutlash (Routing)
+        // Marshrutlash (Routing) - Har bir so'rovda yangi faylni o'qiydi (Live Reload)
         agar yol == "/" yoki yol == "/index.html" {
+            html_sahifa = fayl_oqish("docs/index.html")
             javob = http_javob_html(200, html_sahifa)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/assets/styles.css" {
+            css_sahifa = fayl_oqish("docs/assets/styles.css")
             javob = http_javob_qur(200, "text/css; charset=utf-8", css_sahifa)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/assets/app.js" {
+            js_sahifa = fayl_oqish("docs/assets/app.js")
             javob = http_javob_qur(200, "application/javascript; charset=utf-8", js_sahifa)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/assets/icon.svg" yoki yol == "/favicon.ico" {
+            icon_svg = fayl_oqish("docs/assets/icon.svg")
             javob = http_javob_qur(200, "image/svg+xml", icon_svg)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/assets/logo.svg" {
+            logo_svg = fayl_oqish("docs/assets/logo.svg")
             javob = http_javob_qur(200, "image/svg+xml", logo_svg)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/install.sh" {
+            install_sh = fayl_oqish("docs/install.sh")
             javob = http_javob_qur(200, "text/plain; charset=utf-8", install_sh)
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/api/salomatlik" {
             javob = http_javob_json(200, "{\"holat\":\"faol\",\"til\":\"Algo v1.5.0\",\"dvijok\":\"x86_64 Direct Syscalls\"}")
             xabar_yubor(mijoz_fd, javob)
         } aks agar yol == "/api/bajar" va metod == "POST" {
-            // Jonli kod bajarish API si
             tana = http_tana(sorov)
             agar uzunlik(tana) > 0 {
                 fayl_yozish("/tmp/live_kod.algo", tana)
