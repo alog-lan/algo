@@ -1,4 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <path fill="#0288d1" d="M16 2 3 9.5v13L16 30l13-7.5v-13ZM16 4.8 26.5 10.9v10.2L16 27.2 5.5 21.1V10.9Z"/>
-  <path fill="#00e5ff" d="M16 7 9 24h3.8l1.4-3.5h5.6l1.4 3.5H25ZM15 17.2 16 13l1 4.2Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%">
+  <defs>
+    <linearGradient id="algoHex" x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0088d1" />
+      <stop offset="100%" stop-color="#00e5ff" />
+    </linearGradient>
+    <linearGradient id="algoA" x1="9" y1="7" x2="25" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#00a3ff" />
+    </linearGradient>
+  </defs>
+  <!-- Hexagon Frame -->
+  <path fill="url(#algoHex)" fill-rule="evenodd" d="M16 2 3 9.5v13L16 30l13-7.5v-13ZM16 4.8 26.5 10.9v10.2L16 27.2 5.5 21.1V10.9Z"/>
+  <!-- Bold 'A' Inside -->
+  <path fill="url(#algoA)" fill-rule="evenodd" d="M16 7 9 24h3.8l1.4-3.5h5.6l1.4 3.5H25ZM15 17.2 16 13l1 4.2Z"/>
 </svg>
