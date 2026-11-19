@@ -17,6 +17,13 @@ Expr *ast_new_int(int64_t val) {
     return e;
 }
 
+Expr *ast_new_float(double val) {
+    Expr *e = (Expr *)malloc(sizeof(Expr));
+    e->type = EXPR_FLOAT;
+    e->as.float_val = val;
+    return e;
+}
+
 Expr *ast_new_string(const char *str) {
     Expr *e = (Expr *)malloc(sizeof(Expr));
     e->type = EXPR_STRING;

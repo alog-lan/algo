@@ -4,6 +4,7 @@
 
 typedef enum {
     TYPE_INT,
+    TYPE_FLOAT,
     TYPE_STRING,
     TYPE_ARRAY,
     TYPE_STRUCT
@@ -31,10 +32,27 @@ typedef struct {
     int len;
 } StringLiteral;
 
+typedef struct {
+    int id;
+    double val;
+} FloatLiteral;
+
 static StringLiteral strings[512];
 static int string_count = 0;
+static FloatLiteral floats[256];
+static int float_count = 0;
 static int label_counter = 0;
 static Program *current_prog = NULL;
+
+static int add_float_literal(double val) {
+    for (int i = 0; i < float_count; i++) {
+        if (floats[i].val == val) return floats[i].id;
+    }
+    int id = float_count++;
+    floats[id].id = id;
+    floats[id].val = val;
+    return id;
+}
 
 static int add_string_literal(const char *str) {
     for (int i = 0; i < string_count; i++) {
@@ -130,6 +148,7 @@ static VarType infer_expr_type(Expr *expr, Scope *scope) {
     if (!expr) return TYPE_INT;
     switch (expr->type) {
         case EXPR_INT: return TYPE_INT;
+        case EXPR_FLOAT: return TYPE_FLOAT;
         case EXPR_STRING: return TYPE_STRING;
         case EXPR_KIRIT: return TYPE_STRING;
         case EXPR_ARRAY_LITERAL: return TYPE_ARRAY;
@@ -142,10 +161,16 @@ static VarType infer_expr_type(Expr *expr, Scope *scope) {
             return v ? v->type : TYPE_INT;
         }
         case EXPR_BINARY: {
+            VarType lt = infer_expr_type(expr->as.binary.left, scope);
+            VarType rt = infer_expr_type(expr->as.binary.right, scope);
             if (expr->as.binary.op == TOKEN_PLUS) {
-                VarType lt = infer_expr_type(expr->as.binary.left, scope);
-                VarType rt = infer_expr_type(expr->as.binary.right, scope);
                 if (lt == TYPE_STRING || rt == TYPE_STRING) return TYPE_STRING;
+            }
+            if (lt == TYPE_FLOAT || rt == TYPE_FLOAT) {
+                if (expr->as.binary.op == TOKEN_PLUS || expr->as.binary.op == TOKEN_MINUS ||
+                    expr->as.binary.op == TOKEN_STAR || expr->as.binary.op == TOKEN_SLASH) {
+                    return TYPE_FLOAT;
+                }
             }
             return TYPE_INT;
         }
@@ -164,6 +189,12 @@ static void gen_expr(Expr *expr, Scope *scope, FILE *out) {
         case EXPR_INT:
             fprintf(out, "    mov rax, %ld\n", (long)expr->as.int_val);
             break;
+
+        case EXPR_FLOAT: {
+            int fid = add_float_literal(expr->as.float_val);
+            fprintf(out, "    mov rax, [rip + .LC_f%d]\n", fid);
+            break;
+        }
 
         case EXPR_STRING: {
             int str_id = add_string_literal(expr->as.str_val);
@@ -205,6 +236,30 @@ static void gen_expr(Expr *expr, Scope *scope, FILE *out) {
                 fprintf(out, "    mov rsi, rax\n");
                 fprintf(out, "    pop rdi\n");
                 fprintf(out, "    call algo_matn_birlashtir\n");
+                break;
+            }
+
+            // Haqiqiy (o'nlik) sonlar arifmetikasi (SSE xmm registers)
+            if (lt == TYPE_FLOAT || rt == TYPE_FLOAT) {
+                gen_expr(expr->as.binary.left, scope, out);
+                fprintf(out, "    push rax\n");
+                gen_expr(expr->as.binary.right, scope, out);
+                fprintf(out, "    movq xmm1, rax\n");
+                fprintf(out, "    pop rax\n");
+                fprintf(out, "    movq xmm0, rax\n");
+                if (lt == TYPE_INT) fprintf(out, "    cvtsi2sd xmm0, rax\n");
+                if (rt == TYPE_INT) {
+                    fprintf(out, "    movq rax, xmm1\n");
+                    fprintf(out, "    cvtsi2sd xmm1, rax\n");
+                }
+                switch (expr->as.binary.op) {
+                    case TOKEN_PLUS:  fprintf(out, "    addsd xmm0, xmm1\n"); break;
+                    case TOKEN_MINUS: fprintf(out, "    subsd xmm0, xmm1\n"); break;
+                    case TOKEN_STAR:  fprintf(out, "    mulsd xmm0, xmm1\n"); break;
+                    case TOKEN_SLASH: fprintf(out, "    divsd xmm0, xmm1\n"); break;
+                    default: break;
+                }
+                fprintf(out, "    movq rax, xmm0\n");
                 break;
             }
 
@@ -441,6 +496,8 @@ static void gen_stmt(Stmt *stmt, Scope *scope, FILE *out) {
                     fprintf(out, "    call algo_chiqar_satr\n");
                 } else if (type == TYPE_ARRAY) {
                     fprintf(out, "    call algo_chiqar_massiv\n");
+                } else if (type == TYPE_FLOAT) {
+                    fprintf(out, "    call algo_chiqar_haqiqiy\n");
                 } else {
                     fprintf(out, "    call algo_chiqar_son_oddiy\n");
                 }
@@ -623,6 +680,10 @@ void codegen_generate(Program *prog, FILE *out) {
     // Dastur kirish nuqtasi (_start)
     fprintf(out, ".global _start\n");
     fprintf(out, "_start:\n");
+    fprintf(out, "    mov rax, [rsp]\n");
+    fprintf(out, "    mov [rip + algo_argc], rax\n");
+    fprintf(out, "    lea rax, [rsp + 8]\n");
+    fprintf(out, "    mov [rip + algo_argv], rax\n");
     fprintf(out, "    call algo_asosiy\n");
     fprintf(out, "    mov rdi, rax\n");
     fprintf(out, "    mov rax, 60\n"); // sys_exit
@@ -1459,6 +1520,133 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "    syscall\n");
     fprintf(out, "    ret\n\n");
 
+    // 12. Buyruqlar qatori argumentlari (CLI arguments)
+    fprintf(out, "algo_argumentlar:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    push r12\n");
+    fprintf(out, "    push r13\n");
+    fprintf(out, "    push r14\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    mov r12, [rip + algo_argc]\n");
+    fprintf(out, "    mov rax, r12\n");
+    fprintf(out, "    imul rax, 8\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    mov [rax], r12\n");
+    fprintf(out, "    mov [rax + 8], r12\n");
+    fprintf(out, "    mov r13, rax\n");
+    fprintf(out, "    xor r14, r14\n");
+    fprintf(out, "    mov rbx, [rip + algo_argv]\n");
+    fprintf(out, ".L_args_loop:\n");
+    fprintf(out, "    cmp r14, r12\n");
+    fprintf(out, "    jge .L_args_done\n");
+    fprintf(out, "    mov rdi, [rbx + r14 * 8]\n");
+    fprintf(out, "    push rbx\n");
+    fprintf(out, "    push rdi\n");
+    fprintf(out, "    xor rcx, rcx\n");
+    fprintf(out, ".L_arg_slen:\n");
+    fprintf(out, "    cmp byte ptr [rdi + rcx], 0\n");
+    fprintf(out, "    je .L_arg_slen_done\n");
+    fprintf(out, "    inc rcx\n");
+    fprintf(out, "    jmp .L_arg_slen\n");
+    fprintf(out, ".L_arg_slen_done:\n");
+    fprintf(out, "    pop rsi\n");
+    fprintf(out, "    push rcx\n");
+    fprintf(out, "    push rsi\n");
+    fprintf(out, "    mov rax, rcx\n");
+    fprintf(out, "    add rax, 16\n");
+    fprintf(out, "    call algo_ajrat\n");
+    fprintf(out, "    pop rsi\n");
+    fprintf(out, "    pop rcx\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    mov [rax], rcx\n");
+    fprintf(out, "    push rax\n");
+    fprintf(out, "    lea rdi, [rax + 8]\n");
+    fprintf(out, "    rep movsb\n");
+    fprintf(out, "    mov byte ptr [rdi], 0\n");
+    fprintf(out, "    pop rax\n");
+    fprintf(out, "    mov [r13 + 16 + r14 * 8], rax\n");
+    fprintf(out, "    inc r14\n");
+    fprintf(out, "    jmp .L_args_loop\n");
+    fprintf(out, ".L_args_done:\n");
+    fprintf(out, "    mov rax, r13\n");
+    fprintf(out, "    pop rbx\n");
+    fprintf(out, "    pop r14\n");
+    fprintf(out, "    pop r13\n");
+    fprintf(out, "    pop r12\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
+    // 13. Tasdiqlash / Xatolik (Assertions / Panic)
+    fprintf(out, "algo_tasdiqla:\n");
+    fprintf(out, "    test rdi, rdi\n");
+    fprintf(out, "    jnz .L_assert_ok\n");
+    fprintf(out, "    push rsi\n");
+    fprintf(out, "    lea rsi, [rip + algo_assert_msg]\n");
+    fprintf(out, "    mov rdx, 17\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    pop rsi\n");
+    fprintf(out, "    test rsi, rsi\n");
+    fprintf(out, "    jz .L_assert_exit\n");
+    fprintf(out, "    mov rdx, [rsi]\n");
+    fprintf(out, "    lea rsi, [rsi + 8]\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, ".L_assert_exit:\n");
+    fprintf(out, "    lea rsi, [rip + algo_newline]\n");
+    fprintf(out, "    mov rdx, 1\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    mov rax, 60\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, ".L_assert_ok:\n");
+    fprintf(out, "    ret\n\n");
+
+    // 14. Haqiqiy son chiqarish (Float / Double printing)
+    fprintf(out, "algo_chiqar_haqiqiy:\n");
+    fprintf(out, "    push rbp\n");
+    fprintf(out, "    mov rbp, rsp\n");
+    fprintf(out, "    sub rsp, 48\n");
+    fprintf(out, "    movq xmm0, rax\n");
+    fprintf(out, "    movsd [rbp - 8], xmm0\n");
+    fprintf(out, "    xorps xmm2, xmm2\n");
+    fprintf(out, "    ucomisd xmm0, xmm2\n");
+    fprintf(out, "    jae .L_fp_pos\n");
+    fprintf(out, "    lea rsi, [rip + algo_fp_minus]\n");
+    fprintf(out, "    mov rdx, 1\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    movsd xmm0, [rbp - 8]\n");
+    fprintf(out, "    mulsd xmm0, [rip + algo_fp_neg_one]\n");
+    fprintf(out, "    movsd [rbp - 8], xmm0\n");
+    fprintf(out, ".L_fp_pos:\n");
+    fprintf(out, "    movsd xmm0, [rbp - 8]\n");
+    fprintf(out, "    cvttsd2si r12, xmm0\n");
+    fprintf(out, "    mov rax, r12\n");
+    fprintf(out, "    call algo_chiqar_son_oddiy\n");
+    fprintf(out, "    lea rsi, [rip + algo_fp_dot]\n");
+    fprintf(out, "    mov rdx, 1\n");
+    fprintf(out, "    mov rax, 1\n");
+    fprintf(out, "    mov rdi, 1\n");
+    fprintf(out, "    syscall\n");
+    fprintf(out, "    cvtsi2sd xmm1, r12\n");
+    fprintf(out, "    movsd xmm0, [rbp - 8]\n");
+    fprintf(out, "    subsd xmm0, xmm1\n");
+    fprintf(out, "    mulsd xmm0, [rip + algo_fp_scale]\n");
+    fprintf(out, "    cvttsd2si rax, xmm0\n");
+    fprintf(out, "    call algo_chiqar_son_oddiy\n");
+    fprintf(out, "    mov rsp, rbp\n");
+    fprintf(out, "    pop rbp\n");
+    fprintf(out, "    ret\n\n");
+
     // Barcha foydalanuvchi funksiyalarini generatsiya qilish
     for (int i = 0; i < prog->function_count; i++) {
         gen_function(prog->functions[i], out);
@@ -1466,6 +1654,8 @@ void codegen_generate(Program *prog, FILE *out) {
 
     // .data va .rodata bo'limi
     fprintf(out, "\n.section .data\n");
+    fprintf(out, "algo_argc:       .quad 0\n");
+    fprintf(out, "algo_argv:       .quad 0\n");
     fprintf(out, "algo_heap_start: .quad 0\n");
     fprintf(out, "algo_heap_ptr:   .quad 0\n");
     fprintf(out, "algo_heap_end:   .quad 0\n");
@@ -1477,6 +1667,16 @@ void codegen_generate(Program *prog, FILE *out) {
     fprintf(out, "algo_lbracket:\n    .byte 91\n");
     fprintf(out, "algo_rbracket:\n    .byte 93\n");
     fprintf(out, "algo_comma_space:\n    .ascii \", \"\n");
+    fprintf(out, "algo_assert_msg:\n    .string \"[Tasdiq Xatosi]: \"\n");
+    fprintf(out, "algo_fp_dot:\n    .byte 46\n");
+    fprintf(out, "algo_fp_minus:\n    .byte 45\n");
+    fprintf(out, "algo_fp_scale:\n    .double 100000.0\n");
+    fprintf(out, "algo_fp_neg_one:\n    .double -1.0\n");
+
+    for (int i = 0; i < float_count; i++) {
+        fprintf(out, ".LC_f%d:\n", floats[i].id);
+        fprintf(out, "    .double %.10f\n", floats[i].val);
+    }
 
     for (int i = 0; i < string_count; i++) {
         fprintf(out, ".LC%d:\n", strings[i].id);

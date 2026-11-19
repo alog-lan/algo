@@ -23,6 +23,7 @@ const char *token_type_to_string(TokenType type) {
         case TOKEN_YUKLA: return "yukla";
         case TOKEN_IDENT: return "IDENT";
         case TOKEN_INT: return "INT";
+        case TOKEN_FLOAT: return "FLOAT";
         case TOKEN_STRING: return "STRING";
         case TOKEN_LBRACE: return "{";
         case TOKEN_RBRACE: return "}";

@@ -1,0 +1,18 @@
+amal asosiy() {
+    pi = 3.1415
+    e = 2.7182
+
+    chiqar("Pi soni:", pi)
+    chiqar("Eyler soni (e):", e)
+
+    yigindi = pi + e
+    chiqar("Pi + E:", yigindi)
+
+    kopaytma = pi * 2.0
+    chiqar("Pi * 2.0:", kopaytma)
+
+    bolinma = 10.0 / 4.0
+    chiqar("10.0 / 4.0:", bolinma)
+
+    qaytar 0
+}

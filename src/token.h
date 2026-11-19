@@ -29,6 +29,7 @@ typedef enum {
     // Literallar va identifikatorlar
     TOKEN_IDENT,      // o'zgaruvchi, funksiya, tuzilma nomi
     TOKEN_INT,        // 64-bitli butun son
+    TOKEN_FLOAT,      // haqiqiy (o'nlik) son
     TOKEN_STRING,     // matn ("...")
 
     // Belgilar va qavslar
@@ -65,6 +66,7 @@ typedef struct {
     char *text;
     int length;
     int64_t int_val;
+    double float_val;
     int line;
     int col;
 } Token;

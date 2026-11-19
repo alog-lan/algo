@@ -1,0 +1,24 @@
+amal asosiy() {
+    port = 9090
+    chiqar("HTTP server 9090-portda ishga tushmoqda...")
+    server_fd = tarmoq_server_och(port)
+
+    agar server_fd > 0 {
+        chiqar("Server ulanishlarni kutmoqda...")
+        // 1 ta so'rovni qabul qilib, unga javob berib, xavfsiz to'xtatamiz
+        mijoz_fd = tarmoq_mijoz_qabul(server_fd)
+        agar mijoz_fd > 0 {
+            so'rov = tarmoq_qabul(mijoz_fd, 1024)
+            chiqar("Kelgan HTTP so'rov hajmi:", uzunlik(so'rov))
+
+            javob = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<h1>Salom! Algo tili orqali toza HTTP javob!</h1>"
+            tarmoq_yubor(mijoz_fd, javob)
+            tarmoq_yop(mijoz_fd)
+            chiqar("HTTP javob mijozga yuborildi!")
+        }
+        tarmoq_yop(server_fd)
+        chiqar("Server muvaffaqiyatli yakunlandi.")
+    }
+
+    qaytar 0
+}

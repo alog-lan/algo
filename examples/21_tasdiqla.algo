@@ -1,0 +1,11 @@
+amal asosiy() {
+    yosh = 20
+    tasdiqla(yosh >= 18, "Yosh 18 dan kichik bo'lmasligi kerak!")
+    chiqar("1-tasdiq muvaffaqiyatli o'tdi (Yosh >= 18)")
+
+    ball = 95
+    tasdiqla(ball <= 100, "Ball 100 dan oshishi mumkin emas!")
+    chiqar("2-tasdiq muvaffaqiyatli o'tdi (Ball <= 100)")
+
+    qaytar 0
+}

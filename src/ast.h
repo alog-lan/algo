@@ -6,6 +6,7 @@
 
 typedef enum {
     EXPR_INT,
+    EXPR_FLOAT,
     EXPR_STRING,
     EXPR_VAR,
     EXPR_BINARY,
@@ -57,6 +58,7 @@ struct Expr {
     ExprType type;
     union {
         int64_t int_val;
+        double float_val;
         char *str_val;
         char *var_name;
         BinaryExpr binary;
@@ -168,6 +170,7 @@ typedef struct {
 
 // Yordamchi konstruktorlar
 Expr *ast_new_int(int64_t val);
+Expr *ast_new_float(double val);
 Expr *ast_new_string(const char *str);
 Expr *ast_new_var(const char *name);
 Expr *ast_new_binary(TokenType op, Expr *left, Expr *right);

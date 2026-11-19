@@ -48,6 +48,9 @@ static Expr *parse_primary(Parser *parser) {
     if (match(parser, TOKEN_INT)) {
         return ast_new_int(parser->previous.int_val);
     }
+    if (match(parser, TOKEN_FLOAT)) {
+        return ast_new_float(parser->previous.float_val);
+    }
     if (match(parser, TOKEN_STRING)) {
         return ast_new_string(parser->previous.text);
     }

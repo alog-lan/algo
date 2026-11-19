@@ -87,7 +87,7 @@ Token lexer_next_token(Lexer *lexer) {
     char c = peek(lexer);
 
     if (c == '\0') {
-        Token tok = {TOKEN_EOF, NULL, 0, 0, start_line, start_col};
+        Token tok = {TOKEN_EOF, NULL, 0, 0, 0.0, start_line, start_col};
         return tok;
     }
 
@@ -105,25 +105,39 @@ Token lexer_next_token(Lexer *lexer) {
         strncpy(token_str, text, len);
         token_str[len] = '\0';
 
-        Token tok = {type, token_str, len, 0, start_line, start_col};
+        Token tok = {type, token_str, len, 0, 0.0, start_line, start_col};
         return tok;
     }
 
-    // Butun son (Integer)
+    // Butun yoki Haqiqiy son (Integer yoki Float)
     if (isdigit((unsigned char)c)) {
         int start_pos = lexer->cursor;
+        int is_float = 0;
         int64_t val = 0;
         while (isdigit((unsigned char)peek(lexer))) {
             char digit = advance(lexer);
             val = val * 10 + (digit - '0');
+        }
+        if (peek(lexer) == '.' && isdigit((unsigned char)peek_next(lexer))) {
+            is_float = 1;
+            advance(lexer); // skip '.'
+            while (isdigit((unsigned char)peek(lexer))) {
+                advance(lexer);
+            }
         }
         int len = lexer->cursor - start_pos;
         char *token_str = (char *)malloc(len + 1);
         strncpy(token_str, &lexer->source[start_pos], len);
         token_str[len] = '\0';
 
-        Token tok = {TOKEN_INT, token_str, len, val, start_line, start_col};
-        return tok;
+        if (is_float) {
+            double f_val = strtod(token_str, NULL);
+            Token tok = {TOKEN_FLOAT, token_str, len, 0, f_val, start_line, start_col};
+            return tok;
+        } else {
+            Token tok = {TOKEN_INT, token_str, len, val, 0.0, start_line, start_col};
+            return tok;
+        }
     }
 
     // Matn (String literal)
@@ -157,7 +171,7 @@ Token lexer_next_token(Lexer *lexer) {
         }
         buf[len] = '\0';
 
-        Token tok = {TOKEN_STRING, buf, len, 0, start_line, start_col};
+        Token tok = {TOKEN_STRING, buf, len, 0, 0.0, start_line, start_col};
         return tok;
     }
 
@@ -234,6 +248,6 @@ Token lexer_next_token(Lexer *lexer) {
             break;
     }
 
-    Token tok = {type, NULL, 0, 0, start_line, start_col};
+    Token tok = {type, NULL, 0, 0, 0.0, start_line, start_col};
     return tok;
 }

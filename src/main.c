@@ -153,7 +153,10 @@ static void run_all_tests(void) {
         "examples/15_matn_amallari.algo",
         "examples/16_modul_test.algo",
         "examples/17_massiv_amallari.algo",
-        "examples/18_veb_server.algo"
+        "examples/18_veb_server.algo",
+        "examples/19_haqiqiy_sonlar.algo",
+        "examples/20_argumentlar.algo",
+        "examples/21_tasdiqla.algo"
     };
 
     int count = sizeof(test_files) / sizeof(test_files[0]);

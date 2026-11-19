@@ -1,0 +1,11 @@
+amal asosiy() {
+    args = argumentlar()
+    soni = uzunlik(args)
+    chiqar("Dasturga uzatilgan argumentlar soni:", soni)
+
+    uchun i = 0; i < soni; i = i + 1 {
+        chiqar("Arg", i, ":", args[i])
+    }
+
+    qaytar 0
+}
