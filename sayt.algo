@@ -5,6 +5,7 @@
 
 yukla "std/tarmoq.algo"
 yukla "std/http.algo"
+yukla "std/matn.algo"
 yukla "std/fayl.algo"
 yukla "std/rang.algo"
 yukla "std/tizim.algo"
@@ -52,7 +53,7 @@ amal asosiy() {
         
         chiqar(rang_turkuaz("[HTTP]") + " " + rang_qalin(metod) + " " + yol)
         
-        // Marshrutlash (Routing) - Har bir so'rovda yangi faylni o'qiydi (Live Reload)
+        // Marshrutlash (Routing) - Har bir so'rovda faylni jonli o'qish
         agar yol == "/" yoki yol == "/index.html" {
             html_sahifa = fayl_oqish("docs/index.html")
             javob = http_javob_html(200, html_sahifa)
@@ -73,6 +74,22 @@ amal asosiy() {
             logo_svg = fayl_oqish("docs/assets/logo.svg")
             javob = http_javob_qur(200, "image/svg+xml", logo_svg)
             xabar_yubor(mijoz_fd, javob)
+        } aks agar matn_boshlanishi(yol, "/assets/fonts/") {
+            fayl_yoli = "docs" + yol
+            agar fayl_bormi(fayl_yoli) {
+                shrift_matn = fayl_oqish(fayl_yoli)
+                mime = "font/woff2"
+                agar matn_tugashi(yol, ".otf") {
+                    mime = "font/otf"
+                } aks agar matn_tugashi(yol, ".ttf") {
+                    mime = "font/ttf"
+                }
+                javob = http_javob_qur(200, mime, shrift_matn)
+                xabar_yubor(mijoz_fd, javob)
+            } aks {
+                javob = http_javob_404()
+                xabar_yubor(mijoz_fd, javob)
+            }
         } aks agar yol == "/install.sh" {
             install_sh = fayl_oqish("docs/install.sh")
             javob = http_javob_qur(200, "text/plain; charset=utf-8", install_sh)
