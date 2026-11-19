@@ -122,6 +122,10 @@ html {
   color: var(--color-bone);
 }
 
+section[id], header[id], div[id] {
+  scroll-margin-top: 84px;
+}
+
 body {
   font-family: var(--font-inter);
   font-weight: var(--font-weight-regular);
@@ -219,35 +223,44 @@ code, kbd, samp, pre {
 }
 
 /* ==============================================================================
-   NAVBAR (Midnight Command Center)
+   NAVBAR (Midnight Command Center — Dovetail System)
    ============================================================================== */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(10, 10, 10, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(10, 10, 10, 0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--color-iron);
-  padding: 12px 0;
+  padding: 10px 0;
+  transition: all 0.2s ease;
 }
 
 .nav-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-24);
+  gap: var(--spacing-16);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: var(--spacing-8);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.brand:hover {
+  opacity: 0.9;
 }
 
 .brand img {
   height: 28px;
   width: auto;
+  display: block;
 }
 
 .brand-badge {
@@ -257,7 +270,7 @@ code, kbd, samp, pre {
   color: var(--color-ash);
   border: 1px solid var(--color-iron);
   background: var(--surface-card);
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: var(--radius-tags);
   text-transform: uppercase;
 }
@@ -266,29 +279,56 @@ code, kbd, samp, pre {
   display: flex;
   align-items: center;
   list-style: none;
-  gap: 4px;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   border-radius: var(--radius-navpills);
   background: transparent;
-  color: var(--color-bone);
-  padding: 8px 14px;
+  color: var(--color-ash);
+  padding: 7px 13px;
   font-size: var(--text-body-sm);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-body-sm);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all 0.15s ease;
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-bone);
+}
+
+.nav-link.active {
   background-color: var(--surface-card);
   color: var(--color-bone);
+  box-shadow: inset 0 0 0 1px var(--color-iron);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 2px;
+  background-color: var(--color-soft-indigo);
+  border-radius: 1px;
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-16);
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .nav-link-plain {
@@ -298,12 +338,117 @@ code, kbd, samp, pre {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 10px;
-  transition: color 0.15s ease;
+  padding: 7px 12px;
+  border-radius: var(--radius-buttons);
+  transition: all 0.15s ease;
+  text-decoration: none;
 }
 
 .nav-link-plain:hover {
   color: var(--color-bone);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Mobile Toggle Hamburger */
+.nav-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-buttons);
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.nav-mobile-toggle:hover {
+  background-color: var(--surface-card);
+  border-color: var(--color-slate-edge);
+}
+
+.nav-mobile-toggle .bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background-color: var(--color-bone);
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-mobile-toggle.open .bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-mobile-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-mobile-toggle.open .bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Mobile Dropdown Menu */
+.nav-mobile-menu {
+  display: none;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  background-color: rgba(10, 10, 10, 0.98);
+  border-bottom: 1px solid var(--color-iron);
+}
+
+.nav-mobile-menu.open {
+  max-height: 520px;
+  opacity: 1;
+}
+
+.nav-mobile-container {
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-mobile-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-mobile-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-buttons);
+  color: var(--color-bone);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-mobile-link:hover, .nav-mobile-link.active {
+  background-color: var(--surface-card);
+  color: var(--color-soft-indigo);
+}
+
+.nav-mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-iron);
 }
 
 /* Primary Button (Filled) — Dovetail Signature: Inverted White */
@@ -1012,6 +1157,22 @@ code, kbd, samp, pre {
    RESPONSIVE QUERIES
    ============================================================================== */
 @media (max-width: 960px) {
+  .nav-links {
+    display: none;
+  }
+
+  .nav-actions .btn-primary {
+    display: none;
+  }
+
+  .nav-mobile-toggle {
+    display: flex;
+  }
+
+  .nav-mobile-menu {
+    display: block;
+  }
+
   .stat-row {
     grid-template-columns: 1fr;
     gap: var(--spacing-24);
@@ -1036,7 +1197,11 @@ code, kbd, samp, pre {
 }
 
 @media (max-width: 640px) {
-  .nav-links {
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .nav-link-plain span {
     display: none;
   }
 

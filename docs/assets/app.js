@@ -342,23 +342,113 @@ function searchModules(val) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  selectTab('salom');
-  
-  const ed = document.getElementById('code-editor');
-  if (ed) {
-    ed.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = ed.selectionStart;
-        const end = ed.selectionEnd;
-        ed.value = ed.value.substring(0, start) + "    " + ed.value.substring(end);
-        ed.selectionStart = ed.selectionEnd = start + 4;
+// ==============================================================================
+// NAVIGATION BAR CONTROLLER (ScrollSpy & Mobile Menu)
+// ==============================================================================
+function initNavbar() {
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mainNav = document.getElementById('main-nav');
+
+  if (menuBtn && mobileMenu) {
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuBtn.classList.toggle('open', isOpen);
+      menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    // Close on clicking links
+    document.querySelectorAll('.nav-mobile-link, .nav-mobile-actions a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        menuBtn.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (mainNav && !mainNav.contains(e.target)) {
+        mobileMenu.classList.remove('open');
+        menuBtn.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        executeCode();
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+        mobileMenu.classList.remove('open');
+        menuBtn.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
       }
     });
   }
+
+  // ScrollSpy for desktop and mobile links
+  const sections = ['workbench', 'lugat', 'arxitektura', 'benchmarks', 'kutubxona', 'cli'];
+  const navLinks = document.querySelectorAll('.nav-link[data-nav]');
+  const mobileNavLinks = document.querySelectorAll('.nav-mobile-link[data-nav]');
+
+  if (navLinks.length > 0) {
+    function updateActiveNav() {
+      const scrollPos = window.scrollY + 120;
+      let activeSection = null;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const sec = document.getElementById(sections[i]);
+        if (sec && sec.offsetTop <= scrollPos) {
+          activeSection = sections[i];
+          break;
+        }
+      }
+
+      navLinks.forEach(link => {
+        const target = link.getAttribute('data-nav');
+        if (target === activeSection) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+
+      mobileNavLinks.forEach(link => {
+        const target = link.getAttribute('data-nav');
+        if (target === activeSection) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    updateActiveNav();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('code-editor')) {
+    selectTab('salom');
+    
+    const ed = document.getElementById('code-editor');
+    if (ed) {
+      ed.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = ed.selectionStart;
+          const end = ed.selectionEnd;
+          ed.value = ed.value.substring(0, start) + "    " + ed.value.substring(end);
+          ed.selectionStart = ed.selectionEnd = start + 4;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          executeCode();
+        }
+      });
+    }
+  }
+  
+  initNavbar();
 });
