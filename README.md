@@ -1,7 +1,16 @@
-# 🚀 Algo Dasturlash Tili (`.algo`)
+<p align="center">
+  <img src="assets/logo.png" alt="Algo Dasturlash Tili Logo" width="650" />
+</p>
 
 <p align="center">
   <b>Python kabi oson, Go dan tez, to'g'ridan-to'g'ri x86_64 GNU Assembler ustiga qurilgan mutlaq mustaqil dasturlash tili.</b>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/versiya-v1.5.0-blue.svg?style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/badge/arxitektura-x86__64-brightgreen.svg?style=flat-square" alt="Arch" />
+  <img src="https://img.shields.io/badge/bog'liqliklar-0%20(zero--libc)-orange.svg?style=flat-square" alt="Zero-Libc" />
+  <img src="https://img.shields.io/badge/sinovlar-31%2F31%20(100%25)-success.svg?style=flat-square" alt="Tests" />
 </p>
 
 ---
