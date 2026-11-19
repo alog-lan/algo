@@ -36,7 +36,7 @@
   <nav class="navbar" id="main-nav">
     <div class="container nav-wrapper">
       <a href="index.html" class="brand">
-        <img src="assets/logo.svg" alt="Algo" height="28">
+        <img src="assets/logo.svg" alt="Algo" height="42">
         <span class="brand-badge">BETA v1.5.0</span>
       </a>
 
@@ -101,7 +101,13 @@
        ============================================================================== -->
   <header class="hero">
     <div class="container">
-      <div class="section-eyebrow">Tizim Darajasidagi Dasturlash Tili</div>
+      <div class="hero-brand-badge" style="display: inline-flex; align-items: center; gap: 14px; margin-bottom: 24px; padding: 6px 18px 6px 8px; border: 1px solid var(--color-iron); background-color: rgba(20, 20, 20, 0.7); border-radius: 9999px; backdrop-filter: blur(8px);">
+        <img src="assets/icon.png" alt="Algo" style="width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.6));">
+        <div style="display: flex; flex-direction: column; text-align: left;">
+          <span style="font-family: var(--font-jetbrains-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-soft-indigo); font-weight: 500;">Tizim Darajasidagi Dasturlash Tili</span>
+          <span style="font-size: 13px; color: var(--color-bone); font-weight: 500;">Algo v1.5.0 &bull; x86_64 Direct Syscalls</span>
+        </div>
+      </div>
 
       <h1 class="hero-title">
         To'g'ridan-to'g'ri mashina kodi.<br>
@@ -120,6 +126,29 @@
           </svg>
           <span>GitHub ombori</span>
         </a>
+      </div>
+
+      <!-- Supported Platforms Bar -->
+      <div class="hero-platforms" style="display: flex; align-items: center; gap: 14px; margin-top: 24px; flex-wrap: wrap;">
+        <span style="font-family: var(--font-jetbrains-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-ash);">Qo'llab-quvvatlanadi:</span>
+        <div style="display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <a href="yuklab-olish.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-bone); text-decoration: none; padding: 4px 10px; border-radius: 6px; background-color: var(--surface-card); border: 1px solid var(--color-iron); transition: border-color 0.15s ease;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#fcc624"><path d="M12.001 0c-3.138 0-5.688 2.418-5.688 5.398 0 .543.083 1.071.242 1.577C5.232 7.599 4.3 8.647 3.96 9.873c-.364 1.272-.27 2.618.239 3.791.522 1.192 1.45 2.158 2.621 2.727.189.887.523 1.729.98 2.48-1.288.528-2.336 1.288-2.887 2.196-.543.906-.489 1.947.123 2.697.627.763 1.66 1.183 2.868 1.183 1.842 0 3.94-.962 5.803-2.303 1.864 1.341 3.961 2.303 5.803 2.303 1.208 0 2.241-.42 2.868-1.183.612-.75.666-1.791.123-2.697-.551-.908-1.599-1.668-2.887-2.196.457-.751.791-1.593.98-2.48 1.171-.569 2.099-1.535 2.621-2.727.509-1.173.603-2.519.239-3.791-.34-1.226-1.272-2.274-2.595-2.897.159-.506.242-1.034.242-1.577C17.689 2.418 15.139 0 12.001 0z"/></svg>
+            <span>Linux</span>
+          </a>
+          <a href="yuklab-olish.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-bone); text-decoration: none; padding: 4px 10px; border-radius: 6px; background-color: var(--surface-card); border: 1px solid var(--color-iron); transition: border-color 0.15s ease;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#ffffff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.87-.96.04-2.13.64-2.79 1.41-.58.68-1.1 1.74-.96 2.79 1.07.08 2.12-.58 2.74-1.33z"/></svg>
+            <span>macOS</span>
+          </a>
+          <a href="yuklab-olish.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-bone); text-decoration: none; padding: 4px 10px; border-radius: 6px; background-color: var(--surface-card); border: 1px solid var(--color-iron); transition: border-color 0.15s ease;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#00adef"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+            <span>Windows</span>
+          </a>
+          <a href="yuklab-olish.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-bone); text-decoration: none; padding: 4px 10px; border-radius: 6px; background-color: var(--surface-card); border: 1px solid var(--color-iron); transition: border-color 0.15s ease;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#2496ed"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.186.185.186zm0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.186.185.186zm-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186zm-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.186.186.186zm5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185zm-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185zm-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186H5.136a.186.186 0 00-.186.185v1.888c0 .102.084.185.186.185zm-2.928 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186H2.208a.186.186 0 00-.186.185v1.888c0 .102.084.185.186.185zm21.656-.694c-.31-.205-.992-.472-1.92-.35-.37-.738-1.04-1.365-1.93-1.638l-.403-.122-.263.337c-.57.728-.887 1.637-.887 2.585 0 .327.037.653.111.968-.45.244-.97.382-1.536.402H1.144a.952.952 0 00-.952.952c0 2.226.75 4.318 2.11 5.892 1.488 1.722 3.585 2.738 5.904 2.862 5.093.272 9.61-2.457 11.516-6.958.552.029 1.13-.03 1.693-.243 1.05-.398 1.83-1.22 2.2-2.316l.135-.403-.393-.186z"/></svg>
+            <span>Docker</span>
+          </a>
+        </div>
       </div>
 
       <!-- Terminal Install Bar -->
@@ -849,7 +878,7 @@ baza_saqla("ilovam.db")</div>
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="brand">
-            <img src="assets/logo.svg" alt="Algo" height="24">
+            <img src="assets/logo.svg" alt="Algo" height="38">
             <span class="brand-badge">v1.5.0</span>
           </div>
           <p>

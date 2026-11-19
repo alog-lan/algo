@@ -258,9 +258,16 @@ code, kbd, samp, pre {
 }
 
 .brand img {
-  height: 28px;
+  height: 42px;
   width: auto;
   display: block;
+  filter: drop-shadow(0 2px 14px rgba(0, 229, 255, 0.25));
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.brand:hover img {
+  transform: scale(1.02);
+  filter: drop-shadow(0 2px 18px rgba(0, 229, 255, 0.4));
 }
 
 .brand-badge {
@@ -1110,6 +1117,13 @@ code, kbd, samp, pre {
   gap: var(--spacing-16);
 }
 
+.footer-brand img {
+  height: 38px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 2px 10px rgba(0, 229, 255, 0.2));
+}
+
 .footer-brand p {
   color: var(--color-ash);
   max-width: 320px;
@@ -1197,6 +1211,10 @@ code, kbd, samp, pre {
 }
 
 @media (max-width: 640px) {
+  .brand img {
+    height: 34px;
+  }
+
   .nav-actions {
     gap: 6px;
   }
