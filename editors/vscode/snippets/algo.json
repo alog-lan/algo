@@ -1,0 +1,81 @@
+{
+  "Asosiy Amal": {
+    "prefix": "asosiy",
+    "body": [
+      "amal asosiy() {",
+      "\t${1:// Dastur kodi...}",
+      "\tqaytar 0",
+      "}"
+    ],
+    "description": "Algo asosiy kirish amali (main entry)"
+  },
+  "Amal (Funksiya)": {
+    "prefix": "amal",
+    "body": [
+      "amal ${1:nomi}(${2:param}) {",
+      "\t${3:// Kod}",
+      "\tqaytar ${4:natija}",
+      "}"
+    ],
+    "description": "Algo amali (funksiyasi) yaratish"
+  },
+  "Chiqarish (Print)": {
+    "prefix": "chiq",
+    "body": [
+      "chiqar(${1:\"Salom, Dunyo!\"})"
+    ],
+    "description": "Ekranga ma'lumot chiqarish (print)"
+  },
+  "Kiritish (Input)": {
+    "prefix": "kir",
+    "body": [
+      "${1:o_zgaruvchi} = kirit(\"${2:Qiymat kiriting: }\")"
+    ],
+    "description": "Foydalanuvchidan konsol orqali ma'lumot qabul qilish"
+  },
+  "Agar-Aks holda (If-Else)": {
+    "prefix": "agar",
+    "body": [
+      "agar (${1:shart}) {",
+      "\t${2:// Agar shart rost bo'lsa}",
+      "} aks {",
+      "\t${3:// Aks holda}",
+      "}"
+    ],
+    "description": "Shart operatori (agar - aks)"
+  },
+  "Uchun Sikli (For Loop)": {
+    "prefix": "uchun",
+    "body": [
+      "uchun (${1:i} = 0; ${1:i} < ${2:10}; ${1:i} = ${1:i} + 1) {",
+      "\t${3:// Takrorlanish kodi}",
+      "}"
+    ],
+    "description": "Uchun (for) takrorlanish sikli"
+  },
+  "Toki Sikli (While Loop)": {
+    "prefix": "toki",
+    "body": [
+      "toki (${1:shart}) {",
+      "\t${2:// Sikl kodi}",
+      "}"
+    ],
+    "description": "Toki (while) takrorlanish sikli"
+  },
+  "Tuzilma (Struct)": {
+    "prefix": "tuzilma",
+    "body": [
+      "tuzilma ${1:Nomi} {",
+      "\t${2:maydon}",
+      "}"
+    ],
+    "description": "Algo maxsus ma'lumot tuzilmasi (struct)"
+  },
+  "Modul Yuklash (Import)": {
+    "prefix": "yukla",
+    "body": [
+      "yukla \"${1:modul_nomi}\""
+    ],
+    "description": "Tashqi kutubxona yoki faylni yuklash"
+  }
+}

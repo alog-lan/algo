@@ -1,17 +1,30 @@
 {
   "name": "algo-lang",
   "displayName": "Algo Dasturlash Tili",
-  "description": "Algo dasturlash tili uchun sintaksis ranglari, rasmiy ikonkalar va qo'llab-quvvatlash",
+  "description": "O'zbek tilidagi birinchi ultra-tezkor dasturlash tili (.algo) uchun rasmiy kengaytma, sintaksis ranglari va 3D ikonkalar",
   "version": "1.5.0",
   "publisher": "alog-lan",
-  "icon": "icons/algo.png",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.60.0"
   },
   "categories": [
     "Programming Languages",
+    "Snippets",
     "Themes"
   ],
+  "keywords": [
+    "algo",
+    "uzbek",
+    "dasturlash",
+    "compiler",
+    "language"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alog-lan/algo.git"
+  },
+  "homepage": "https://github.com/alog-lan/algo",
   "contributes": {
     "languages": [
       {
@@ -35,6 +48,12 @@
         "language": "algo",
         "scopeName": "source.algo",
         "path": "./syntaxes/algo.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "algo",
+        "path": "./snippets/algo.json"
       }
     ],
     "iconThemes": [
