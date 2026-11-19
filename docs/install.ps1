@@ -7,13 +7,14 @@ $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 Write-Host @"
-   ___   __             
-  / _ | / /__ ____  ___ 
- / __ |/ / _ `/ _ \/ _ \
-/_/ |_/_/\_, /\___/\___/
-        /___/           
-Algo Dasturlash Tili v1.5.0 (Windows / x86_64)
-Rasmiy ombor: https://github.com/alog-lan/algo
+    █████╗   ██╗      ██████╗   ██████╗ 
+   ██╔══██╗  ██║     ██╔════╝  ██╔═══██╗
+   ███████║  ██║     ██║  ███╗ ██║   ██║
+   ██╔══██║  ██║     ██║   ██║ ██║   ██║
+   ██║  ██║  ███████╗╚██████╔╝ ╚██████╔╝
+   ╚═╝  ╚═╝  ╚══════╝ ╚═════╝   ╚═════╝ 
+   ⚡ Algo Dasturlash Tili v1.5.0 (Windows / x86_64)
+   Rasmiy ombor: https://github.com/alog-lan/algo
 "@ -ForegroundColor Cyan
 
 # 1. Arxitekturani tekshirish

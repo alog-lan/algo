@@ -116,13 +116,14 @@ make web
 ### 1. Interaktiv REPL Shell
 ```bash
 $ ./bin/algo repl
-   ___   __             
-  / _ | / /__ ____  ___ 
- / __ |/ / _ `/ _ \/ _ \
-/_/ |_/_/\_, /\___/\___/
-        /___/           
-Algo Dasturlash Tili v1.4.0 (x86_64, Linux, Mustaqil)
-Interaktiv REPL qobig'i. Chiqish uchun 'chiqish' deb yozing yoki Ctrl+C bosing.
+    █████╗  ██╗      ██████╗   ██████╗ 
+   ██╔══██╗ ██║     ██╔════╝  ██╔═══██╗
+   ███████║ ██║     ██║  ███╗ ██║   ██║
+   ██╔══██║ ██║     ██║   ██║ ██║   ██║
+   ██║  ██║ ███████╗╚██████╔╝ ╚██████╔╝
+   ╚═╝  ╚═╝ ╚══════╝ ╚═════╝   ╚═════╝ 
+   ⚡ Algo Dasturlash Tili v1.5.0 (x86_64, Linux, Mustaqil)
+Interaktiv REPL qobig'i. Chiqish uchun 'chiq' deb yozing yoki Ctrl+C bosing.
 
 algo> chiqar("Salom, Dunyo!")
 Salom, Dunyo!

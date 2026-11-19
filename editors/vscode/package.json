@@ -5,6 +5,11 @@
   "version": "1.5.0",
   "publisher": "alog-lan",
   "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#0a0a0a",
+    "theme": "dark"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.60.0"
   },
